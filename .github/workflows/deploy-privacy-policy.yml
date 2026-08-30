@@ -37,7 +37,7 @@ jobs:
             --from=markdown \
             --to=html5 \
             --template=template.html \
-            --output=_site/index.html
+            --output=_site/bn_privacy.html
           cp style.css _site/
 
       - name: Upload Pages Artifact
