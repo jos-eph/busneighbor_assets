@@ -1,0 +1,13 @@
+﻿Hex Code,color,colorName,RGB,constantName
+#5A960A,5A960A,Apple / Olive Forest Green,"rgb(90, 150, 10)",TROLLEY_GREEN
+#F26100,F26100,Bright Orange / Tangerine,"rgb(242, 97, 0)",ORANGE_LINE_ORANGE
+#FFD700,FFD700,Classic Bright Gold,"rgb(255, 215, 0)",GIRARD_GOLD
+#EF3340,EF3340,Crimson / Bright Warm Red,"rgb(239, 51, 64)",FREQUENT_BUS_RED
+#DC2E6B,DC2E6B,Deep Cerise / Raspberry Pink,"rgb(220, 46, 107)",DELCO_PINK
+#003E53,003E53,Deep Teal / Dark Marine Slate,"rgb(0, 62, 83)",BLVD_DIRECT_TEAL
+#00A239,00A239,Emerald / Vibrant Leaf Green,"rgb(0, 162, 57)",LUCY_EMERALD
+#4F758B,4F758B,Muted Steel Blue / Slate Gray-Blue,"rgb(79, 117, 139)",TEMPORARY_SHUTTLE_BLUE
+#5F249F,5F249F,Royal Violet / Deep Purple,"rgb(95, 36, 159)",NORRISTOWN_VIOLET
+#1A1818,1A1818,Soft Charcoal / Off-Black,"rgb(26, 24, 24)",STANDARD_BUS_BLACK
+#0097D6,0097D6,Vivid Cerulean / Rich Sky Blue,"rgb(0, 151, 214)",BLUE_LINE_BLUE
+#ECAF3B,ECAF3B,Warm Amber / Saffron Yellow,"rgb(236, 175, 59)",LUCY_YELLOW
