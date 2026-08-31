@@ -35,6 +35,37 @@ BUS_FEED_MEMBER = "google_bus.zip"
 # ship a short route list. The real feed has ~175 routes.
 MIN_ROUTES = 100
 
+# Route colour categories. SEPTA's palette names; the value is the key that
+# appears in septameta.json.
+BLUE_LINE_BLUE = "blue_line_blue"
+BLVD_DIRECT_TEAL = "blvd_direct_teal"
+DELCO_PINK = "delco_pink"
+FREQUENT_BUS_RED = "frequent_bus_red"
+GIRARD_GOLD = "girard_gold"
+LUCY_EMERALD = "lucy_emerald"
+LUCY_YELLOW = "lucy_yellow"
+NORRISTOWN_VIOLET = "norristown_violet"
+ORANGE_LINE_ORANGE = "orange_line_orange"
+STANDARD_BUS_BLACK = "standard_bus_black"
+TEMPORARY_SHUTTLE_BLUE = "temporary_shuttle_blue"
+TROLLEY_GREEN = "trolley_green"
+
+# GTFS route_color (uppercase hex, no '#') -> category.
+CATEGORY_BY_COLOR = {
+    "0097D6": BLUE_LINE_BLUE,
+    "003E53": BLVD_DIRECT_TEAL,
+    "DC2E6B": DELCO_PINK,
+    "EF3340": FREQUENT_BUS_RED,
+    "FFD700": GIRARD_GOLD,
+    "00A239": LUCY_EMERALD,
+    "ECAF3B": LUCY_YELLOW,
+    "5F249F": NORRISTOWN_VIOLET,
+    "F26100": ORANGE_LINE_ORANGE,
+    "1A1818": STANDARD_BUS_BLACK,
+    "4F758B": TEMPORARY_SHUTTLE_BLUE,
+    "5A960A": TROLLEY_GREEN,
+}
+
 _DOWNLOAD_ATTEMPTS = 3
 _DOWNLOAD_INITIAL_DELAY_S = 30
 
