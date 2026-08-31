@@ -150,6 +150,44 @@ def route_list(feed: zipfile.ZipFile) -> list[str]:
     return routes
 
 
+def route_categories(
+    feed: zipfile.ZipFile,
+) -> tuple[dict[str, str], dict[str, list[str]]]:
+    """Route id -> colour category, and colour category -> route ids.
+
+    Ordering reuses route_list rather than re-deriving it, so route_list,
+    route_category and category_routes always agree on route order.
+    """
+    routes = route_list(feed)
+
+    color_by_route: dict[str, str] = {}
+    for row in _read_csv(feed, "routes.txt"):
+        route_id = (row.get("route_id") or "").strip()
+        color_by_route[route_id] = (row.get("route_color") or "").strip().upper()
+
+    route_category: dict[str, str] = {}
+    category_routes: dict[str, list[str]] = {
+        category: [] for category in sorted(set(CATEGORY_BY_COLOR.values()))
+    }
+    for route_id in routes:
+        color = color_by_route[route_id]
+        if not color:
+            raise ValueError(f"route {route_id} has a blank route_color")
+        if color not in CATEGORY_BY_COLOR:
+            raise ValueError(
+                f"route {route_id} has route_color {color!r}, which is not in "
+                "CATEGORY_BY_COLOR; add it to septaclrs.csv"
+            )
+        category = CATEGORY_BY_COLOR[color]
+        route_category[route_id] = category
+        category_routes[category].append(route_id)
+
+    assert set(route_category) == set(routes)
+    assert sum(len(v) for v in category_routes.values()) == len(routes)
+
+    return route_category, category_routes
+
+
 def feed_meta(feed: zipfile.ZipFile) -> dict[str, str]:
     """feed_start_date, feed_end_date and feed_version from feed_info.txt."""
     rows = _read_csv(feed, "feed_info.txt")
@@ -172,7 +210,15 @@ def feed_meta(feed: zipfile.ZipFile) -> dict[str, str]:
 
 def build(bundle_path: str) -> dict:
     feed = open_bus_feed(bundle_path)
-    return {"meta": feed_meta(feed), "buses": {"route_list": route_list(feed)}}
+    route_category, category_routes = route_categories(feed)
+    return {
+        "meta": feed_meta(feed),
+        "buses": {
+            "route_list": route_list(feed),
+            "route_category": route_category,
+            "category_routes": category_routes,
+        },
+    }
 
 
 def write_outputs(document: dict, output_dir: str) -> tuple[str, str]:
@@ -215,8 +261,10 @@ def main(argv: list[str] | None = None) -> int:
     rolling, dated = write_outputs(document, args.output_dir)
 
     meta = document["meta"]
+    buses = document["buses"]
     print(
-        f"{len(document['buses']['route_list'])} routes, "
+        f"{len(buses['route_list'])} routes in "
+        f"{len(buses['category_routes'])} categories, "
         f"feed {meta['version']} ({meta['start_date']}–{meta['end_date']})",
         file=sys.stderr,
     )
