@@ -26,7 +26,9 @@ ships a `.sha256` sidecar in `sha256sum -c` format.
     "version": "v202608233"
   },
   "buses": {
-    "route_list": ["L1", "B1", "B2", "..."]
+    "route_list": ["L1", "B1", "B2", "..."],
+    "route_category": { "L1": "blue_line_blue", "T1": "trolley_green" },
+    "category_routes": { "blue_line_blue": ["L1", "L1_OWL"] }
   }
 }
 ```
@@ -34,6 +36,11 @@ ships a `.sha256` sidecar in `sha256sum -c` format.
 `meta` is `feed_info.txt` verbatim. `route_list` is every `route_id` in the
 bundle's bus feed — surface routes plus Metro — ordered by `route_sort_order`.
 Regional Rail lives in a separate feed and is not included.
+
+`route_category` and `category_routes` classify each route by SEPTA's
+palette, derived from `routes.txt`'s `route_color` via `septaclrs.csv`. The
+category names are palette buckets, not vehicle types — routes of different
+`route_type` can share a colour and land in the same category.
 
 The build runs `python build_septa_meta.py`; `python -m unittest discover -s tests`
 covers it. Both are stdlib-only.
