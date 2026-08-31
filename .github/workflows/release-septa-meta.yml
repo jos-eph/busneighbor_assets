@@ -24,9 +24,6 @@ name: Release SEPTA meta
 #   * Dated releases beyond the most recent 30 are pruned.
 
 on:
-  # TEMPORARY: smoke-test this pipeline from the PR branch. Reverted before merge.
-  push:
-    branches: ['003/septa_meta_pipeline']
   schedule:
     - cron: '0 6 * * 1'
   workflow_dispatch:
