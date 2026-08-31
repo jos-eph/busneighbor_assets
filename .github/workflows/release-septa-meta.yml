@@ -1,0 +1,211 @@
+name: Release SEPTA meta
+
+# Weekly refresh of septameta.json — the SEPTA bus/Metro route list and feed
+# window that BusNeighbor reads at runtime. Follows the two-release pattern
+# already used by jos-eph/lovmaps: an immutable dated release for pinning and a
+# rolling `current` release for "always latest" consumers.
+#
+# Stable consumer URL:
+#   https://github.com/jos-eph/busneighbor_assets/releases/download/current/septameta.json
+#
+# Behaviour summary:
+#   * Scheduled Mondays at 06:00 UTC — 02:00 EDT / 01:00 EST. GitHub cron has no
+#     time zone, so the local hour shifts with DST; both land on Monday morning
+#     and the exact minute does not matter, since SEPTA publishes on its own
+#     cadence and this job is a no-op when nothing changed.
+#   * Manual run via workflow_dispatch; set push_release=false for a build-only
+#     smoke test.
+#   * Publishing is gated by repo variable RELEASE_SEPTA_META_ENABLED, which must
+#     equal the literal string 'true'. This is the kill switch — flip it under
+#     Settings -> Secrets and variables -> Actions -> Variables without editing
+#     this file.
+#   * SEPTA reissues the same feed for weeks at a time, so a run whose output
+#     matches the published septameta.json publishes nothing.
+#   * Dated releases beyond the most recent 30 are pruned.
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      push_release:
+        description: 'Build and publish a release now (false = build-only smoke test)'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write   # required to create releases and upload assets
+
+concurrency:
+  group: release-septa-meta
+  cancel-in-progress: false   # never let a manual run clobber a scheduled run mid-flight
+
+env:
+  SOURCE_URL: https://www3.septa.org/developer/gtfs_public.zip
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        with:
+          python-version: '3.12'
+
+      - name: Run unit tests
+        # Stdlib-only and offline, so this fails the job before the download.
+        run: python -m unittest discover -s tests -v
+
+      - name: Build septameta.json
+        id: build
+        run: |
+          set -euo pipefail
+          START_DATE="$(python build_septa_meta.py \
+            --source-url "${SOURCE_URL}" \
+            --output-dir ./out)"
+          echo "start_date=${START_DATE}" >> "$GITHUB_OUTPUT"
+          echo "START_DATE=${START_DATE}" >> "$GITHUB_ENV"
+
+      - name: Decide whether to publish
+        id: gate
+        # Three independent conditions must hold:
+        #   1. The trigger is not a workflow_dispatch with push_release=false.
+        #   2. Repo variable RELEASE_SEPTA_META_ENABLED == 'true' (kill switch).
+        #      If unset, publishing is skipped — the human must opt in before the
+        #      weekly schedule starts cutting releases.
+        #   3. The build differs from the published `current` asset.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_PUSH_RELEASE: ${{ inputs.push_release }}
+          KILL_SWITCH: ${{ vars.RELEASE_SEPTA_META_ENABLED }}
+        run: |
+          set -euo pipefail
+          PUBLISH=true
+          if [ "${EVENT_NAME}" = "workflow_dispatch" ] && [ "${INPUT_PUSH_RELEASE}" != "true" ]; then
+            PUBLISH=false
+            echo "::notice::Skipping publish: workflow_dispatch with push_release=false (build-only)"
+          fi
+          if [ "${KILL_SWITCH}" != "true" ]; then
+            PUBLISH=false
+            echo "::notice::Skipping publish: repo variable RELEASE_SEPTA_META_ENABLED is not 'true' (current value: '${KILL_SWITCH}'). Set it to 'true' in Settings -> Variables to enable releases."
+          fi
+          if [ "${PUBLISH}" = "true" ]; then
+            if gh release download current \
+                 --repo "${GITHUB_REPOSITORY}" \
+                 --pattern septameta.json \
+                 --dir /tmp/published >/dev/null 2>&1 \
+               && cmp -s /tmp/published/septameta.json ./out/septameta.json; then
+              PUBLISH=false
+              echo "::notice::Skipping publish: build is identical to the published septameta.json (SEPTA feed ${START_DATE} unchanged)."
+            fi
+          fi
+          echo "publish=${PUBLISH}" >> "$GITHUB_OUTPUT"
+          echo "Publish decision: ${PUBLISH}"
+
+      - name: Generate sha256 sidecars
+        # `sha256sum` output format — consumers verify with `sha256sum -c`.
+        run: |
+          set -euo pipefail
+          cd ./out
+          for f in septameta.json "septameta_${START_DATE}.json"; do
+            sha256sum "${f}" > "${f}.sha256"
+            echo "sha256(${f}) = $(awk '{print $1}' "${f}.sha256")"
+          done
+
+      - name: Build traceability blob
+        run: |
+          set -euo pipefail
+          {
+            echo "start_date: ${START_DATE}"
+            echo "generated_at_utc: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            echo "git_sha: ${GITHUB_SHA}"
+            echo "git_ref: ${GITHUB_REF}"
+            echo "workflow_run_url: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "source_url: ${SOURCE_URL}"
+            echo "septameta_sha256: $(awk '{print $1}' ./out/septameta.json.sha256)"
+          } > "./out/septameta_${START_DATE}.run.txt"
+          cat "./out/septameta_${START_DATE}.run.txt"
+
+      - name: Upload build artifact
+        # Keeps a build-only smoke test inspectable without cutting a release.
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        with:
+          name: septameta-${{ steps.build.outputs.start_date }}
+          path: ./out/septameta*.json
+          retention-days: 14
+
+      - name: Create or update the dated release
+        if: steps.gate.outputs.publish == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="septameta-${START_DATE}"
+          ASSETS=(
+            "./out/septameta_${START_DATE}.json"
+            "./out/septameta_${START_DATE}.json.sha256"
+            "./out/septameta_${START_DATE}.run.txt"
+          )
+          if gh release view "${TAG}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            # SEPTA revised the feed inside an effective window it had already
+            # opened, so the dated file has to be corrected in place: the
+            # filename is keyed on feed_start_date and that has not moved. The
+            # run.txt asset records which build the assets came from.
+            echo "::notice::${TAG} already exists; SEPTA revised feed ${START_DATE} in place. Updating its assets."
+            gh release upload "${TAG}" --clobber \
+              --repo "${GITHUB_REPOSITORY}" "${ASSETS[@]}"
+          else
+            gh release create "${TAG}" \
+              --repo "${GITHUB_REPOSITORY}" \
+              --title "SEPTA meta ${START_DATE}" \
+              --notes "SEPTA route list and feed window for the service period starting ${START_DATE}. Built from ${SOURCE_URL} by workflow run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}." \
+              "${ASSETS[@]}"
+          fi
+
+      - name: Update the 'current' rolling release
+        if: steps.gate.outputs.publish == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if ! gh release view current --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release create current \
+              --repo "${GITHUB_REPOSITORY}" \
+              --title "Current SEPTA meta (rolling)" \
+              --notes "Rolling release: septameta.json is overwritten by every successful weekly build. Pin to a dated septameta-<start_date> release for immutability."
+          fi
+          gh release upload current --clobber \
+            --repo "${GITHUB_REPOSITORY}" \
+            ./out/septameta.json \
+            ./out/septameta.json.sha256
+
+      - name: Prune dated releases beyond the most recent 30
+        # Keep the 30 most recent dated releases; never prune `current`. Sort by
+        # tagName (septameta-YYYYMMDD sorts lexicographically == chronologically),
+        # not createdAt: GitHub takes a release's created_at from its target
+        # commit, and every dated release here tags the same unchanged main
+        # commit, so createdAt ties and the sort would prune arbitrarily.
+        if: steps.gate.outputs.publish == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh release list --repo "${GITHUB_REPOSITORY}" --limit 1000 \
+            --json tagName \
+            --jq 'map(select(.tagName | startswith("septameta-"))) | sort_by(.tagName) | reverse | .[30:] | .[].tagName' \
+            > /tmp/prune.txt
+          if [ ! -s /tmp/prune.txt ]; then
+            echo "Nothing to prune (have <= 30 dated releases)."
+            exit 0
+          fi
+          while IFS= read -r tag; do
+            [ -z "${tag}" ] && continue
+            echo "Pruning old release: ${tag}"
+            gh release delete "${tag}" --yes --cleanup-tag --repo "${GITHUB_REPOSITORY}"
+          done < /tmp/prune.txt
