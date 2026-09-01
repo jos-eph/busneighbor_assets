@@ -40,7 +40,31 @@ Regional Rail lives in a separate feed and is not included.
 `route_category` and `category_routes` classify each route by SEPTA's
 palette, derived from `routes.txt`'s `route_color` via `septaclrs.csv`. The
 category names are palette buckets, not vehicle types — routes of different
-`route_type` can share a colour and land in the same category.
+`route_type` can share a color and land in the same category.
+
+`realtime` is a claim about SEPTA's infrastructure rather than about the GTFS
+feed, which is why it sits beside `buses` rather than inside it.
+`overrides.no_vehicle_positions` lists routes SEPTA publishes no live vehicle
+positions for, ordered to match `route_list`:
+
+```json
+"realtime": {
+  "source": "manual",
+  "observed_through": null,
+  "overrides": { "no_vehicle_positions": ["L1", "B1", "B2", "B3"] }
+}
+```
+
+**This is a deny-list, and consumers must fail open.** A route absent from it is
+shown normally, and a failure to fetch this document must mean *show
+everything*. Treating it as an allow-list, or hiding routes when the fetch
+fails, turns a pipeline outage into an app outage.
+
+The list is currently hand-maintained in `realtime_overrides.json` and
+`source` reads `"manual"`. A sampler that measures coverage from the real-time
+feed is the intended replacement; when it lands, `source` becomes `"observed"`
+and `observed_through` carries the last measured date, without the document's
+shape changing.
 
 The build runs `python build_septa_meta.py`; `python -m unittest discover -s tests`
 covers it. Both are stdlib-only.

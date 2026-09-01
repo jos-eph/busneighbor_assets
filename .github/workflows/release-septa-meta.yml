@@ -8,7 +8,7 @@ name: Release SEPTA meta
 # Stable consumer URL:
 #   https://github.com/jos-eph/busneighbor_assets/releases/download/current/septameta.json
 #
-# Behaviour summary:
+# Behavior summary:
 #   * Scheduled Mondays at 06:00 UTC — 02:00 EDT / 01:00 EST. GitHub cron has no
 #     time zone, so the local hour shifts with DST; both land on Monday morning
 #     and the exact minute does not matter, since SEPTA publishes on its own

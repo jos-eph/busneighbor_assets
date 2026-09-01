@@ -20,7 +20,7 @@ FEED_INFO = (
 )
 
 # STANDARD_BUS_BLACK, so existing (route_id, sort_order) fixtures keep
-# classifying without every test needing to care about colour.
+# classifying without every test needing to care about color.
 DEFAULT_COLOR = next(
     color for color, category in build_septa_meta.CATEGORY_BY_COLOR.items()
     if category == build_septa_meta.STANDARD_BUS_BLACK
@@ -81,6 +81,33 @@ def make_bundle(bus_feed_bytes, path, member=build_septa_meta.BUS_FEED_MEMBER):
 
 def open_feed(feed_bytes):
     return zipfile.ZipFile(io.BytesIO(feed_bytes))
+
+
+def make_overrides(path, routes=(), source="manual", **extra):
+    """Write a realtime_overrides.json and return its path.
+
+    Tests must pass one explicitly: the committed file names real SEPTA routes
+    that the synthetic route tables here do not contain, so the default would
+    fail validation.
+    """
+    document = {
+        "source": source,
+        "observed_through": None,
+        "window_days": None,
+        "days_observed": None,
+        "updated_at": "2026-09-01T21:02:53Z",
+        "no_vehicle_positions": list(routes),
+    }
+    document.update(extra)
+    with open(path, "w", encoding="utf-8") as handle:
+        json.dump(document, handle)
+    return path
+
+
+def write_raw_overrides(path, text):
+    with open(path, "w", encoding="utf-8") as handle:
+        handle.write(text)
+    return path
 
 
 class RouteListTest(unittest.TestCase):
@@ -188,10 +215,14 @@ class DocumentTest(unittest.TestCase):
         return make_bundle(make_feed(routes_csv(enough_routes())),
                            os.path.join(tmp, "bundle.zip"))
 
+    def _overrides(self, tmp, routes=("R3", "R1")):
+        return make_overrides(os.path.join(tmp, "overrides.json"), routes)
+
     def test_document_shape(self):
         with tempfile.TemporaryDirectory() as tmp:
-            document = build_septa_meta.build(self._bundle(tmp))
-        self.assertEqual(list(document), ["meta", "buses"])
+            document = build_septa_meta.build(
+                self._bundle(tmp), self._overrides(tmp))
+        self.assertEqual(list(document), ["meta", "buses", "realtime"])
         self.assertEqual(list(document["meta"]), ["start_date", "end_date", "version"])
         buses = document["buses"]
         self.assertEqual(list(buses), ["route_list", "route_category", "category_routes"])
@@ -205,7 +236,8 @@ class DocumentTest(unittest.TestCase):
 
     def test_rolling_and_dated_files_are_byte_identical(self):
         with tempfile.TemporaryDirectory() as tmp:
-            document = build_septa_meta.build(self._bundle(tmp))
+            document = build_septa_meta.build(
+                self._bundle(tmp), self._overrides(tmp))
             rolling, dated = build_septa_meta.write_outputs(document, tmp)
             self.assertEqual(os.path.basename(dated), "septameta_20260823.json")
             with open(rolling, "rb") as a, open(dated, "rb") as b:
@@ -219,8 +251,12 @@ class DocumentTest(unittest.TestCase):
                                   os.path.join(tmp, "bundle.zip"))
             first = os.path.join(tmp, "a")
             second = os.path.join(tmp, "b")
-            build_septa_meta.write_outputs(build_septa_meta.build(bundle), first)
-            build_septa_meta.write_outputs(build_septa_meta.build(bundle), second)
+            overrides = make_overrides(
+                os.path.join(tmp, "overrides.json"), ["R9", "R2"])
+            build_septa_meta.write_outputs(
+                build_septa_meta.build(bundle, overrides), first)
+            build_septa_meta.write_outputs(
+                build_septa_meta.build(bundle, overrides), second)
             with open(os.path.join(first, "septameta.json"), "rb") as a, \
                  open(os.path.join(second, "septameta.json"), "rb") as b:
                 self.assertEqual(a.read(), b.read())
@@ -233,15 +269,129 @@ class DocumentTest(unittest.TestCase):
             try:
                 self.assertEqual(
                     build_septa_meta.main(
-                        ["--gtfs-zip", bundle, "--output-dir", tmp]), 0)
+                        ["--gtfs-zip", bundle, "--output-dir", tmp,
+                         "--overrides", self._overrides(tmp)]), 0)
                 printed = sys.stdout.getvalue()
             finally:
                 sys.stdout, sys.stderr = stdout, stderr
             self.assertEqual(printed.strip(), "20260823")
 
 
+class RealtimeOverridesTest(unittest.TestCase):
+    def _build(self, tmp, routes=(), source="manual", raw=None, pairs=None):
+        bundle = make_bundle(
+            make_feed(routes_csv(pairs if pairs is not None else enough_routes())),
+            os.path.join(tmp, "bundle.zip"))
+        path = os.path.join(tmp, "overrides.json")
+        if raw is not None:
+            write_raw_overrides(path, raw)
+        else:
+            make_overrides(path, routes, source=source)
+        return build_septa_meta.build(bundle, path)
+
+    def test_listed_routes_appear_under_realtime(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            document = self._build(tmp, ["R2", "R5"])
+        self.assertEqual(
+            document["realtime"]["overrides"]["no_vehicle_positions"],
+            ["R2", "R5"])
+
+    def test_order_follows_route_sort_order_not_file_order(self):
+        # The file lists R9 first; route_sort_order puts R2 first.
+        with tempfile.TemporaryDirectory() as tmp:
+            document = self._build(tmp, ["R9", "R2"])
+        emitted = document["realtime"]["overrides"]["no_vehicle_positions"]
+        self.assertEqual(emitted, ["R2", "R9"])
+        route_list = document["buses"]["route_list"]
+        self.assertLess(route_list.index("R2"), route_list.index("R9"))
+
+    def test_source_and_observed_through_are_carried(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            document = self._build(tmp, ["R1"])
+        self.assertEqual(document["realtime"]["source"], "manual")
+        self.assertIsNone(document["realtime"]["observed_through"])
+
+    def test_empty_list_is_accepted(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            document = self._build(tmp, [])
+        self.assertEqual(
+            document["realtime"]["overrides"]["no_vehicle_positions"], [])
+
+    def test_unknown_route_id_raises_and_names_it(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(ValueError) as caught:
+                self._build(tmp, ["R1", "NOT_A_ROUTE"])
+        self.assertIn("NOT_A_ROUTE", str(caught.exception))
+
+    def test_missing_file_raises(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            bundle = make_bundle(make_feed(routes_csv(enough_routes())),
+                                 os.path.join(tmp, "bundle.zip"))
+            with self.assertRaises(ValueError) as caught:
+                build_septa_meta.build(bundle, os.path.join(tmp, "absent.json"))
+        self.assertIn("not found", str(caught.exception))
+
+    def test_invalid_json_raises(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(ValueError) as caught:
+                self._build(tmp, raw="{not json")
+        self.assertIn("valid JSON", str(caught.exception))
+
+    def test_non_list_no_vehicle_positions_raises(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(ValueError) as caught:
+                self._build(
+                    tmp,
+                    raw='{"source": "manual", "no_vehicle_positions": "R1"}')
+        self.assertIn("non-list", str(caught.exception))
+
+    def test_non_string_route_id_raises(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(ValueError) as caught:
+                self._build(
+                    tmp,
+                    raw='{"source": "manual", "no_vehicle_positions": [7]}')
+        self.assertIn("non-string", str(caught.exception))
+
+    def test_unknown_source_raises(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(ValueError) as caught:
+                self._build(tmp, ["R1"], source="guessed")
+        self.assertIn("guessed", str(caught.exception))
+
+    def test_observed_source_is_accepted(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            document = self._build(tmp, ["R1"], source="observed")
+        self.assertEqual(document["realtime"]["source"], "observed")
+
+    def test_meta_and_buses_are_unchanged_by_the_realtime_block(self):
+        """The published document's existing keys must be byte-identical, or
+        the release workflow's byte-comparison gate would fire on a no-op."""
+        with tempfile.TemporaryDirectory() as tmp:
+            bundle = make_bundle(make_feed(routes_csv(multi_color_routes())),
+                                 os.path.join(tmp, "bundle.zip"))
+            without = make_overrides(os.path.join(tmp, "empty.json"), [])
+            with_list = make_overrides(os.path.join(tmp, "full.json"), ["R2", "R5"])
+            a = build_septa_meta.build(bundle, without)
+            b = build_septa_meta.build(bundle, with_list)
+        for key in ("meta", "buses"):
+            self.assertEqual(json.dumps(a[key], indent=2),
+                             json.dumps(b[key], indent=2))
+
+    def test_committed_overrides_file_is_valid(self):
+        """The real realtime_overrides.json must parse and be well formed even
+        though its route ids cannot be checked without the live feed."""
+        path = build_septa_meta.DEFAULT_OVERRIDES_PATH
+        overrides = build_septa_meta.realtime_overrides(path)
+        self.assertEqual(overrides["source"], "manual")
+        self.assertEqual(overrides["no_vehicle_positions"],
+                         ["L1", "B1", "B2", "B3"])
+        for key in ("observed_through", "window_days", "days_observed"):
+            self.assertIn(key, overrides)
+
+
 class RouteCategoriesTest(unittest.TestCase):
-    def test_route_lands_in_the_category_its_colour_names(self):
+    def test_route_lands_in_the_category_its_color_names(self):
         pairs = enough_routes() + [("T1", "99999", "5A960A")]
         feed = open_feed(make_feed(routes_csv(pairs)))
         route_category, category_routes = build_septa_meta.route_categories(feed)
@@ -258,7 +408,7 @@ class RouteCategoriesTest(unittest.TestCase):
         _, category_routes = build_septa_meta.route_categories(feed)
         self.assertEqual(category_routes["trolley_green"], ["M", "Z", "A"])
 
-    def test_all_twelve_categories_appear_even_with_one_colour_in_the_feed(self):
+    def test_all_twelve_categories_appear_even_with_one_color_in_the_feed(self):
         feed = open_feed(make_feed(routes_csv(enough_routes())))
         _, category_routes = build_septa_meta.route_categories(feed)
         self.assertEqual(
@@ -273,13 +423,13 @@ class RouteCategoriesTest(unittest.TestCase):
         self.assertEqual(set(route_category), set(routes))
         self.assertEqual(sum(len(v) for v in category_routes.values()), len(routes))
 
-    def test_unrecognised_colour_is_an_error(self):
+    def test_unrecognized_color_is_an_error(self):
         pairs = enough_routes() + [("BAD", "99999", "ABCDEF")]
         feed = open_feed(make_feed(routes_csv(pairs)))
         with self.assertRaisesRegex(ValueError, "ABCDEF"):
             build_septa_meta.route_categories(feed)
 
-    def test_blank_colour_is_an_error(self):
+    def test_blank_color_is_an_error(self):
         pairs = enough_routes() + [("NOCOLOR", "99999", "")]
         feed = open_feed(make_feed(routes_csv(pairs)))
         with self.assertRaisesRegex(ValueError, "NOCOLOR"):
