@@ -84,10 +84,55 @@ against `route_list`, so coverage is always computed against the current feed.
 A quiet hour with few routes is a valid sample, not a failure; an empty or
 unparseable feed exits non-zero and writes nothing.
 
+## septacoverage.json
+
+Which routes SEPTA actually publishes live vehicle positions for, measured
+rather than asserted. Published daily to the same rolling release:
+
+```
+https://github.com/jos-eph/busneighbor_assets/releases/download/current/septacoverage.json
+```
+
+```json
+{
+  "generated_at": "2026-09-29T01:47:12Z",
+  "observed_through": "2026-09-28",
+  "window_days": 28,
+  "days_observed": 27,
+  "samples": 214,
+  "feed_meta": { "start_date": "20260823", "version": "v202608233" },
+  "vehicle_positions": {
+    "no_vehicle_positions": ["L1", "B1", "B2", "B3"],
+    "routes": {
+      "L1": { "days_seen": 0,  "last_seen": null,         "positions": 0 },
+      "T1": { "days_seen": 27, "last_seen": "2026-09-28", "positions": 41203 }
+    }
+  },
+  "unmatched_route_ids": []
+}
+```
+
+`days_seen` counts distinct **days**, not samples, so a route does not score
+higher merely for running frequently. `days_observed` is how many days the
+window actually holds, so a consumer can tell a thin window from a full one.
+`no_vehicle_positions` holds exactly the routes with `days_seen == 0`, ordered
+to match `route_list`. `unmatched_route_ids` should be empty; it is the
+tripwire for route ids drifting between the real-time and static feeds.
+
+**This is a deny-list, and consumers must fail open.** A route absent from it
+is shown normally, and a failure to fetch this document must mean *show
+everything*. An allow-list, or a fetch failure that means *show nothing*, turns
+a pipeline outage into an app outage.
+
+`septacoverage.json` is evidence, published on its own daily clock.
+`septameta.json` changes only when SEPTA does, which is why the two live in
+separate files.
+
 ## Dependencies
 
-`build_septa_meta.py` and the release workflow are **stdlib-only**. Only the
-real-time sampler has dependencies, pinned with hashes in `requirements.txt`:
+Everything except the sampler is **stdlib-only**. Only
+`sample_realtime_coverage.py` has dependencies, pinned with hashes in
+`requirements.txt`:
 
 ```bash
 pip install --require-hashes -r requirements.txt
@@ -98,7 +143,13 @@ Protobuf parsing goes through
 rather than a hand-rolled wire-format reader, and anything that grows a second
 `.pb` consumer imports `gtfs_rt.py` rather than opening its own parser.
 
-The split is deliberate: **the workflow that can write to this repository runs
-no third-party code.** The sampler holds `contents: read` and publishes only a
-build artifact; the release workflow keeps `contents: write` and installs
-nothing.
+## How it runs
+
+| Workflow | Cadence | Permissions | Dependencies |
+| --- | --- | --- | --- |
+| `release-septa-meta` | weekly | `contents: write` | none |
+| `sample-realtime-coverage` | 8× daily | `contents: read` | `requirements.txt` |
+| `aggregate-realtime-coverage` | daily | `contents: write` | none |
+
+Only the sampler installs a third-party package, and it is the one workflow
+that cannot write to the repository.
