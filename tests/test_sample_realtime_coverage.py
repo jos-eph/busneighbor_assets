@@ -22,8 +22,16 @@ import urllib.error
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import fetching
-import gtfs_rt
-import sample_realtime_coverage as sampler
+
+try:
+    import gtfs_rt
+    import sample_realtime_coverage as sampler
+except ImportError as exc:  # pragma: no cover - exercised by the meta workflow
+    # The release workflow installs nothing and runs this same directory, so
+    # these tests skip there rather than failing it. The sampler workflow
+    # installs requirements.txt and asserts the import separately, so a broken
+    # install cannot hide behind this skip.
+    raise unittest.SkipTest(f"gtfs-realtime-bindings not installed: {exc}")
 
 SAMPLED_AT = datetime.datetime(2026, 9, 1, 21, 2, 53,
                                tzinfo=datetime.timezone.utc)

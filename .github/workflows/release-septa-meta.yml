@@ -59,6 +59,9 @@ jobs:
 
       - name: Run unit tests
         # Stdlib-only and offline, so this fails the job before the download.
+        # The sampler's tests skip themselves here rather than failing: they
+        # need gtfs-realtime-bindings, and this workflow deliberately installs
+        # nothing. See sample-realtime-coverage.yml, which runs them for real.
         run: python -m unittest discover -s tests -v
 
       - name: Build septameta.json
