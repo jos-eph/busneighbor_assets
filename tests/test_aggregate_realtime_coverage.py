@@ -240,12 +240,20 @@ class GuardTest(unittest.TestCase):
         self.assertEqual(len(failures), 1)
         self.assertIn("blast radius", failures[0])
 
-    def test_feed_agreement_guard_trips_when_the_window_spans_versions(self):
+    def test_feed_agreement_guard_trips_when_the_newest_day_is_stale(self):
         days = self._full_window(ALL_TRACKED)
-        days["2026-09-01"] = day_entry(ALL_TRACKED, feed_version="v202601011")
+        newest = max(days)
+        days[newest] = day_entry(ALL_TRACKED, feed_version="v202601011")
         failures = self._guards(days, min_days=7)
         self.assertEqual(len(failures), 1)
         self.assertIn("feed agreement", failures[0])
+
+    def test_an_older_day_on_a_previous_feed_does_not_trip_it(self):
+        """Deliberately looser than "every day matches": that would suspend the
+        override sync for a full 28 days after each SEPTA feed change."""
+        days = self._full_window(ALL_TRACKED)
+        days["2026-09-01"] = day_entry(ALL_TRACKED, feed_version="v202601011")
+        self.assertEqual(self._guards(days, min_days=7), [])
 
 
 class MainTest(unittest.TestCase):

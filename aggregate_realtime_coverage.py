@@ -278,15 +278,20 @@ def check_guards(coverage: dict, state: dict, route_list: list[str],
             f"everything"
         )
 
+    # Newest day only, not every day in the window. Requiring the whole window
+    # to match would suspend the override sync for 28 days after every SEPTA
+    # feed change, and buy little: projection densifies against the current
+    # route_list, so a route the feed retired leaves the document regardless.
     current = feed_meta.get("version")
-    versions = {d.get("feed_version") for d in state["days"].values()}
-    if versions and versions != {current}:
-        failures.append(
-            f"feed agreement: window spans feed versions "
-            f"{sorted(str(v) for v in versions)} but septameta.json reports "
-            f"{current!r}; a deny-list derived across a feed change can name "
-            f"retired routes"
-        )
+    if state["days"]:
+        newest = max(state["days"])
+        observed = state["days"][newest].get("feed_version")
+        if observed != current:
+            failures.append(
+                f"feed agreement: newest day {newest} was folded against feed "
+                f"version {observed!r} but septameta.json reports {current!r}; "
+                f"the window has not caught up to the feed change"
+            )
 
     return failures
 
