@@ -20,6 +20,11 @@ name: Aggregate real-time coverage
 #   * SHADOW MODE: the proposed deny-list is uploaded and diffed against the
 #     committed realtime_overrides.json, and nothing is committed. Arming the
 #     sync is a separate, separately gated change.
+#   * A tripped guard is a ::warning::, not a failed run. The aggregator still
+#     exits 2 and the step records guards=tripped, which is what a future
+#     override-sync step must gate on — but nothing here acts on the proposal,
+#     so a red run every morning would be noise rather than signal. The window
+#     needs 7 days before the depth guard stops tripping at all.
 #   * Stdlib-only. The aggregator sees JSON, never protobuf, so this workflow
 #     installs nothing despite holding contents: write.
 
@@ -151,7 +156,7 @@ jobs:
           case "${CODE}" in
             0) echo "guards=passed" >> "$GITHUB_OUTPUT" ;;
             2) echo "guards=tripped" >> "$GITHUB_OUTPUT"
-               echo "::warning::A guard tripped; publishing the coverage document but the proposal must not be applied." ;;
+               echo "::warning::A guard tripped for ${DAY}: the coverage document is still published, but the proposed deny-list must not be applied. Expected while the window is filling — days_observed has to reach 7." ;;
             *) echo "::error::Aggregator failed with exit ${CODE}"; exit "${CODE}" ;;
           esac
 
@@ -303,11 +308,3 @@ jobs:
                 --repo "${GITHUB_REPOSITORY}" --yes
             fi
           done
-
-      - name: Fail the run if a guard tripped
-        # Last step on purpose: everything above has already published. A red
-        # run is the signal that the proposal must not be trusted today.
-        if: steps.aggregate.outputs.guards == 'tripped'
-        run: |
-          echo "::error::A guard tripped for ${DAY}. The coverage document was published; the proposed deny-list was not applied."
-          exit 1
