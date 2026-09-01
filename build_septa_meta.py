@@ -24,6 +24,8 @@ import urllib.error
 import urllib.request
 import zipfile
 
+import fetching
+
 DEFAULT_SOURCE_URL = "https://www3.septa.org/developer/gtfs_public.zip"
 
 # SEPTA ships two feeds inside the public bundle. The bus feed carries every
@@ -74,27 +76,19 @@ CATEGORY_BY_COLOR = {
     "5A960A": TROLLEY_GREEN,
 }
 
-_DOWNLOAD_ATTEMPTS = 3
-_DOWNLOAD_INITIAL_DELAY_S = 30
-
-
 def download(url: str, dest: str, *, sleep=time.sleep) -> None:
-    """Fetch url to dest, retrying with exponential backoff."""
-    delay = _DOWNLOAD_INITIAL_DELAY_S
-    for attempt in range(1, _DOWNLOAD_ATTEMPTS + 1):
-        try:
-            with urllib.request.urlopen(url, timeout=300) as response:
-                with open(dest, "wb") as handle:
-                    while chunk := response.read(1 << 20):
-                        handle.write(chunk)
-            return
-        except (urllib.error.URLError, TimeoutError, OSError) as exc:
-            print(f"Download attempt {attempt}/{_DOWNLOAD_ATTEMPTS} failed: {exc}",
-                  file=sys.stderr)
-            if attempt == _DOWNLOAD_ATTEMPTS:
-                raise
-            sleep(delay)
-            delay *= 4
+    """Fetch url to dest, retrying with exponential backoff.
+
+    The bundle is large, so it streams to disk rather than into memory; the
+    retry policy itself lives in fetching, shared with the real-time sampler.
+    """
+    def once() -> None:
+        with urllib.request.urlopen(url, timeout=300) as response:
+            with open(dest, "wb") as handle:
+                while chunk := response.read(1 << 20):
+                    handle.write(chunk)
+
+    fetching.with_retries(once, f"Download {url}", sleep=sleep)
 
 
 def open_bus_feed(bundle_path: str) -> zipfile.ZipFile:

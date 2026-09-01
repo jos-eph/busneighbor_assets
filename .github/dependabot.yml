@@ -1,0 +1,15 @@
+version: 2
+
+updates:
+  # Only the real-time sampler has dependencies; everything else is stdlib.
+  # requirements.txt is pinned with hashes, so this is how it stays current
+  # instead of rotting behind a pin.
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: monthly
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

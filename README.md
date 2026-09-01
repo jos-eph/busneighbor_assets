@@ -67,4 +67,38 @@ and `observed_through` carries the last measured date, without the document's
 shape changing.
 
 The build runs `python build_septa_meta.py`; `python -m unittest discover -s tests`
-covers it. Both are stdlib-only.
+covers it.
+
+## Real-time coverage sampling
+
+`sample_realtime_coverage.py` records which routes SEPTA is currently
+publishing vehicle positions for, one observation per run:
+
+```bash
+python sample_realtime_coverage.py --output out/sample.json
+python sample_realtime_coverage.py --pb local.pb --output out/sample.json
+```
+
+Samples are sparse — only routes actually seen. Zeros are filled in later
+against `route_list`, so coverage is always computed against the current feed.
+A quiet hour with few routes is a valid sample, not a failure; an empty or
+unparseable feed exits non-zero and writes nothing.
+
+## Dependencies
+
+`build_septa_meta.py` and the release workflow are **stdlib-only**. Only the
+real-time sampler has dependencies, pinned with hashes in `requirements.txt`:
+
+```bash
+pip install --require-hashes -r requirements.txt
+```
+
+Protobuf parsing goes through
+[`gtfs-realtime-bindings`](https://pypi.org/project/gtfs-realtime-bindings/)
+rather than a hand-rolled wire-format reader, and anything that grows a second
+`.pb` consumer imports `gtfs_rt.py` rather than opening its own parser.
+
+The split is deliberate: **the workflow that can write to this repository runs
+no third-party code.** The sampler holds `contents: read` and publishes only a
+build artifact; the release workflow keeps `contents: write` and installs
+nothing.

@@ -1,0 +1,89 @@
+name: Sample real-time coverage
+
+# Measures which SEPTA routes are publishing live vehicle positions. GTFS has
+# no field for that fact, so we sample rtVehiclePosition.pb on a schedule and
+# let a separate daily job fold the samples into a rolling window.
+#
+# Behavior summary:
+#   * Eight slots a day, three hours apart, at :17 past. GitHub's scheduler is
+#     heavily contended on the hour and routinely runs 10-20 minutes late
+#     there; for a sampler, punctuality is the product.
+#   * The slots are UTC, so in EDT they land at 22:17, 01:17, 04:17, 07:17,
+#     10:17, 13:17, 16:17 and 19:17 local, an hour earlier in EST. Either way
+#     two of them fall inside Owl service, which is the window nothing else
+#     measures.
+#   * Each run uploads one small JSON artifact. Nothing is published and
+#     nothing is committed — this workflow holds contents: read.
+#   * Artifacts expire after 2 days. The aggregator reads the previous UTC day,
+#     so 1 day would expire them roughly half an hour before it runs.
+#   * This is the only workflow in the repository that installs a third-party
+#     package. The release workflow keeps contents: write and stays
+#     stdlib-only, so the job that can write here runs no third-party code.
+
+on:
+  schedule:
+    - cron: '17 2,5,8,11,14,17,20,23 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read   # this workflow publishes nothing
+
+# No concurrency group on purpose: the slots are three hours apart, and a stuck
+# run must never cancel the sample that follows it.
+
+env:
+  FEED_URL: https://septa-gtfs-mirror.mirrorkey.workers.dev/septa/rtVehiclePosition.pb
+
+jobs:
+  sample:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install dependencies
+        # --require-hashes is the point of pinning; without it the hashes in
+        # requirements.txt are decoration.
+        run: pip install --require-hashes -r requirements.txt
+
+      - name: Verify the bindings are importable
+        # The sampler's unit tests skip themselves when gtfs-realtime-bindings
+        # is absent, so that the stdlib-only release workflow can run the same
+        # tests directory. That skip must never be silent here.
+        run: python -c "import gtfs_rt; print(gtfs_rt.gtfs_realtime_pb2.__name__)"
+
+      - name: Run unit tests
+        # After the install and before the fetch, so a bad dependency bump
+        # fails loudly eight times a day rather than quietly zeroing every
+        # route count — which the aggregator would read as a coverage collapse.
+        run: python -m unittest discover -s tests -v
+
+      - name: Sample the feed
+        id: sample
+        run: |
+          set -euo pipefail
+          UTC_DATE="$(python sample_realtime_coverage.py \
+            --feed-url "${FEED_URL}" \
+            --output ./out/sample.json)"
+          echo "utc_date=${UTC_DATE}" >> "$GITHUB_OUTPUT"
+          echo "Sample belongs to UTC day ${UTC_DATE}"
+
+      - name: Upload sample
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          # The date comes from the sampler's own sampled_at rather than from a
+          # separate date step, so a run straddling midnight files itself
+          # consistently. run_id plus run_attempt keeps the name unique across
+          # reruns, which matters because the aggregator collects by prefix.
+          name: rtcov-sample-${{ steps.sample.outputs.utc_date }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: out/sample.json
+          retention-days: 2
+          if-no-files-found: error

@@ -1,0 +1,12 @@
+# Pinned with hashes because gtfs-realtime-bindings declares protobuf with no
+# upper bound and ships generated code from an older protoc. An unpinned
+# install is one upstream release away from breaking the sampler silently.
+#
+# Install with: pip install --require-hashes -r requirements.txt
+# Only the sampler workflow installs these; see README for why.
+gtfs-realtime-bindings==2.2.0 \
+    --hash=sha256:4f222a962bcb8715d9305cc08e7f7662cc70e7479f377e2694439a50724bc676
+protobuf==7.36.1 \
+    --hash=sha256:97198b77e369a0abd8e262b8f6c7266c55ddb796a3a12c76d7b8881188ed83aa \
+    --hash=sha256:43d3d37b1eb24c113b9b7d02008cac44e423f00b611b7781ae998d7623972969 \
+    --hash=sha256:7d951e46b3f963d6c264c367c437921de9d5aedd9c3f9612b9077736b4e3ad5c
