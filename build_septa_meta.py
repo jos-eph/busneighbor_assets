@@ -35,7 +35,15 @@ BUS_FEED_MEMBER = "google_bus.zip"
 # ship a short route list. The real feed has ~175 routes.
 MIN_ROUTES = 100
 
-# Route colour categories. SEPTA's palette names; the value is the key that
+# Routes SEPTA publishes no vehicle positions for. Read from a committed file
+# rather than a constant so the coverage pipeline can move the list without a
+# code change, and so every move is a reviewable commit.
+DEFAULT_OVERRIDES_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "realtime_overrides.json"
+)
+OVERRIDE_SOURCES = ("manual", "observed")
+
+# Route color categories. SEPTA's palette names; the value is the key that
 # appears in septameta.json.
 BLUE_LINE_BLUE = "blue_line_blue"
 BLVD_DIRECT_TEAL = "blvd_direct_teal"
@@ -153,7 +161,7 @@ def route_list(feed: zipfile.ZipFile) -> list[str]:
 def route_categories(
     feed: zipfile.ZipFile,
 ) -> tuple[dict[str, str], dict[str, list[str]]]:
-    """Route id -> colour category, and colour category -> route ids.
+    """Route id -> color category, and color category -> route ids.
 
     Ordering reuses route_list rather than re-deriving it, so route_list,
     route_category and category_routes always agree on route order.
@@ -208,16 +216,86 @@ def feed_meta(feed: zipfile.ZipFile) -> dict[str, str]:
     return meta
 
 
-def build(bundle_path: str) -> dict:
+def realtime_overrides(path: str) -> dict:
+    """Read and validate realtime_overrides.json.
+
+    Fails closed. This is the one place in the document where a wrong string
+    silently changes app behavior, and the list is short and hand-maintained
+    rather than an open set from upstream, so an unknown id is a bug and not a
+    feed quirk. Route ids are checked against route_list by apply_overrides.
+    """
+    try:
+        with open(path, encoding="utf-8") as handle:
+            data = json.load(handle)
+    except FileNotFoundError as exc:
+        raise ValueError(f"overrides file not found: {path}") from exc
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"overrides file {path} is not valid JSON: {exc}") from exc
+
+    if not isinstance(data, dict):
+        raise ValueError(f"overrides file {path} must contain a JSON object")
+
+    source = data.get("source")
+    if source not in OVERRIDE_SOURCES:
+        raise ValueError(
+            f"overrides file {path} has source {source!r}; "
+            f"expected one of {', '.join(OVERRIDE_SOURCES)}"
+        )
+
+    routes = data.get("no_vehicle_positions")
+    if not isinstance(routes, list):
+        raise ValueError(
+            f"overrides file {path} has a non-list no_vehicle_positions"
+        )
+    for route_id in routes:
+        if not isinstance(route_id, str):
+            raise ValueError(
+                f"overrides file {path} has a non-string route id: {route_id!r}"
+            )
+
+    return data
+
+
+def apply_overrides(overrides: dict, routes: list[str], path: str) -> dict:
+    """Build the realtime block, ordered to match route_list.
+
+    Emitting in route_sort_order rather than file order keeps the output
+    byte-stable however the file happens to be written on disk.
+    """
+    listed = set(overrides["no_vehicle_positions"])
+    unknown = sorted(listed - set(routes))
+    if unknown:
+        raise ValueError(
+            f"overrides file {path} names route ids absent from route_list: "
+            f"{', '.join(unknown)}"
+        )
+
+    return {
+        "source": overrides["source"],
+        "observed_through": overrides.get("observed_through"),
+        "overrides": {
+            "no_vehicle_positions": [r for r in routes if r in listed],
+        },
+    }
+
+
+def build(bundle_path: str, overrides_path: str = DEFAULT_OVERRIDES_PATH) -> dict:
     feed = open_bus_feed(bundle_path)
     route_category, category_routes = route_categories(feed)
+    routes = route_list(feed)
+    overrides = realtime_overrides(overrides_path)
+
+    # realtime is a sibling of buses, not a child: it is a claim about SEPTA's
+    # infrastructure, not about the GTFS feed, and it does not travel with the
+    # feed's service window.
     return {
         "meta": feed_meta(feed),
         "buses": {
-            "route_list": route_list(feed),
+            "route_list": routes,
             "route_category": route_category,
             "category_routes": category_routes,
         },
+        "realtime": apply_overrides(overrides, routes, overrides_path),
     }
 
 
@@ -248,6 +326,11 @@ def main(argv: list[str] | None = None) -> int:
         "--gtfs-zip",
         help="use this local bundle instead of downloading",
     )
+    parser.add_argument(
+        "--overrides",
+        default=DEFAULT_OVERRIDES_PATH,
+        help="realtime_overrides.json to read the deny-list from",
+    )
     args = parser.parse_args(argv)
 
     bundle = args.gtfs_zip
@@ -257,15 +340,18 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Downloading {args.source_url}", file=sys.stderr)
         download(args.source_url, bundle)
 
-    document = build(bundle)
+    document = build(bundle, args.overrides)
     rolling, dated = write_outputs(document, args.output_dir)
 
     meta = document["meta"]
     buses = document["buses"]
+    realtime = document["realtime"]
+    denied = realtime["overrides"]["no_vehicle_positions"]
     print(
         f"{len(buses['route_list'])} routes in "
         f"{len(buses['category_routes'])} categories, "
-        f"feed {meta['version']} ({meta['start_date']}–{meta['end_date']})",
+        f"feed {meta['version']} ({meta['start_date']}–{meta['end_date']}), "
+        f"{len(denied)} routes without vehicle positions ({realtime['source']})",
         file=sys.stderr,
     )
     print(f"Wrote {rolling} and {dated}", file=sys.stderr)
