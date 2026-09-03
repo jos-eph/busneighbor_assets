@@ -1,0 +1,203 @@
+#!/usr/bin/env python3
+"""Turn a measured deny-list proposal into a recommendation for a human.
+
+This script writes a recommendation. It never changes what the app shows.
+
+The document the app reads is septameta.json, which is built from
+realtime_overrides.json. Nothing here touches that file, so a recommendation
+can be produced, committed and ignored for as long as you like without any
+user seeing a difference. Applying it is a deliberate human act: copy one file
+over another and commit.
+
+Two outputs, written side by side:
+
+    realtime_overrides.recommended.json   drop-in replacement, ready to copy
+    docs/coverage-recommendation.md       what changed, and the evidence for it
+
+Both are deleted when the measurement agrees with the committed list again, so
+a stale recommendation cannot sit around looking current.
+
+Stdlib only.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import sys
+
+DEFAULT_RECOMMENDED_JSON = "realtime_overrides.recommended.json"
+DEFAULT_RECOMMENDED_DOC = os.path.join("docs", "coverage-recommendation.md")
+
+
+def _read_json(path: str) -> dict | None:
+    if not path or not os.path.exists(path):
+        return None
+    with open(path, encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def _write(path: str, text: str) -> None:
+    parent = os.path.dirname(os.path.abspath(path))
+    os.makedirs(parent, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as handle:
+        handle.write(text)
+
+
+def _remove(path: str) -> bool:
+    """Delete path if present; return whether anything was removed."""
+    if os.path.exists(path):
+        os.remove(path)
+        return True
+    return False
+
+
+def describe_route(route_id: str, coverage: dict) -> str:
+    """One line of evidence for why a route is being added or removed."""
+    routes = coverage["vehicle_positions"]["routes"]
+    window = coverage["days_observed"]
+    entry = routes.get(route_id)
+    if entry is None:
+        return "not in the current route list"
+    if entry["days_seen"] == 0:
+        return f"no vehicle positions on any of {window} days observed"
+    return (f"seen on {entry['days_seen']} of {window} days, "
+            f"last {entry['last_seen']}, {entry['positions']} positions")
+
+
+def build_document(recommended: list[str], committed: list[str],
+                   coverage: dict, proposal: dict) -> str:
+    added = [r for r in recommended if r not in committed]
+    removed = [r for r in committed if r not in recommended]
+
+    lines = [
+        "# Recommended real-time coverage overrides",
+        "",
+        "**Nothing has changed for users.** This file is a recommendation, not",
+        "a change. The list the app reads is `realtime_overrides.json`, and it",
+        "has not been touched. Applying this is a deliberate act — see *How to",
+        "apply* below.",
+        "",
+        f"Generated from {coverage['days_observed']} day(s) of sampling "
+        f"through {coverage['observed_through']}, "
+        f"{coverage['samples']} samples, "
+        f"SEPTA feed {coverage['feed_meta']['version']}.",
+        "",
+        "## What changed",
+        "",
+    ]
+
+    if added:
+        lines.append("Routes to **add** to the deny-list — measured as having no live")
+        lines.append("vehicle positions:")
+        lines.append("")
+        for route_id in added:
+            lines.append(f"- `{route_id}` — {describe_route(route_id, coverage)}")
+        lines.append("")
+
+    if removed:
+        lines.append("Routes to **remove** from the deny-list — SEPTA is now publishing")
+        lines.append("positions for them:")
+        lines.append("")
+        for route_id in removed:
+            lines.append(f"- `{route_id}` — {describe_route(route_id, coverage)}")
+        lines.append("")
+
+    lines += [
+        "## How to apply",
+        "",
+        "Only if you want to. From the repository root:",
+        "",
+        "```bash",
+        f"cp {DEFAULT_RECOMMENDED_JSON} realtime_overrides.json",
+        "git commit -am 'Update real-time coverage overrides'",
+        "```",
+        "",
+        "The weekly release workflow picks it up on its next run, or you can",
+        "dispatch it by hand. Until then nothing changes for anyone.",
+        "",
+        "To reject the recommendation, do nothing. This file is regenerated",
+        "whenever the measurement changes and deleted when the measurement and",
+        "the committed list agree again.",
+        "",
+        "## Full recommended list",
+        "",
+        f"{len(recommended)} route(s), ordered to match `route_list`:",
+        "",
+        "```json",
+        json.dumps(proposal, indent=2, sort_keys=True),
+        "```",
+        "",
+        "## Currently committed",
+        "",
+        f"{len(committed)} route(s): "
+        + (", ".join(f"`{r}`" for r in committed) if committed else "none"),
+        "",
+        "---",
+        "",
+        "Generated by `recommend_overrides.py` from the daily coverage",
+        "aggregation. Do not edit by hand — edits are overwritten.",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def recommend(proposal: dict, committed: dict | None, coverage: dict,
+              *, json_path: str, doc_path: str) -> tuple[bool, str]:
+    """Write, refresh or clear the recommendation.
+
+    Returns (changed, reason). `changed` is whether the files on disk now
+    differ from what was there before, which is what the workflow commits on.
+    """
+    recommended = proposal["no_vehicle_positions"]
+
+    if committed is None:
+        return False, ("no committed realtime_overrides.json to compare "
+                       "against; nothing recommended")
+
+    if recommended == committed["no_vehicle_positions"]:
+        cleared = _remove(json_path) | _remove(doc_path)
+        if cleared:
+            return True, "measurement agrees with the committed list; clearing"
+        return False, "measurement agrees with the committed list"
+
+    # Already delivered this exact recommendation? Then today adds nothing.
+    previous = _read_json(json_path)
+    if previous is not None and previous.get("no_vehicle_positions") == recommended:
+        return False, "this recommendation was already delivered"
+
+    _write(json_path, json.dumps(proposal, indent=2, sort_keys=True) + "\n")
+    _write(doc_path, build_document(recommended,
+                                    committed["no_vehicle_positions"],
+                                    coverage, proposal))
+    return True, f"recommending {len(recommended)} route(s)"
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--proposal", required=True)
+    parser.add_argument("--coverage", required=True)
+    parser.add_argument("--committed", default="realtime_overrides.json")
+    parser.add_argument("--out-json", default=DEFAULT_RECOMMENDED_JSON)
+    parser.add_argument("--out-doc", default=DEFAULT_RECOMMENDED_DOC)
+    args = parser.parse_args(argv)
+
+    proposal = _read_json(args.proposal)
+    coverage = _read_json(args.coverage)
+    if proposal is None or coverage is None:
+        print("::error::proposal and coverage documents are both required",
+              file=sys.stderr)
+        return 1
+
+    changed, reason = recommend(
+        proposal, _read_json(args.committed), coverage,
+        json_path=args.out_json, doc_path=args.out_doc)
+
+    print(reason, file=sys.stderr)
+    # stdout carries the flag alone, so the workflow can gate the commit on it.
+    print("true" if changed else "false")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
