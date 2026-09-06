@@ -13,48 +13,21 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import build_septa_meta  # noqa: E402
 
 
-ROUTES_HEADER = "route_id,route_type,route_sort_order,route_color\n"
+ROUTES_HEADER = "route_id,route_type,route_sort_order\n"
 FEED_INFO = (
     "feed_publisher_name,feed_lang,feed_start_date,feed_end_date,feed_version\n"
     "SEPTA,en,20260823,20270220,v202608233\n"
 )
 
-# STANDARD_BUS_BLACK, so existing (route_id, sort_order) fixtures keep
-# classifying without every test needing to care about color.
-DEFAULT_COLOR = next(
-    color for color, category in build_septa_meta.CATEGORY_BY_COLOR.items()
-    if category == build_septa_meta.STANDARD_BUS_BLACK
-)
 
-
-def routes_csv(pairs, color=None):
-    """pairs: (route_id, sort_order) or (route_id, sort_order, route_color).
-
-    route_type is filler; a route_color left out of a triple falls back to
-    `color` (default DEFAULT_COLOR).
-    """
-    default = color if color is not None else DEFAULT_COLOR
-    lines = []
-    for pair in pairs:
-        route_id, sort_order, *rest = pair
-        row_color = rest[0] if rest else default
-        lines.append(f"{route_id},3,{sort_order},{row_color}\n")
-    return ROUTES_HEADER + "".join(lines)
+def routes_csv(pairs):
+    """pairs: (route_id, sort_order) — route_type is filler."""
+    return ROUTES_HEADER + "".join(f"{r},3,{s}\n" for r, s in pairs)
 
 
 def enough_routes():
     """A route table comfortably above MIN_ROUTES, in scrambled file order."""
     pairs = [(f"R{i}", str(10000 + i)) for i in range(build_septa_meta.MIN_ROUTES + 20)]
-    return list(reversed(pairs))
-
-
-def multi_color_routes():
-    """enough_routes, but cycling through every category instead of one."""
-    colors = list(build_septa_meta.CATEGORY_BY_COLOR)
-    pairs = [
-        (f"R{i}", str(10000 + i), colors[i % len(colors)])
-        for i in range(build_septa_meta.MIN_ROUTES + 20)
-    ]
     return list(reversed(pairs))
 
 
@@ -225,14 +198,8 @@ class DocumentTest(unittest.TestCase):
         self.assertEqual(list(document), ["meta", "buses", "realtime"])
         self.assertEqual(list(document["meta"]), ["start_date", "end_date", "version"])
         buses = document["buses"]
-        self.assertEqual(list(buses), ["route_list", "route_category", "category_routes"])
+        self.assertEqual(list(buses), ["route_list"])
         self.assertTrue(all(isinstance(r, str) for r in buses["route_list"]))
-        self.assertEqual(set(buses["route_category"]), set(buses["route_list"]))
-        self.assertEqual(
-            sorted(buses["category_routes"]),
-            sorted(build_septa_meta.CATEGORY_BY_COLOR.values()),
-        )
-        self.assertEqual(list(buses["category_routes"]), sorted(buses["category_routes"]))
 
     def test_rolling_and_dated_files_are_byte_identical(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -247,7 +214,7 @@ class DocumentTest(unittest.TestCase):
 
     def test_output_is_byte_stable_across_runs(self):
         with tempfile.TemporaryDirectory() as tmp:
-            bundle = make_bundle(make_feed(routes_csv(multi_color_routes())),
+            bundle = make_bundle(make_feed(routes_csv(enough_routes())),
                                   os.path.join(tmp, "bundle.zip"))
             first = os.path.join(tmp, "a")
             second = os.path.join(tmp, "b")
@@ -368,7 +335,7 @@ class RealtimeOverridesTest(unittest.TestCase):
         """The published document's existing keys must be byte-identical, or
         the release workflow's byte-comparison gate would fire on a no-op."""
         with tempfile.TemporaryDirectory() as tmp:
-            bundle = make_bundle(make_feed(routes_csv(multi_color_routes())),
+            bundle = make_bundle(make_feed(routes_csv(enough_routes())),
                                  os.path.join(tmp, "bundle.zip"))
             without = make_overrides(os.path.join(tmp, "empty.json"), [])
             with_list = make_overrides(os.path.join(tmp, "full.json"), ["R2", "R5"])
@@ -388,59 +355,6 @@ class RealtimeOverridesTest(unittest.TestCase):
                          ["L1", "B1", "B2", "B3"])
         for key in ("observed_through", "window_days", "days_observed"):
             self.assertIn(key, overrides)
-
-
-class RouteCategoriesTest(unittest.TestCase):
-    def test_route_lands_in_the_category_its_color_names(self):
-        pairs = enough_routes() + [("T1", "99999", "5A960A")]
-        feed = open_feed(make_feed(routes_csv(pairs)))
-        route_category, category_routes = build_septa_meta.route_categories(feed)
-        self.assertEqual(route_category["T1"], "trolley_green")
-        self.assertIn("T1", category_routes["trolley_green"])
-
-    def test_category_routes_values_follow_sort_order_not_file_order(self):
-        pairs = enough_routes() + [
-            ("Z", "1", "5A960A"),
-            ("A", "2", "5A960A"),
-            ("M", "0", "5A960A"),
-        ]
-        feed = open_feed(make_feed(routes_csv(pairs)))
-        _, category_routes = build_septa_meta.route_categories(feed)
-        self.assertEqual(category_routes["trolley_green"], ["M", "Z", "A"])
-
-    def test_all_twelve_categories_appear_even_with_one_color_in_the_feed(self):
-        feed = open_feed(make_feed(routes_csv(enough_routes())))
-        _, category_routes = build_septa_meta.route_categories(feed)
-        self.assertEqual(
-            sorted(category_routes), sorted(build_septa_meta.CATEGORY_BY_COLOR.values()))
-        self.assertEqual(list(category_routes), sorted(category_routes))
-        self.assertEqual(category_routes["trolley_green"], [])
-
-    def test_route_category_covers_exactly_route_list(self):
-        feed = open_feed(make_feed(routes_csv(multi_color_routes())))
-        routes = build_septa_meta.route_list(feed)
-        route_category, category_routes = build_septa_meta.route_categories(feed)
-        self.assertEqual(set(route_category), set(routes))
-        self.assertEqual(sum(len(v) for v in category_routes.values()), len(routes))
-
-    def test_unrecognized_color_is_an_error(self):
-        pairs = enough_routes() + [("BAD", "99999", "ABCDEF")]
-        feed = open_feed(make_feed(routes_csv(pairs)))
-        with self.assertRaisesRegex(ValueError, "ABCDEF"):
-            build_septa_meta.route_categories(feed)
-
-    def test_blank_color_is_an_error(self):
-        pairs = enough_routes() + [("NOCOLOR", "99999", "")]
-        feed = open_feed(make_feed(routes_csv(pairs)))
-        with self.assertRaisesRegex(ValueError, "NOCOLOR"):
-            build_septa_meta.route_categories(feed)
-
-    def test_lowercase_hex_still_classifies(self):
-        pairs = enough_routes() + [("T1", "99999", "5a960a")]
-        feed = open_feed(make_feed(routes_csv(pairs)))
-        route_category, _ = build_septa_meta.route_categories(feed)
-        self.assertEqual(route_category["T1"], "trolley_green")
-
 
 class DownloadTest(unittest.TestCase):
     def test_retries_then_succeeds(self):
