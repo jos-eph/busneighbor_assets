@@ -45,37 +45,6 @@ DEFAULT_OVERRIDES_PATH = os.path.join(
 )
 OVERRIDE_SOURCES = ("manual", "observed")
 
-# Route color categories. SEPTA's palette names; the value is the key that
-# appears in septameta.json.
-BLUE_LINE_BLUE = "blue_line_blue"
-BLVD_DIRECT_TEAL = "blvd_direct_teal"
-DELCO_PINK = "delco_pink"
-FREQUENT_BUS_RED = "frequent_bus_red"
-GIRARD_GOLD = "girard_gold"
-LUCY_EMERALD = "lucy_emerald"
-LUCY_YELLOW = "lucy_yellow"
-NORRISTOWN_VIOLET = "norristown_violet"
-ORANGE_LINE_ORANGE = "orange_line_orange"
-STANDARD_BUS_BLACK = "standard_bus_black"
-TEMPORARY_SHUTTLE_BLUE = "temporary_shuttle_blue"
-TROLLEY_GREEN = "trolley_green"
-
-# GTFS route_color (uppercase hex, no '#') -> category.
-CATEGORY_BY_COLOR = {
-    "0097D6": BLUE_LINE_BLUE,
-    "003E53": BLVD_DIRECT_TEAL,
-    "DC2E6B": DELCO_PINK,
-    "EF3340": FREQUENT_BUS_RED,
-    "FFD700": GIRARD_GOLD,
-    "00A239": LUCY_EMERALD,
-    "ECAF3B": LUCY_YELLOW,
-    "5F249F": NORRISTOWN_VIOLET,
-    "F26100": ORANGE_LINE_ORANGE,
-    "1A1818": STANDARD_BUS_BLACK,
-    "4F758B": TEMPORARY_SHUTTLE_BLUE,
-    "5A960A": TROLLEY_GREEN,
-}
-
 def download(url: str, dest: str, *, sleep=time.sleep) -> None:
     """Fetch url to dest, retrying with exponential backoff.
 
@@ -150,44 +119,6 @@ def route_list(feed: zipfile.ZipFile) -> list[str]:
             "refusing to publish a possibly truncated feed"
         )
     return routes
-
-
-def route_categories(
-    feed: zipfile.ZipFile,
-) -> tuple[dict[str, str], dict[str, list[str]]]:
-    """Route id -> color category, and color category -> route ids.
-
-    Ordering reuses route_list rather than re-deriving it, so route_list,
-    route_category and category_routes always agree on route order.
-    """
-    routes = route_list(feed)
-
-    color_by_route: dict[str, str] = {}
-    for row in _read_csv(feed, "routes.txt"):
-        route_id = (row.get("route_id") or "").strip()
-        color_by_route[route_id] = (row.get("route_color") or "").strip().upper()
-
-    route_category: dict[str, str] = {}
-    category_routes: dict[str, list[str]] = {
-        category: [] for category in sorted(set(CATEGORY_BY_COLOR.values()))
-    }
-    for route_id in routes:
-        color = color_by_route[route_id]
-        if not color:
-            raise ValueError(f"route {route_id} has a blank route_color")
-        if color not in CATEGORY_BY_COLOR:
-            raise ValueError(
-                f"route {route_id} has route_color {color!r}, which is not in "
-                "CATEGORY_BY_COLOR; add it to septaclrs.csv"
-            )
-        category = CATEGORY_BY_COLOR[color]
-        route_category[route_id] = category
-        category_routes[category].append(route_id)
-
-    assert set(route_category) == set(routes)
-    assert sum(len(v) for v in category_routes.values()) == len(routes)
-
-    return route_category, category_routes
 
 
 def feed_meta(feed: zipfile.ZipFile) -> dict[str, str]:
@@ -275,7 +206,6 @@ def apply_overrides(overrides: dict, routes: list[str], path: str) -> dict:
 
 def build(bundle_path: str, overrides_path: str = DEFAULT_OVERRIDES_PATH) -> dict:
     feed = open_bus_feed(bundle_path)
-    route_category, category_routes = route_categories(feed)
     routes = route_list(feed)
     overrides = realtime_overrides(overrides_path)
 
@@ -286,8 +216,6 @@ def build(bundle_path: str, overrides_path: str = DEFAULT_OVERRIDES_PATH) -> dic
         "meta": feed_meta(feed),
         "buses": {
             "route_list": routes,
-            "route_category": route_category,
-            "category_routes": category_routes,
         },
         "realtime": apply_overrides(overrides, routes, overrides_path),
     }
@@ -342,8 +270,7 @@ def main(argv: list[str] | None = None) -> int:
     realtime = document["realtime"]
     denied = realtime["overrides"]["no_vehicle_positions"]
     print(
-        f"{len(buses['route_list'])} routes in "
-        f"{len(buses['category_routes'])} categories, "
+        f"{len(buses['route_list'])} routes, "
         f"feed {meta['version']} ({meta['start_date']}–{meta['end_date']}), "
         f"{len(denied)} routes without vehicle positions ({realtime['source']})",
         file=sys.stderr,
