@@ -1,6 +1,6 @@
 # BusNeighbor — Privacy Policy
 
-**Effective date:** `August 29, 2026`
+**Effective date:** `September 15, 2026`
 
 BusNeighbor is a free app that shows Philadelphia public transit vehicle positions, service alerts, and a map. It is built for the general public to enjoy, but with thoughtful touches for blind and low-vision riders. This policy explains what BusNeighbor does with information on your phone, and what it sends over the network and to whom.
 
@@ -46,7 +46,7 @@ Your phone may include them in its own system backup — to your iCloud or Googl
 
 ### Map data on your device
 
-If you choose to download the offline map, roughly 28 MB of map data is stored on your device. Map tiles you have viewed may also be cached on your device so they load faster and use less data. Both are removed when you uninstall the app, and both can be cleared from within the app.
+If you choose to download the offline map, roughly 36 MB of map data is stored on your device. Map tiles you have viewed may also be cached on your device so they load faster and use less data. Both are removed when you uninstall the app, and both can be cleared from within the app.
 
 ---
 
@@ -59,14 +59,16 @@ Here is every service BusNeighbor contacts, and the most that each one can see.
 | Service                                 | Who runs it                  | Why BusNeighbor contacts it                                                                                  | What that service can see                                                                                                                         |
 | --------------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **BusNeighbor vehicle-position mirror** | Me, using Cloudflare Workers | To fetch real-time vehicle positions and service alerts, mirrored from SEPTA                                 | Your IP address and the time of the request. The file covers the entire SEPTA system, so **the request does not reveal which routes you follow**. |
-| **SEPTA** (`www3.septa.org`)            | SEPTA                        | To fetch detour and trip details for specific routes                                                         | Your IP address, the time of the request, and **which routes you asked about**                                                           |
 | **GitHub Releases** (`jos-eph/lovmaps`) | GitHub, Inc.                 | To download the offline map, or — if you have not downloaded it — to stream pieces of it as you move the map | Your IP address, and, when streaming, **which portions of the map file you request**, which corresponds to the areas you pan to                   |
 
 All of these requests use HTTPS.
 
-**Two things follow from this table that are worth saying plainly.** 
-* First, whenever you pan the map without having downloaded the offline map, some third party learns roughly which part of the Philadelphia area you were looking at — not because BusNeighbor tells them where you are, but because you asked them for that piece of the map. Downloading the offline map fully removes this concern. 
-* Second, if you select specific routes, SEPTA can see which ones.
+**One thing follows from this table that is worth saying plainly.** 
+
+Whenever you pan the map without having downloaded the offline map, some third party learns roughly which part of the Philadelphia area you were looking at — not because BusNeighbor tells them where you are, but because you asked them for that piece of the map. Downloading the offline map fully removes this concern.
+
+* To download the offline map, click on the map theme (artists' palette) button, and click on the download from cloud icon.
+* For increased privacy and better performance, I recommend that all users download the offline map.
 
 ### About the mirror I operate
 
@@ -78,7 +80,6 @@ I have not turned on request logging or log export for that Worker, so **no reco
 
 I do not send these services anything about you beyond what your device's own request contains, and I receive nothing back from them about you. Each one operates independently and handles what it receives under its own privacy policy, which I neither control nor can see into:
 
-- **SEPTA** — <https://www.septa.org/privacy/>
 - **GitHub** — <https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement>
 
 ---
@@ -134,7 +135,7 @@ BusNeighbor is a general-audience transit app. It is not directed to children, a
 
 BusNeighbor is distributed in the United States only. It is not offered in the European Union or the United Kingdom. Because it is built around the SEPTA network, all intended users are in Pennsylvania, New Jersey, and Delaware.
 
-New Jersey and Delaware have comprehensive consumer privacy laws. Pennsylvania does not. Those laws reach organizations holding personal data about tens of thousands of a state's residents — and **I hold personal data about no one.** No threshold is met, and no reading of any of them changes a word of this policy.
+New Jersey and Delaware have comprehensive consumer privacy laws. As of this writing, Pennsylvania does not. Those laws reach organizations holding personal data about tens of thousands of a state's residents — and **I hold personal data about no one.** No threshold is met, and no reading of any of them changes a word of this policy.
 
 If you live in New Jersey or Delaware and want to exercise a privacy right — to see, correct, or delete what I hold about you — there is nothing to act on, because there is nothing held. Write to me at the address below if you would like that confirmed directly.
 
@@ -160,6 +161,7 @@ Questions about this policy, or about privacy in BusNeighbor:
 
 ## Revision history
 
-| Date            | What changed     |
-| --------------- | ---------------- |
-| August 29, 2026 | First published. |
+| Date                | What changed     |
+| --------------------|----------------  |
+| August 29, 2026     | First published. |
+| September 15, 2026  | Removed SEPTA call (now fully mirrored); cosmetic improvements; minor text changes. |
