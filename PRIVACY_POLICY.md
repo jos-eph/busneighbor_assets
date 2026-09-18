@@ -1,6 +1,6 @@
 # BusNeighbor — Privacy Policy
 
-**Effective date:** `September 15, 2026`
+**Effective date:** `September 18, 2026`
 
 BusNeighbor is a free app that shows Philadelphia public transit vehicle positions, service alerts, and a map. It is built for the general public to enjoy, but with thoughtful touches for blind and low-vision riders. This policy explains what BusNeighbor does with information on your phone, and what it sends over the network and to whom.
 
@@ -60,6 +60,7 @@ Here is every service BusNeighbor contacts, and the most that each one can see.
 | --------------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **BusNeighbor vehicle-position mirror** | Me, using Cloudflare Workers | To fetch real-time vehicle positions and service alerts, mirrored from SEPTA                                 | Your IP address and the time of the request. The file covers the entire SEPTA system, so **the request does not reveal which routes you follow**. |
 | **GitHub Releases** (`jos-eph/lovmaps`) | GitHub, Inc.                 | To download the offline map, or — if you have not downloaded it — to stream pieces of it as you move the map | Your IP address, and, when streaming, **which portions of the map file you request**, which corresponds to the areas you pan to                   |
+| **GitHub Releases** (`jos-eph/busneighbor_assets`) | GitHub, Inc. | To check for an updated list of routes, at most once a day | Your IP address and the time of the request. Everyone gets the same file, so **the request does not reveal which routes you follow**. |
 
 All of these requests use HTTPS.
 
@@ -165,3 +166,4 @@ Questions about this policy, or about privacy in BusNeighbor:
 | --------------------|----------------  |
 | August 29, 2026     | First published. |
 | September 15, 2026  | Removed SEPTA call (now fully mirrored); cosmetic improvements; minor text changes. |
+| September 18, 2026  | Listed the daily route-list check on GitHub Releases, which was missing from the table. |
