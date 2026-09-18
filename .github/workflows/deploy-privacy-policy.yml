@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'PRIVACY_POLICY.md'
+      - 'SUPPORT.md'
       - 'template.html'
       - 'style.css'
       - '.github/workflows/deploy-privacy-policy.yml'
@@ -37,7 +38,14 @@ jobs:
             --from=markdown \
             --to=html5 \
             --template=template.html \
+            --metadata pagetitle="Privacy Policy" \
             --output=_site/bn_privacy.html
+          pandoc SUPPORT.md \
+            --from=markdown \
+            --to=html5 \
+            --template=template.html \
+            --metadata pagetitle="Support" \
+            --output=_site/support.html
           cp style.css _site/
 
       - name: Upload Pages Artifact
