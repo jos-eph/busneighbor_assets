@@ -51,3 +51,348 @@ a:focus-visible {
   outline: 3px solid var(--link);
   outline-offset: 2px;
 }
+
+/* Landing page (index.html). Every rule below is scoped under body.landing,
+   so bn_privacy.html and support.html are unaffected. */
+body.landing {
+  --muted: #4a4a4a;
+  --hero: #f3f1ec;      /* Daybreak land */
+  --panel: #e4eef5;     /* Daybreak water, lightened */
+  --accent: #005a8c;    /* darker Okabe-Ito blue, for text */
+  --route: #0072b2;     /* Okabe-Ito blue, decorative line */
+  --chip-bg: #0072b2;
+  --chip-fg: #ffffff;
+  --frame: #1a1a1a;
+  --gut: 1.5rem;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  body.landing {
+    --bg: #101216;      /* Nightshift land */
+    --muted: #c4c4c4;
+    --hero: #14253a;    /* Nightshift water */
+    --panel: #171c24;
+    --accent: #8ccbf2;
+    --route: #4ba3db;
+    --chip-bg: #8ccbf2;
+    --chip-fg: #101216;
+    --frame: #5b6675;
+    --border: #3a4250;
+  }
+}
+
+@media (min-width: 40rem) {
+  body.landing { --gut: 2.5rem; }
+}
+
+.landing .wrap {
+  max-width: 68rem;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+.landing a:hover {
+  text-decoration-thickness: 0.15em;
+}
+
+.landing .skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -20rem;
+  z-index: 10;
+  padding: 0.75rem 1rem;
+  background: var(--bg);
+  color: var(--link);
+  border: 2px solid var(--link);
+  font-weight: 600;
+}
+
+.landing .skip-link:focus {
+  top: 1rem;
+}
+
+/* Hero */
+.landing .hero {
+  background: var(--hero);
+  border-bottom: 1px solid var(--border);
+  padding: 2.5rem 0 3rem;
+}
+
+.landing .hero-grid {
+  display: grid;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.landing .app-icon {
+  display: block;
+  border-radius: 22%;
+  border: 1px solid var(--border);
+}
+
+.landing .hero h1 {
+  font-size: 2.5rem;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 1.25rem 0 0.25rem;
+}
+
+.landing .tagline {
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 0;
+}
+
+.landing .lede {
+  font-size: 1.2rem;
+  max-width: 34rem;
+  margin: 1.25rem 0 0;
+}
+
+.landing .store-slot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1.75rem;
+}
+
+.landing .store-status {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 44px;
+  margin: 0;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--text);
+  border-radius: 0.5rem;
+  background: var(--bg);
+  font-weight: 600;
+}
+
+/* Apple badge, post-launch: 40 px tall, clear space = 1/4 of its height. */
+.landing .store-badge {
+  display: inline-block;
+  padding: 10px;
+  margin: -10px;
+}
+
+.landing .store-badge img {
+  display: block;
+  height: 40px;
+  width: auto;
+}
+
+.landing .store-note {
+  margin: 0;
+  color: var(--muted);
+}
+
+/* CSS device outline; percentages keep the corner shape at any size. */
+.landing .phone {
+  box-sizing: border-box;
+  border: 2px solid var(--frame);
+  border-radius: 13% / 6%;
+  padding: 4%;
+  background: var(--bg);
+}
+
+.landing .phone img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10% / 4.6%;
+}
+
+.landing .hero-shot {
+  width: 100%;
+  max-width: 13rem;
+  margin: 0 auto;
+}
+
+@media (min-width: 52rem) {
+  .landing .hero-grid {
+    grid-template-columns: minmax(0, 1fr) 18rem;
+    gap: 3rem;
+  }
+  .landing .hero h1 { font-size: 3.25rem; }
+  .landing .hero-shot { max-width: 18rem; }
+}
+
+/* Route line down the main content, with a stop at each heading. Decorative. */
+.landing main {
+  padding: 3.5rem 0 1rem;
+}
+
+.landing .route {
+  position: relative;
+  margin-left: 0.5rem;
+  padding-left: var(--gut);
+  border-left: 4px solid var(--route);
+}
+
+.landing .route-chip {
+  position: absolute;
+  top: -2rem;
+  left: calc(-2px - 1.3rem);
+  min-width: 2.6rem;
+  box-sizing: border-box;
+  padding: 0.1rem 0.4rem;
+  border: 2px solid #000000;
+  border-radius: 0.4rem;
+  background: var(--chip-bg);
+  color: var(--chip-fg);
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.landing section {
+  margin: 0 0 3.5rem;
+}
+
+.landing section h2 {
+  position: relative;
+  font-size: 1.75rem;
+  line-height: 1.25;
+  margin: 0 0 0.75rem;
+}
+
+.landing section h2::before {
+  content: "";
+  position: absolute;
+  top: 0.3em;
+  left: calc(-1 * var(--gut) - 2px - 0.65rem);
+  width: 1.3rem;
+  height: 1.3rem;
+  box-sizing: border-box;
+  border: 4px solid var(--route);
+  border-radius: 50%;
+  background: var(--bg);
+}
+
+.landing section p {
+  max-width: 40rem;
+}
+
+/* Made to be read */
+.landing .read {
+  display: grid;
+  gap: 2rem;
+}
+
+.landing .features {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 0;
+  display: grid;
+  gap: 1.25rem;
+  max-width: 36rem;
+}
+
+.landing .features li {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.landing .feature-icon {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid transparent;
+  border-radius: 0.6rem;
+  background: var(--panel);
+  color: var(--accent);
+}
+
+.landing .shot-pair {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 13rem));
+  gap: 1rem;
+}
+
+@media (min-width: 60rem) {
+  .landing .read {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 3rem;
+    align-items: start;
+  }
+  .landing .shot-pair { grid-template-columns: repeat(2, 13rem); }
+}
+
+/* Nothing collected */
+.landing .nos {
+  list-style: none;
+  padding: 0;
+  margin: 1.25rem 0 1.25rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 1rem 1.5rem;
+  max-width: 44rem;
+}
+
+.landing .nos li {
+  padding-top: 0.5rem;
+  border-top: 3px solid var(--route);
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+/* Footer */
+.landing footer {
+  margin-top: 1rem;
+  padding: 1.5rem 0 2.5rem;
+  border-top: 1px solid var(--border);
+  background: var(--hero);
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.landing .footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+}
+
+.landing .footer-links a {
+  display: inline-block;
+  padding: 0.25rem 0;
+  font-weight: 600;
+}
+
+.landing footer p {
+  margin: 0.5rem 0 0;
+}
+
+@media (forced-colors: active) {
+  .landing .route-chip,
+  .landing .phone,
+  .landing .store-status {
+    border-color: CanvasText;
+  }
+  .landing a:focus-visible {
+    outline-color: Highlight;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}

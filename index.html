@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>BusNeighbor — Live Philly buses for everyone</title>
+  <meta name="description" content="A live map of Philadelphia's buses and trolleys, built for blind and low-vision riders and clearer for everyone. No ads, no tracking, nothing collected.">
+  <meta property="og:title" content="BusNeighbor">
+  <meta property="og:description" content="Live Philly buses for everyone. Built for VoiceOver, compatible with large text, and high contrast. Nothing collected.">
+  <link rel="icon" href="images/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="landing">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-text">
+        <img class="app-icon" src="images/icon-192.png" width="88" height="88" alt="">
+        <h1>BusNeighbor</h1>
+        <p class="tagline">Live Philly buses for everyone.</p>
+        <p class="lede">BusNeighbor shows where Philadelphia's buses and trolleys are right now, on a map
+          with data refreshed every 30 seconds. Pick the routes you ride and keep them in view.</p>
+        <div class="store-slot">
+          <p class="store-status">Coming soon to the App Store for iPhone.</p>
+          <!-- At launch, replace the <p> above with Apple's unmodified black badge:
+          <a class="store-badge" href="[APP STORE LINK]"><img src="images/app-store-badge.svg" width="120" height="40" alt="Download on the App Store"></a>
+          -->
+          <p class="store-note">Free. Philadelphia region only.</p>
+        </div>
+      </div>
+      <div class="phone hero-shot">
+        <img src="images/shot-live-map.jpg" width="330" height="717" alt="BusNeighbor's map of Center City Philadelphia, with buses on several routes, each marked with its route number.">
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <div class="wrap">
+      <div class="route">
+        <span class="route-chip" aria-hidden="true">45</span>
+
+        <section aria-labelledby="read" class="read">
+          <div class="read-text">
+            <h2 id="read">Made to be read, not just seen</h2>
+            <p>BusNeighbor is designed for riders who are blind or have low vision, and that makes it
+              clearer for everyone.</p>
+            <ul class="features">
+              <li>
+                <span class="feature-icon"><svg aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg></span>
+                <span>Every control works with VoiceOver, and the nearest vehicles can be read out as a list:
+                  route, intersection, and distance.</span>
+              </li>
+              <li>
+                <span class="feature-icon"><svg aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5" fill="currentColor"/></svg></span>
+                <span>Twelve map palettes tuned for contrast, and compatibility with large text throughout.</span>
+              </li>
+              <li>
+                <span class="feature-icon"><svg aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
+                <span>The app always tells you how old the data is, and a bus that stops reporting looks
+                  different from one that's live.</span>
+              </li>
+            </ul>
+          </div>
+          <ul class="shot-pair">
+            <li class="phone"><img src="images/shot-closest-vehicles.jpg" width="330" height="717" alt="The Closest Vehicles list in dark mode: each row shows a route, the intersection the vehicle is near, and how far away it is."></li>
+            <li class="phone"><img src="images/shot-palettes.jpg" width="330" height="717" alt="The map theme picker, with a grid of map palettes and the Dot, Chip, and Circle marker styles."></li>
+          </ul>
+        </section>
+
+        <section aria-labelledby="privacy" class="privacy">
+          <h2 id="privacy">Nothing collected</h2>
+          <ul class="nos">
+            <li>No accounts</li>
+            <li>No ads</li>
+            <li>No analytics</li>
+            <li>No tracking</li>
+          </ul>
+          <p>Location is optional, is never requested when the app opens, and never leaves your phone.
+            The <a href="bn_privacy.html">privacy policy</a> is short and in plain English.</p>
+        </section>
+
+        <section aria-labelledby="maker" class="maker">
+          <h2 id="maker">Who made this</h2>
+          <p>I'm Joe Mirarchi (Joseph Dante, if you ask my mother). I ride the bus back and forth to Center City,
+            and I built BusNeighbor to feel more confident taking the bus, with a realistic, constantly
+            updating view of where my ride is. The transit apps I'd tried were too complicated, too
+            confusing, or too unreliable.</p>
+          <p>Then I met a friend through C.O.D.E. Philly who installed the app the first time we met, but
+            needed accessibility features to use it. So I rose to the challenge.</p>
+          <p>I'm an enterprise backend engineer who works in Java and Python, and I learned Flutter and
+            Dart to build this app. Before engineering, I researched and
+            analyzed public information. Advocating for people with disabilities is important to
+            me. I saw a gap in what was available to serve the community, and I wanted to help.</p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <nav aria-label="Site">
+        <ul class="footer-links">
+          <li><a href="support.html">Support</a></li>
+          <li><a href="bn_privacy.html">Privacy policy</a></li>
+          <li><a href="mailto:bus@dydx.org">bus@dydx.org</a></li>
+        </ul>
+      </nav>
+      <p>BusNeighbor is not affiliated with, endorsed by, or operated by SEPTA. Map data ©
+        OpenStreetMap contributors.</p>
+      <p>© 2026 Joseph D. Mirarchi</p>
+    </div>
+  </footer>
+</body>
+</html>
