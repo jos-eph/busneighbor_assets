@@ -7,6 +7,8 @@ on:
     paths:
       - 'PRIVACY_POLICY.md'
       - 'SUPPORT.md'
+      - 'index.html'
+      - 'images/**'
       - 'template.html'
       - 'style.css'
       - '.github/workflows/deploy-privacy-policy.yml'
@@ -46,7 +48,8 @@ jobs:
             --template=template.html \
             --metadata pagetitle="Support" \
             --output=_site/support.html
-          cp style.css _site/
+          cp style.css index.html _site/
+          cp -r images _site/
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v5
