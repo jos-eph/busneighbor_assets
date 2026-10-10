@@ -187,6 +187,17 @@ body.landing {
   width: auto;
 }
 
+.landing .store-beta {
+  margin: 0;
+  font-weight: 600;
+}
+
+.landing .store-beta a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
 .landing .store-note {
   margin: 0;
   color: var(--muted);
