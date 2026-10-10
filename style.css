@@ -199,6 +199,8 @@ body.landing {
 }
 
 .landing .store-note {
+  /* Own row: it qualifies both platforms, not just the one beside it. */
+  flex-basis: 100%;
   margin: 0;
   color: var(--muted);
 }
