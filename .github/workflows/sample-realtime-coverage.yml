@@ -13,26 +13,19 @@ name: Sample real-time coverage
 #     two of them fall inside Owl service, which is the window nothing else
 #     measures.
 #   * Each run uploads one small JSON artifact. Nothing is committed.
-#   * Once a day, the 14:17 UTC slot also archives the text of every service
-#     alert to the 'service-alerts' release as septaalerts_<date>.json. That
-#     slot has its own cron line so the job can tell it apart; it is midday
-#     service in Philadelphia, when the alert list is most representative.
+#   * Each run also snapshots SEPTA's service alerts and bus detours and folds
+#     them into that UTC day's septaalerts_<date>.json on the 'service-alerts'
+#     release. Day files older than 50 days are deleted.
 #   * Artifacts expire after 2 days. The aggregator reads the previous UTC day,
 #     so 1 day would expire them roughly half an hour before it runs.
 #   * This is the only workflow in the repository that installs a third-party
-#     package. Only publish-alerts holds contents: write, and it installs and
-#     checks out nothing, so the job that can write runs no third-party code.
+#     package. Only publish-alerts holds contents: write, and it installs
+#     nothing, so the job that can write runs no third-party code.
 
 on:
   schedule:
-    - cron: '17 2,5,8,11,17,20,23 * * *'
-    - cron: '17 14 * * *'   # also archives alerts; the alerts job matches this string
+    - cron: '17 2,5,8,11,14,17,20,23 * * *'
   workflow_dispatch:
-    inputs:
-      sample_alerts:
-        description: 'Also archive service alerts'
-        type: boolean
-        default: false
 
 permissions:
   contents: read   # publish-alerts raises this for itself alone
@@ -99,11 +92,8 @@ jobs:
           if-no-files-found: error
 
   alerts:
-    # Independent of `sample`, so a vehicle feed outage does not cost a day of
-    # alerts, or the reverse. github.event.schedule is the cron line verbatim.
-    if: >-
-      github.event.schedule == '17 14 * * *' ||
-      (github.event_name == 'workflow_dispatch' && inputs.sample_alerts)
+    # Independent of `sample`, so a vehicle feed outage does not cost a
+    # snapshot of alerts, or the reverse.
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
@@ -125,7 +115,7 @@ jobs:
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
 
-      - name: Snapshot the alerts
+      - name: Snapshot alerts and detours
         id: snapshot
         run: |
           set -euo pipefail
@@ -143,42 +133,101 @@ jobs:
           if-no-files-found: error
 
   publish-alerts:
-    # Stdlib and gh only: no checkout, no install. This is the one job here
-    # that can write, so it runs nothing but first-party tooling.
+    # Checks out first-party code and runs it on the runner's Python with
+    # nothing installed: this is the one job here that can write.
     needs: alerts
     if: vars.RELEASE_ALERTS_ENABLED != 'false'   # kill switch; unset means on
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     permissions:
       contents: write   # required to create the release and upload assets
+    # The day file is read, merged and rewritten, so two publishes must never
+    # interleave. Slots are three hours apart; this only matters when GitHub
+    # delays one badly.
+    concurrency:
+      group: service-alerts-publish
+      cancel-in-progress: false
+
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      DAY: ${{ needs.alerts.outputs.utc_date }}
+      KEEP_DAYS: 50
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: '3.12'
+
       - name: Download snapshot
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333  # v8.0.2
         with:
           name: alerts-${{ github.run_id }}-${{ github.run_attempt }}
-          path: out
+          path: snapshot
 
-      - name: Publish to the 'service-alerts' release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          UTC_DATE: ${{ needs.alerts.outputs.utc_date }}
+      - name: Fetch the day's file so far
+        id: day
         run: |
           set -euo pipefail
-          if ! printf '%s' "${UTC_DATE}" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'; then
-            echo "::error::Snapshot date must be YYYY-MM-DD, got '${UTC_DATE}'"
+          if ! printf '%s' "${DAY}" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'; then
+            echo "::error::Snapshot date must be YYYY-MM-DD, got '${DAY}'"
             exit 1
           fi
           if ! gh release view service-alerts --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
             gh release create service-alerts \
               --repo "${GITHUB_REPOSITORY}" \
               --title "Service alert archive" \
-              --notes "One snapshot of SEPTA's service alerts per day, as septaalerts_<YYYY-MM-DD>.json. Internal archive, NOT a consumer API."
+              --notes "SEPTA service alerts and bus detours, one septaalerts_<YYYY-MM-DD>.json per UTC day, kept for ${KEEP_DAYS} days. Internal archive, NOT a consumer API."
           fi
-          # One asset per UTC day: a manual rerun replaces that day's snapshot
-          # rather than adding a second one.
-          ASSET="septaalerts_${UTC_DATE}.json"
-          cp out/alerts.json "${ASSET}"
+          ASSET="septaalerts_${DAY}.json"
+          echo "asset=${ASSET}" >> "$GITHUB_OUTPUT"
+          mkdir -p prev
+          # Decide from the listing, then download without a fallback: a
+          # download that fails for any other reason must fail the job rather
+          # than restart the day from this one snapshot.
+          # Captured first: piping into grep -q under pipefail can SIGPIPE gh
+          # and read as "not found".
+          NAMES="$(gh release view service-alerts --repo "${GITHUB_REPOSITORY}" \
+            --json assets --jq '.assets[].name')"
+          if grep -Fxq "${ASSET}" <<< "${NAMES}"; then
+            gh release download service-alerts --repo "${GITHUB_REPOSITORY}" \
+              --pattern "${ASSET}" --dir prev
+            echo "day_args=--day prev/${ASSET}" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Starting ${ASSET}"
+            echo "day_args=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Merge and publish
+        env:
+          ASSET: ${{ steps.day.outputs.asset }}
+          DAY_ARGS: ${{ steps.day.outputs.day_args }}
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          # DAY_ARGS is unquoted on purpose: it is empty or two words.
+          # shellcheck disable=SC2086
+          python merge_service_alerts.py --snapshot snapshot/alerts.json \
+            ${DAY_ARGS} --output "out/${ASSET}"
           gh release upload service-alerts --clobber \
-            --repo "${GITHUB_REPOSITORY}" "${ASSET}"
-          echo "Published ${ASSET}"
+            --repo "${GITHUB_REPOSITORY}" "out/${ASSET}"
+
+      - name: Prune day files older than 50 days
+        run: |
+          set -euo pipefail
+          # Keeps today and the KEEP_DAYS - 1 days before it.
+          CUTOFF="$(date -u -d "${DAY} -$((KEEP_DAYS - 1)) days" +%F)"
+          mapfile -t ASSETS < <(gh release view service-alerts \
+            --repo "${GITHUB_REPOSITORY}" --json assets --jq '.assets[].name')
+          for asset in "${ASSETS[@]}"; do
+            [[ "${asset}" =~ ^septaalerts_([0-9]{4}-[0-9]{2}-[0-9]{2})\.json$ ]] || continue
+            # ISO dates compare correctly as strings.
+            if [[ "${BASH_REMATCH[1]}" < "${CUTOFF}" ]]; then
+              echo "Deleting ${asset}"
+              gh release delete-asset service-alerts "${asset}" \
+                --repo "${GITHUB_REPOSITORY}" --yes
+            fi
+          done

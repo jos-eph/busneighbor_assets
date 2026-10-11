@@ -1,11 +1,13 @@
-"""Tests for the service alert archiver. Offline throughout."""
+"""Tests for the service alert sampler. Offline throughout."""
 
-import datetime
+import contextlib
+import io
 import json
 import os
 import sys
 import tempfile
 import unittest
+import urllib.error
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -17,8 +19,6 @@ except ImportError as exc:  # pragma: no cover - exercised by the meta workflow
     # is installed, and the sampler workflow asserts the import separately.
     raise unittest.SkipTest(f"gtfs-realtime-bindings not installed: {exc}")
 
-SAMPLED_AT = datetime.datetime(2026, 10, 11, 14, 17, 5,
-                               tzinfo=datetime.timezone.utc)
 FEED_TIMESTAMP = 1791743783
 
 
@@ -49,7 +49,21 @@ def add_alert(feed, alert_id, header, description=None, *, routes=(),
 
 
 def summarize(feed):
-    return alerts.summarize(feed, sampled_at=SAMPLED_AT)
+    return {"alerts": alerts.summarize_alerts(feed)}
+
+
+def detour(**overrides):
+    record = {
+        "route_direction": "SB",
+        "reason": "Sink Hole ",
+        "start_location": "17th & Diamond Sts",
+        "end_location": "17th St btwn Jefferson & Master Sts ",
+        "start_date_time": "9/29/2026   7:19 AM",
+        "end_date_time": "10/29/2026   4:00 PM",
+        "current_message": " 24/7 until 10/29/26 SB via 17th St L  - Diamond St",
+    }
+    record.update(overrides)
+    return record
 
 
 class SummarizeTest(unittest.TestCase):
@@ -60,14 +74,49 @@ class SummarizeTest(unittest.TestCase):
 
         document = summarize(feed)
 
-        self.assertEqual(document["sampled_at"], "2026-10-11T14:17:05Z")
-        self.assertEqual(document["feed_timestamp"], FEED_TIMESTAMP)
         self.assertEqual(document["alerts"], [{
             "id": "133350",
             "header": "Shuttle Busing",
             "description": "Bus service replaces train service.",
             "routes": ["M1"],
+            "active_periods": [],
         }])
+
+    def test_active_periods_keep_open_bounds(self):
+        feed = new_feed()
+        entity = add_alert(feed, "1", "Detour")
+        entity.alert.active_period.add(start=100, end=200)
+        entity.alert.active_period.add(start=300)
+
+        (alert,) = summarize(feed)["alerts"]
+
+        self.assertEqual(alert["active_periods"], [[100, 200], [300, None]])
+
+    def test_effect_cause_and_severity_are_named(self):
+        feed = new_feed()
+        alert_pb = add_alert(feed, "D1", "Construction").alert
+        Alert = gtfs_rt.gtfs_realtime_pb2.Alert
+        alert_pb.effect = Alert.DETOUR
+        alert_pb.cause = Alert.CONSTRUCTION
+        alert_pb.severity_level = Alert.WARNING
+
+        (alert,) = summarize(feed)["alerts"]
+
+        self.assertEqual(alert["effect"], "DETOUR")
+        self.assertEqual(alert["cause"], "CONSTRUCTION")
+        self.assertEqual(alert["severity_level"], "WARNING")
+
+    def test_unknown_enums_are_omitted(self):
+        feed = new_feed()
+        alert_pb = add_alert(feed, "1", "Notice").alert
+        Alert = gtfs_rt.gtfs_realtime_pb2.Alert
+        alert_pb.effect = Alert.UNKNOWN_EFFECT
+        alert_pb.cause = Alert.UNKNOWN_CAUSE
+
+        (alert,) = summarize(feed)["alerts"]
+
+        self.assertNotIn("effect", alert)
+        self.assertNotIn("cause", alert)
 
     def test_description_repeating_the_header_is_omitted(self):
         feed = new_feed()
@@ -158,14 +207,62 @@ class SummarizeTest(unittest.TestCase):
         self.assertEqual(ids, ["a", "b", "c"])
 
 
+class DetoursTest(unittest.TestCase):
+    def test_records_are_kept_verbatim(self):
+        (record,) = alerts.summarize_detours(
+            [{"route_id": "2", "route_info": [detour()]}])
+
+        self.assertEqual(record, {**detour(), "routes": ["2"]})
+
+    def test_identical_detour_on_several_routes_is_recorded_once(self):
+        listing = [
+            {"route_id": "LUCYGO", "route_info": [detour()]},
+            {"route_id": "LUCYGR", "route_info": [detour()]},
+            {"route_id": "2", "route_info": [detour(route_direction="NB")]},
+        ]
+
+        records = alerts.summarize_detours(listing)
+
+        self.assertEqual(sorted(r["routes"] for r in records),
+                         [["2"], ["LUCYGO", "LUCYGR"]])
+
+    def test_empty_listing_is_no_detours(self):
+        self.assertEqual(alerts.summarize_detours([]), [])
+
+    def test_unexpected_shape_is_an_error(self):
+        for listing in ({"error": "down"}, [{"route_id": "2"}],
+                        [{"route_id": "2", "route_info": ["x"]}]):
+            with self.subTest(listing=listing):
+                with self.assertRaises(ValueError):
+                    alerts.summarize_detours(listing)
+
+    def test_failed_fetch_records_none(self):
+        def broken(*_args, **_kwargs):
+            raise urllib.error.HTTPError("u", 500, "down", {}, None)
+
+        original = alerts.fetching.get_bytes
+        alerts.fetching.get_bytes = broken
+        try:
+            with contextlib.redirect_stderr(io.StringIO()):
+                self.assertIsNone(alerts.fetch_detours("u"))
+        finally:
+            alerts.fetching.get_bytes = original
+
+
 class MainTest(unittest.TestCase):
-    def run_main(self, body):
+    def run_main(self, body, listing=()):
         with tempfile.TemporaryDirectory() as tmp:
             pb = os.path.join(tmp, "alerts.pb")
+            detours_json = os.path.join(tmp, "detours.json")
             out = os.path.join(tmp, "out", "alerts.json")
             with open(pb, "wb") as handle:
                 handle.write(body)
-            code = alerts.main(["--pb", pb, "--output", out])
+            with open(detours_json, "w", encoding="utf-8") as handle:
+                json.dump(list(listing), handle)
+            with contextlib.redirect_stdout(io.StringIO()), \
+                    contextlib.redirect_stderr(io.StringIO()):
+                code = alerts.main(["--pb", pb, "--detours-json",
+                                    detours_json, "--output", out])
             document = None
             if os.path.exists(out):
                 with open(out, encoding="utf-8") as handle:
@@ -176,10 +273,14 @@ class MainTest(unittest.TestCase):
         feed = new_feed()
         add_alert(feed, "1", "Detour", routes=["17"])
 
-        code, document = self.run_main(feed.SerializeToString())
+        code, document = self.run_main(
+            feed.SerializeToString(),
+            [{"route_id": "2", "route_info": [detour()]}])
 
         self.assertEqual(code, 0)
+        self.assertEqual(document["feed_timestamp"], FEED_TIMESTAMP)
         self.assertEqual(document["alerts"][0]["routes"], ["17"])
+        self.assertEqual(document["detours"][0]["routes"], ["2"])
 
     def test_empty_feed_writes_nothing(self):
         code, document = self.run_main(new_feed().SerializeToString())

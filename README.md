@@ -123,8 +123,10 @@ separate files.
 
 ## Service alert archive
 
-Once a day, `sample_service_alerts.py` snapshots the text of every SEPTA
-service alert to the `service-alerts` release:
+Every sampler run also snapshots SEPTA's service alerts (GTFS-realtime) and its
+[BusDetours](https://www3.septa.org/api/BusDetours/index.php) listing, and
+folds them into one file per UTC day on the `service-alerts` release. Files
+older than 50 days are deleted.
 
 ```
 https://github.com/jos-eph/busneighbor_assets/releases/download/service-alerts/septaalerts_<YYYY-MM-DD>.json
@@ -132,30 +134,61 @@ https://github.com/jos-eph/busneighbor_assets/releases/download/service-alerts/s
 
 ```json
 {
-  "sampled_at": "2026-10-11T14:17:05Z",
-  "feed_timestamp": 1791743783,
+  "date": "2026-10-11",
+  "samples": [
+    { "sampled_at": "2026-10-11T02:17:40Z", "feed_timestamp": 1791685060 },
+    { "sampled_at": "2026-10-11T05:17:12Z", "feed_timestamp": 1791695832, "detours": false }
+  ],
   "alerts": [
     {
-      "id": "133350",
-      "header": "Shuttle Busing Between Norristown Transit Center and Bridgeport Station",
-      "description": "Bus service replaces train service from ...",
-      "routes": ["M1"]
-    },
-    { "id": "TU869197_2026-10-11", "header": "Trip cancellation for trip 869197.", "routes": [] }
+      "id": "D17048",
+      "header": "Sink Hole",
+      "description": "24/7 until 10/29/26, SB via 17th St, Left on Diamond St, ...",
+      "routes": ["2"],
+      "active_periods": [[1790680740, 1793304000]],
+      "effect": "DETOUR",
+      "cause": "CONSTRUCTION",
+      "severity_level": "WARNING",
+      "first_seen": "2026-10-11T02:17:40Z",
+      "last_seen": "2026-10-11T05:17:12Z"
+    }
+  ],
+  "detours": [
+    {
+      "routes": ["2"],
+      "route_direction": "SB",
+      "reason": "Sink Hole ",
+      "start_location": "17th & Diamond Sts",
+      "end_location": "17th St btwn Jefferson & Master Sts ",
+      "start_date_time": "9/29/2026   7:19 AM",
+      "end_date_time": "10/29/2026   4:00 PM",
+      "current_message": " 24/7 until 10/29/26 SB via 17th St L  - Diamond St R - ...",
+      "first_seen": "2026-10-11T02:17:40Z",
+      "last_seen": "2026-10-11T02:17:40Z"
+    }
   ]
 }
 ```
 
-`description` is omitted when it repeats `header`. `routes` lists each route
-the alert names once; alerts scoped only to a trip or stop have none. Text is
-kept as published, HTML entities included. The file itself is compact JSON.
-It is an internal archive, not a consumer API.
+Each distinct alert or detour appears once per day, with the first and last
+snapshot that saw it; one revised during the day appears once per version.
+`samples` lists every snapshot folded in, and `"detours": false` marks one
+whose detour fetch failed, as distinct from SEPTA listing none.
+
+Alerts: `description` is omitted when it repeats `header`; `routes` lists each
+route once, and is empty for alerts scoped only to a trip or stop;
+`active_periods` are `[start, end]` in POSIX seconds, `null` where open;
+`effect`, `cause` and `severity_level` are omitted when unset or `UNKNOWN_*`.
+Detours are SEPTA's records verbatim, except that one listed identically under
+several routes is stored once. All text is kept as published, HTML entities
+and whitespace included. This is an internal archive, not a consumer API.
 
 ## Dependencies
 
-Everything except the samplers is **stdlib-only**. Only
-`sample_realtime_coverage.py` and `sample_service_alerts.py` have
-dependencies, pinned with hashes in `requirements.txt`:
+Everything except the samplers is **stdlib-only**, including
+`merge_service_alerts.py`. Only `sample_realtime_coverage.py` and
+`sample_service_alerts.py` have dependencies, pinned with hashes in
+`requirements.txt`:
 
 ```bash
 pip install --require-hashes -r requirements.txt
@@ -171,8 +204,9 @@ rather than a hand-rolled wire-format reader, and anything that grows a second
 | Workflow | Cadence | Permissions | Dependencies |
 | --- | --- | --- | --- |
 | `release-septa-meta` | weekly | `contents: write` | none |
-| `sample-realtime-coverage` | 8× daily, alerts 1× daily | `contents: read`; `publish-alerts` job `contents: write` | `requirements.txt`, except `publish-alerts` |
+| `sample-realtime-coverage` | 8× daily | `contents: read`; `publish-alerts` job `contents: write` | `requirements.txt`, except `publish-alerts` |
 | `aggregate-realtime-coverage` | daily | `contents: write` | none |
 
 Only the sampler workflow installs a third-party package. Its one job that
-can write, `publish-alerts`, checks out and installs nothing.
+can write, `publish-alerts`, installs nothing and runs only this repository's
+stdlib code.
