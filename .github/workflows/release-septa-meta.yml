@@ -15,13 +15,23 @@ name: Release SEPTA meta
 #     cadence and this job is a no-op when nothing changed.
 #   * Manual run via workflow_dispatch; set push_release=false for a build-only
 #     smoke test.
-#   * Publishing is gated by repo variable RELEASE_SEPTA_META_ENABLED, which must
-#     equal the literal string 'true'. This is the kill switch — flip it under
-#     Settings -> Secrets and variables -> Actions -> Variables without editing
-#     this file.
+#   * Publishing is gated by RELEASE_SEPTA_META_ENABLED, which must equal the
+#     literal string 'true'. This is the kill switch. It is a variable of the
+#     septameta-release environment (Settings -> Environments), not of the
+#     repository, so flip it there without editing this file.
 #   * SEPTA reissues the same feed for weeks at a time, so a run whose output
 #     matches the published septameta.json publishes nothing.
 #   * Dated releases beyond the most recent 30 are pruned.
+#   * A build that would stop offering any route the published document offers
+#     is NOT published, and the run fails. The app removes a route it stops
+#     seeing from the rider's saved selection, permanently. If SEPTA really
+#     retired those routes, rerun by hand with approve_removals set to exactly
+#     the route ids the failure lists. See check_septa_meta.py.
+#   * Only this workflow writes to the `current` release, and only from main.
+#     The job runs in the `septameta-release` environment, which is limited to
+#     main and holds RELEASE_SEPTA_META_ENABLED. A copy of this workflow on an
+#     older branch has no environment, sees the switch as unset, and publishes
+#     nothing.
 
 on:
   schedule:
@@ -32,6 +42,10 @@ on:
         description: 'Build and publish a release now (false = build-only smoke test)'
         type: boolean
         default: true
+      approve_removals:
+        description: 'Route ids the build may stop offering, comma-separated; must match the removals exactly'
+        type: string
+        default: ''
 
 permissions:
   contents: write   # required to create releases and upload assets
@@ -47,6 +61,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    environment: septameta-release
 
     steps:
       - name: Checkout
@@ -76,39 +91,98 @@ jobs:
 
       - name: Decide whether to publish
         id: gate
-        # Three independent conditions must hold:
+        # Five independent conditions must hold:
         #   1. The trigger is not a workflow_dispatch with push_release=false.
-        #   2. Repo variable RELEASE_SEPTA_META_ENABLED == 'true' (kill switch).
-        #      If unset, publishing is skipped — the human must opt in before the
-        #      weekly schedule starts cutting releases.
-        #   3. The build differs from the published `current` asset.
+        #   2. RELEASE_SEPTA_META_ENABLED == 'true' (kill switch, held by the
+        #      septameta-release environment). If unset, publishing is skipped.
+        #   3. The run is on main.
+        #   4. The build differs from the published `current` asset.
+        #   5. check_septa_meta.py finds no route the app would stop offering,
+        #      compared against both the live copy and the newest dated
+        #      release, or the removals match approve_removals exactly.
+        # Every lookup fails the job on error. Treating a failed or missing
+        # download as "nothing published" would skip check 5. Only a
+        # repository with no release of either kind is a first publish.
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EVENT_NAME: ${{ github.event_name }}
           INPUT_PUSH_RELEASE: ${{ inputs.push_release }}
+          APPROVE_REMOVALS: ${{ inputs.approve_removals }}
           KILL_SWITCH: ${{ vars.RELEASE_SEPTA_META_ENABLED }}
         run: |
           set -euo pipefail
           PUBLISH=true
+          BLOCKED=false
           if [ "${EVENT_NAME}" = "workflow_dispatch" ] && [ "${INPUT_PUSH_RELEASE}" != "true" ]; then
             PUBLISH=false
             echo "::notice::Skipping publish: workflow_dispatch with push_release=false (build-only)"
           fi
           if [ "${KILL_SWITCH}" != "true" ]; then
             PUBLISH=false
-            echo "::notice::Skipping publish: repo variable RELEASE_SEPTA_META_ENABLED is not 'true' (current value: '${KILL_SWITCH}'). Set it to 'true' in Settings -> Variables to enable releases."
+            echo "::notice::Skipping publish: RELEASE_SEPTA_META_ENABLED is not 'true' (current value: '${KILL_SWITCH}'). It lives on the septameta-release environment."
+          fi
+          if [ "${PUBLISH}" = "true" ] && [ "${GITHUB_REF}" != "refs/heads/main" ]; then
+            PUBLISH=false
+            BLOCKED=true
+            echo "::error::Refusing to publish from ${GITHUB_REF}; septameta.json is published from main only. Use push_release=false for a build-only run."
           fi
           if [ "${PUBLISH}" = "true" ]; then
-            if gh release download current \
-                 --repo "${GITHUB_REPOSITORY}" \
-                 --pattern septameta.json \
-                 --dir /tmp/published >/dev/null 2>&1 \
-               && cmp -s /tmp/published/septameta.json ./out/septameta.json; then
+            TAGS="$(gh release list --repo "${GITHUB_REPOSITORY}" --limit 1000 \
+              --json tagName --jq '.[].tagName')"
+            BASELINES=()
+            mkdir -p /tmp/published
+
+            if grep -Fxq current <<< "${TAGS}"; then
+              ASSETS="$(gh release view current --repo "${GITHUB_REPOSITORY}" \
+                --json assets --jq '.assets[].name')"
+              if grep -Fxq septameta.json <<< "${ASSETS}"; then
+                gh release download current --repo "${GITHUB_REPOSITORY}" \
+                  --pattern septameta.json --dir /tmp/published --clobber
+                BASELINES+=(--published /tmp/published/septameta.json)
+                if cmp -s /tmp/published/septameta.json ./out/septameta.json; then
+                  PUBLISH=false
+                  echo "::notice::Skipping publish: build is identical to the published septameta.json (SEPTA feed ${START_DATE} unchanged)."
+                fi
+              else
+                echo "::warning::'current' has no septameta.json; checking against the newest dated release instead."
+              fi
+            fi
+
+            # Tags are septameta-YYYYMMDD, so the lexical maximum is the newest.
+            NEWEST="$(grep -E '^septameta-[0-9]{8}$' <<< "${TAGS}" | sort | tail -n 1 || true)"
+            if [ -n "${NEWEST}" ]; then
+              DATED_ASSET="septameta_${NEWEST#septameta-}.json"
+              DATED_ASSETS="$(gh release view "${NEWEST}" --repo "${GITHUB_REPOSITORY}" \
+                --json assets --jq '.assets[].name')"
+              if grep -Fxq "${DATED_ASSET}" <<< "${DATED_ASSETS}"; then
+                gh release download "${NEWEST}" --repo "${GITHUB_REPOSITORY}" \
+                  --pattern "${DATED_ASSET}" --dir /tmp/published --clobber
+                BASELINES+=(--published "/tmp/published/${DATED_ASSET}")
+              else
+                echo "::warning::${NEWEST} has no ${DATED_ASSET}."
+              fi
+            fi
+
+            if [ "${#BASELINES[@]}" -eq 0 ]; then
+              if grep -Fxq current <<< "${TAGS}" || [ -n "${NEWEST}" ]; then
+                # Releases exist but none of them holds a document. That is
+                # damage, not a fresh repository; never publish blind into it.
+                BASELINES=(--published /nonexistent/septameta.json)
+              else
+                echo "::notice::No septameta release of any kind yet; first publish."
+                BASELINES=(--first-publish)
+              fi
+            fi
+          fi
+          if [ "${PUBLISH}" = "true" ]; then
+            if ! python check_septa_meta.py --candidate ./out/septameta.json \
+                   "${BASELINES[@]}" --approve-removals "${APPROVE_REMOVALS}"; then
               PUBLISH=false
-              echo "::notice::Skipping publish: build is identical to the published septameta.json (SEPTA feed ${START_DATE} unchanged)."
+              BLOCKED=true
             fi
           fi
           echo "publish=${PUBLISH}" >> "$GITHUB_OUTPUT"
+          echo "blocked=${BLOCKED}" >> "$GITHUB_OUTPUT"
           echo "Publish decision: ${PUBLISH}"
 
       - name: Generate sha256 sidecars
@@ -212,3 +286,10 @@ jobs:
             echo "Pruning old release: ${tag}"
             gh release delete "${tag}" --yes --cleanup-tag --repo "${GITHUB_REPOSITORY}"
           done < /tmp/prune.txt
+
+      - name: Fail the run if publishing was blocked
+        # Last, so the build artifact above is still uploaded for inspection.
+        if: steps.gate.outputs.blocked == 'true'
+        run: |
+          echo "::error::septameta.json was not published. See 'Decide whether to publish' for why."
+          exit 1

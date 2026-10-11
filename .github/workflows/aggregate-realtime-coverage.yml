@@ -25,6 +25,11 @@ name: Aggregate real-time coverage
 #     override-sync step must gate on — but nothing here acts on the proposal,
 #     so a red run every morning would be noise rather than signal. The window
 #     needs 7 days before the depth guard stops tripping at all.
+#   * While a guard is tripped, septacoverage.json is NOT published; the last
+#     good one stays up. The rolling state and the daily summary still are,
+#     because the window can only fill by recording thin days.
+#   * septacoverage.json goes to its own 'coverage' release. Only the meta
+#     workflow writes 'current', the release the app reads.
 #   * Stdlib-only. The aggregator sees JSON, never protobuf, so this workflow
 #     installs nothing despite holding contents: write.
 
@@ -240,31 +245,35 @@ jobs:
           echo "Publish decision: ${PUBLISH}"
 
       - name: Generate sha256 sidecar
-        if: steps.gate.outputs.publish == 'true'
+        if: steps.gate.outputs.publish == 'true' && steps.aggregate.outputs.guards == 'passed'
         run: |
           set -euo pipefail
           cd ./out
           sha256sum septacoverage.json > septacoverage.json.sha256
           echo "sha256(septacoverage.json) = $(awk '{print $1}' septacoverage.json.sha256)"
 
-      - name: Publish septacoverage.json to the 'current' release
-        if: steps.gate.outputs.publish == 'true'
+      - name: Publish septacoverage.json to the 'coverage' release
+        # Withheld while any guard is tripped: a thin or suspect window is
+        # recorded in the state below but never published as the document.
+        if: steps.gate.outputs.publish == 'true' && steps.aggregate.outputs.guards == 'passed'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          # `current` already exists — the meta workflow creates it — but a
-          # coverage run could land first on a fresh repository.
-          if ! gh release view current --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
-            gh release create current \
+          if ! gh release view coverage --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release create coverage \
               --repo "${GITHUB_REPOSITORY}" \
-              --title "Current SEPTA meta (rolling)" \
-              --notes "Rolling release: assets are overwritten by every successful build."
+              --title "SEPTA real-time coverage (rolling)" \
+              --notes "Rolling release: septacoverage.json is overwritten by each daily aggregation whose guards all pass."
           fi
-          gh release upload current --clobber \
+          gh release upload coverage --clobber \
             --repo "${GITHUB_REPOSITORY}" \
             ./out/septacoverage.json \
             ./out/septacoverage.json.sha256
+
+      - name: Note a withheld document
+        if: steps.gate.outputs.publish == 'true' && steps.aggregate.outputs.guards != 'passed'
+        run: echo "::notice::septacoverage.json withheld for ${DAY}; guards tripped. State and daily summary are still recorded."
 
       - name: Publish the rolling state to the 'coverage-state' release
         if: steps.gate.outputs.publish == 'true'
@@ -276,7 +285,7 @@ jobs:
             gh release create coverage-state \
               --repo "${GITHUB_REPOSITORY}" \
               --title "Coverage pipeline state (internal)" \
-              --notes "Internal pipeline state for the real-time coverage sampler, NOT a consumer API. Shape and retention may change without notice; do not build against it. The consumer document is septacoverage.json on the 'current' release."
+              --notes "Internal pipeline state for the real-time coverage sampler, NOT a consumer API. Shape and retention may change without notice; do not build against it. The consumer document is septacoverage.json on the 'coverage' release."
           fi
           gh release upload coverage-state --clobber \
             --repo "${GITHUB_REPOSITORY}" \
