@@ -164,6 +164,61 @@ class OutputTest(unittest.TestCase):
         self.assertEqual(routes, sorted(routes))
 
 
+class PositionsTest(unittest.TestCase):
+    def test_fields_and_row_line_up(self):
+        feed = gtfs_rt.gtfs_realtime_pb2.FeedMessage()
+        feed.header.gtfs_realtime_version = "2.0"
+        feed.header.timestamp = FEED_TIMESTAMP
+        vehicle = feed.entity.add(id="3641").vehicle
+        vehicle.trip.trip_id = "879622"
+        vehicle.trip.route_id = "42"
+        vehicle.trip.direction_id = 0
+        vehicle.position.latitude = 39.950264
+        vehicle.position.longitude = -75.199646
+        vehicle.position.bearing = 196.79
+        vehicle.position.speed = 8.11824608
+        vehicle.timestamp = 1791746100
+        vehicle.stop_id = "21435"
+        vehicle.current_stop_sequence = 26
+        vehicle.current_status = (
+            gtfs_rt.gtfs_realtime_pb2.VehiclePosition.IN_TRANSIT_TO)
+        vehicle.vehicle.id = "3641"
+
+        document = sampler.positions_snapshot(feed, sampled_at=SAMPLED_AT)
+
+        self.assertEqual(document["sampled_at"], "2026-09-01T21:02:53Z")
+        self.assertEqual(document["feed_timestamp"], FEED_TIMESTAMP)
+        (row,) = document["vehicles"]
+        record = dict(zip(document["fields"], row))
+        self.assertEqual(record, {
+            "vehicle_id": "3641", "route_id": "42", "trip_id": "879622",
+            "direction_id": 0, "lat": 39.950264, "lon": -75.199646,
+            "bearing": 196.8, "speed": 8.12, "timestamp": 1791746100,
+            "stop_id": "21435", "current_stop_sequence": 26,
+            "current_status": "IN_TRANSIT_TO",
+        })
+
+    def test_unset_fields_are_null_not_zero(self):
+        feed = gtfs_rt.parse_feed(make_feed([(None, *PHILADELPHIA)]))
+
+        document = sampler.positions_snapshot(feed, sampled_at=SAMPLED_AT)
+
+        record = dict(zip(document["fields"], document["vehicles"][0]))
+        for field in ("vehicle_id", "route_id", "direction_id", "bearing",
+                      "speed", "timestamp", "stop_id",
+                      "current_stop_sequence", "current_status"):
+            self.assertIsNone(record[field], field)
+
+    def test_invalid_positions_and_non_vehicles_are_left_out(self):
+        feed = gtfs_rt.parse_feed(make_feed(
+            [tracked("17"), ("23", None, None), ("47", 0.0, 0.0)],
+            extra_entities=2))
+
+        document = sampler.positions_snapshot(feed, sampled_at=SAMPLED_AT)
+
+        self.assertEqual(len(document["vehicles"]), 1)
+
+
 class MainTest(unittest.TestCase):
     def _run(self, argv):
         stdout, sys.stdout = sys.stdout, io.StringIO()
@@ -188,6 +243,36 @@ class MainTest(unittest.TestCase):
                 document = json.load(handle)
             self.assertEqual(document["positions_by_route"], {"23": 1, "47": 1})
             self.assertEqual(printed.strip(), document["sampled_at"][:10])
+
+    def test_positions_come_from_the_same_fetch(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            pb = os.path.join(tmp, "feed.pb")
+            with open(pb, "wb") as handle:
+                handle.write(make_feed([tracked("47"), tracked("23")]))
+            out = os.path.join(tmp, "sample.json")
+            positions = os.path.join(tmp, "out", "positions.json")
+            code, _ = self._run(["--pb", pb, "--output", out,
+                                 "--positions-output", positions])
+
+            self.assertEqual(code, 0)
+            with open(out, encoding="utf-8") as handle:
+                sample = json.load(handle)
+            with open(positions, encoding="utf-8") as handle:
+                snapshot = json.load(handle)
+            self.assertEqual(snapshot["sampled_at"], sample["sampled_at"])
+            self.assertEqual(len(snapshot["vehicles"]), 2)
+
+    def test_positions_are_optional(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            pb = os.path.join(tmp, "feed.pb")
+            with open(pb, "wb") as handle:
+                handle.write(make_feed([tracked("47")]))
+            code, _ = self._run(["--pb", pb, "--output",
+                                 os.path.join(tmp, "sample.json")])
+
+            self.assertEqual(code, 0)
+            self.assertEqual(sorted(os.listdir(tmp)),
+                             ["feed.pb", "sample.json"])
 
     def test_empty_feed_exits_non_zero_and_writes_nothing(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -247,8 +332,8 @@ class FetchingTest(unittest.TestCase):
         self.assertEqual(len(attempts), 3)
 
     def test_client_error_is_not_retried(self):
-        """The mirror 403s the default Python-urllib User-Agent. Retrying that
-        costs minutes and then reports a misleading network failure."""
+        """A client error will not fix itself. Retrying one costs minutes and
+        then reports a misleading network failure."""
         attempts = []
 
         def forbidden():
@@ -272,7 +357,6 @@ class FetchingTest(unittest.TestCase):
 
     def test_request_carries_an_explicit_user_agent(self):
         self.assertNotIn("urllib", gtfs_rt.FEED_USER_AGENT)
-        self.assertTrue(gtfs_rt.FEED_USER_AGENT.startswith("busneighbor-assets/"))
 
 
 if __name__ == "__main__":

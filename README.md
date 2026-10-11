@@ -137,10 +137,107 @@ a pipeline outage into an app outage.
 `septameta.json` changes only when SEPTA does, which is why the two live in
 separate files.
 
+## Service alert archive
+
+Every sampler run also snapshots SEPTA's service alerts (GTFS-realtime) and its
+[BusDetours](https://www3.septa.org/api/BusDetours/index.php) listing, and
+folds them into one file per UTC day on the `service-alerts` release. Files
+older than 50 days are deleted.
+
+```
+https://github.com/jos-eph/busneighbor_assets/releases/download/service-alerts/septaalerts_<YYYY-MM-DD>.json
+```
+
+```json
+{
+  "date": "2026-10-11",
+  "samples": [
+    { "sampled_at": "2026-10-11T02:17:40Z", "feed_timestamp": 1791685060 },
+    { "sampled_at": "2026-10-11T05:17:12Z", "feed_timestamp": 1791695832, "detours": false }
+  ],
+  "alerts": [
+    {
+      "id": "D17048",
+      "header": "Sink Hole",
+      "description": "24/7 until 10/29/26, SB via 17th St, Left on Diamond St, ...",
+      "routes": ["2"],
+      "active_periods": [[1790680740, 1793304000]],
+      "effect": "DETOUR",
+      "cause": "CONSTRUCTION",
+      "severity_level": "WARNING",
+      "first_seen": "2026-10-11T02:17:40Z",
+      "last_seen": "2026-10-11T05:17:12Z"
+    }
+  ],
+  "detours": [
+    {
+      "routes": ["2"],
+      "route_direction": "SB",
+      "reason": "Sink Hole ",
+      "start_location": "17th & Diamond Sts",
+      "end_location": "17th St btwn Jefferson & Master Sts ",
+      "start_date_time": "9/29/2026   7:19 AM",
+      "end_date_time": "10/29/2026   4:00 PM",
+      "current_message": " 24/7 until 10/29/26 SB via 17th St L  - Diamond St R - ...",
+      "first_seen": "2026-10-11T02:17:40Z",
+      "last_seen": "2026-10-11T02:17:40Z"
+    }
+  ]
+}
+```
+
+Each distinct alert or detour appears once per day, with the first and last
+snapshot that saw it; one revised during the day appears once per version.
+`samples` lists every snapshot folded in, and `"detours": false` marks one
+whose detour fetch failed, as distinct from SEPTA listing none.
+
+Alerts: `description` is omitted when it repeats `header`; `routes` lists each
+route once, and is empty for alerts scoped only to a trip or stop;
+`active_periods` are `[start, end]` in POSIX seconds, `null` where open;
+`effect`, `cause` and `severity_level` are omitted when unset or `UNKNOWN_*`.
+Detours are SEPTA's records verbatim, except that one listed identically under
+several routes is stored once. All text is kept as published, HTML entities
+and whitespace included. This is an internal archive, not a consumer API.
+
+## Vehicle position archive
+
+Every coverage sample also keeps the vehicle positions it was computed from,
+taken from the same fetch, in one file per UTC day on the
+`vehicle-positions` release. Files older than 50 days are deleted.
+
+```
+https://github.com/jos-eph/busneighbor_assets/releases/download/vehicle-positions/septapositions_<YYYY-MM-DD>.json
+```
+
+```json
+{
+  "date": "2026-10-11",
+  "fields": ["vehicle_id", "route_id", "trip_id", "direction_id", "lat", "lon",
+             "bearing", "speed", "timestamp", "stop_id",
+             "current_stop_sequence", "current_status"],
+  "samples": [
+    {
+      "sampled_at": "2026-10-11T19:43:58Z",
+      "feed_timestamp": 1791746102,
+      "vehicles": [
+        ["3641", "42", "879622", 0, 39.950264, -75.199646, 196.8, 8.12,
+         1791746100, "21435", 26, "IN_TRANSIT_TO"]
+      ]
+    }
+  ]
+}
+```
+
+Each vehicle is a row in `fields` order, with `null` where the feed is silent,
+and only vehicles with a valid position are kept. `timestamp` is the
+vehicle's own report time, which can lag `sampled_at`. This is an internal
+archive, not a consumer API.
+
 ## Dependencies
 
-Everything except the sampler is **stdlib-only**. Only
-`sample_realtime_coverage.py` has dependencies, pinned with hashes in
+Everything except the samplers is **stdlib-only**, including
+`merge_service_alerts.py` and `merge_vehicle_positions.py`. Only `sample_realtime_coverage.py` and
+`sample_service_alerts.py` have dependencies, pinned with hashes in
 `requirements.txt`:
 
 ```bash
@@ -157,8 +254,9 @@ rather than a hand-rolled wire-format reader, and anything that grows a second
 | Workflow | Cadence | Permissions | Dependencies |
 | --- | --- | --- | --- |
 | `release-septa-meta` | weekly | `contents: write` | none |
-| `sample-realtime-coverage` | 8× daily | `contents: read` | `requirements.txt` |
+| `sample-realtime-coverage` | 8× daily | `contents: read`; `publish-*` jobs `contents: write` | `requirements.txt`, except `publish-*` |
 | `aggregate-realtime-coverage` | daily | `contents: write` | none |
 
-Only the sampler installs a third-party package, and it is the one workflow
-that cannot write to the repository.
+Only the sampler workflow installs a third-party package. Its jobs that can
+write, `publish-alerts` and `publish-positions`, install nothing and run only
+this repository's stdlib code and `publish_day_file.sh`.

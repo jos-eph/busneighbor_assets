@@ -12,13 +12,19 @@ name: Sample real-time coverage
 #     10:17, 13:17, 16:17 and 19:17 local, an hour earlier in EST. Either way
 #     two of them fall inside Owl service, which is the window nothing else
 #     measures.
-#   * Each run uploads one small JSON artifact. Nothing is published and
-#     nothing is committed — this workflow holds contents: read.
+#   * Each run uploads one small JSON artifact. Nothing is committed.
+#   * Each run also snapshots SEPTA's service alerts and bus detours and folds
+#     them into that UTC day's septaalerts_<date>.json on the 'service-alerts'
+#     release.
+#   * The vehicle positions behind each sample are kept too, from the same
+#     fetch (no second request), in septapositions_<date>.json on the
+#     'vehicle-positions' release.
+#   * Both archives delete day files older than 50 days.
 #   * Artifacts expire after 2 days. The aggregator reads the previous UTC day,
 #     so 1 day would expire them roughly half an hour before it runs.
 #   * This is the only workflow in the repository that installs a third-party
-#     package. The release workflow keeps contents: write and stays
-#     stdlib-only, so the job that can write here runs no third-party code.
+#     package. Only the publish-* jobs hold contents: write, and they install
+#     nothing, so the jobs that can write run no third-party code.
 
 on:
   schedule:
@@ -26,18 +32,21 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read   # this workflow publishes nothing
+  contents: read   # the publish-* jobs raise this for themselves alone
 
 # No concurrency group on purpose: the slots are three hours apart, and a stuck
 # run must never cancel the sample that follows it.
 
 env:
-  FEED_URL: https://septa-gtfs-mirror.mirrorkey.workers.dev/septa/rtVehiclePosition.pb
+  FEED_URL: https://www3.septa.org/gtfsrt/septa-pa-us/Vehicle/rtVehiclePosition.pb
+  ALERTS_URL: https://www3.septa.org/gtfsrt/septa-pa-us/Service/rtServiceAlerts.pb
 
 jobs:
   sample:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    outputs:
+      utc_date: ${{ steps.sample.outputs.utc_date }}
 
     steps:
       - name: Checkout
@@ -72,7 +81,8 @@ jobs:
           set -euo pipefail
           UTC_DATE="$(python sample_realtime_coverage.py \
             --feed-url "${FEED_URL}" \
-            --output ./out/sample.json)"
+            --output ./out/sample.json \
+            --positions-output ./out/positions.json)"
           echo "utc_date=${UTC_DATE}" >> "$GITHUB_OUTPUT"
           echo "Sample belongs to UTC day ${UTC_DATE}"
 
@@ -87,3 +97,130 @@ jobs:
           path: out/sample.json
           retention-days: 2
           if-no-files-found: error
+
+      - name: Upload positions
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: positions-${{ github.run_id }}-${{ github.run_attempt }}
+          path: out/positions.json
+          retention-days: 2
+          if-no-files-found: error
+
+  alerts:
+    # Independent of `sample`, so a vehicle feed outage does not cost a
+    # snapshot of alerts, or the reverse.
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      utc_date: ${{ steps.snapshot.outputs.utc_date }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install --require-hashes -r requirements.txt
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Snapshot alerts and detours
+        id: snapshot
+        run: |
+          set -euo pipefail
+          UTC_DATE="$(python sample_service_alerts.py \
+            --feed-url "${ALERTS_URL}" \
+            --output ./out/alerts.json)"
+          echo "utc_date=${UTC_DATE}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload snapshot
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: alerts-${{ github.run_id }}-${{ github.run_attempt }}
+          path: out/alerts.json
+          retention-days: 2
+          if-no-files-found: error
+
+  publish-alerts:
+    # Checks out first-party code and runs it on the runner's Python with
+    # nothing installed: this and publish-positions are the only jobs here
+    # that can write.
+    needs: alerts
+    if: vars.RELEASE_ALERTS_ENABLED != 'false'   # kill switch; unset means on
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write   # required to create the release and upload assets
+    # The day file is read, merged and rewritten, so two publishes must never
+    # interleave. Slots are three hours apart; this only matters when GitHub
+    # delays one badly.
+    concurrency:
+      group: service-alerts-publish
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: '3.12'
+
+      - name: Download snapshot
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333  # v8.0.2
+        with:
+          name: alerts-${{ github.run_id }}-${{ github.run_attempt }}
+          path: snapshot
+
+      - name: Merge into the day's file, publish, prune
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DAY: ${{ needs.alerts.outputs.utc_date }}
+        run: |
+          ./publish_day_file.sh service-alerts septaalerts \
+            merge_service_alerts.py snapshot/alerts.json "${DAY}" 50 \
+            "SEPTA service alerts and bus detours, one septaalerts_<YYYY-MM-DD>.json per UTC day, kept for 50 days. Internal archive, NOT a consumer API."
+
+  publish-positions:
+    # Same arrangement as publish-alerts. The positions come from the
+    # vehicle feed the sample job already fetched; nothing here calls SEPTA.
+    needs: sample
+    if: vars.RELEASE_POSITIONS_ENABLED != 'false'   # kill switch; unset means on
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write   # required to create the release and upload assets
+    concurrency:
+      group: vehicle-positions-publish
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: '3.12'
+
+      - name: Download snapshot
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333  # v8.0.2
+        with:
+          name: positions-${{ github.run_id }}-${{ github.run_attempt }}
+          path: snapshot
+
+      - name: Merge into the day's file, publish, prune
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DAY: ${{ needs.sample.outputs.utc_date }}
+        run: |
+          ./publish_day_file.sh vehicle-positions septapositions \
+            merge_vehicle_positions.py snapshot/positions.json "${DAY}" 50 \
+            "SEPTA vehicle positions from each coverage sample, one septapositions_<YYYY-MM-DD>.json per UTC day, kept for 50 days. Internal archive, NOT a consumer API."

@@ -11,8 +11,8 @@ Two rules this module exists to enforce:
   * Presence is checked with HasField, never inferred from a zero value.
     proto2's unset string is "", not None, so `trip.route_id == ""` cannot
     distinguish "no route" from "empty route" on its own.
-  * Requests carry an explicit User-Agent. SEPTA's mirror answers 403 to the
-    default `Python-urllib/*`.
+  * Requests carry an explicit User-Agent rather than the default
+    `Python-urllib/*`.
 """
 
 from __future__ import annotations
@@ -26,13 +26,13 @@ from google.transit import gtfs_realtime_pb2
 import fetching
 
 VEHICLE_POSITION_URL = (
-    "https://septa-gtfs-mirror.mirrorkey.workers.dev/septa/rtVehiclePosition.pb"
+    "https://www3.septa.org/gtfsrt/septa-pa-us/Vehicle/rtVehiclePosition.pb"
+)
+SERVICE_ALERTS_URL = (
+    "https://www3.septa.org/gtfsrt/septa-pa-us/Service/rtServiceAlerts.pb"
 )
 
-# The mirror 403s `Python-urllib/*`, so this is load-bearing, not politeness.
-FEED_USER_AGENT = (
-    "busneighbor-assets/1.0 (+https://github.com/jos-eph/busneighbor_assets)"
-)
+FEED_USER_AGENT = "Researcher/0.1"
 
 
 def fetch_feed_bytes(url: str, *, sleep=time.sleep) -> bytes:
@@ -79,6 +79,7 @@ def has_valid_position(vehicle) -> bool:
 __all__ = [
     "DecodeError",
     "FEED_USER_AGENT",
+    "SERVICE_ALERTS_URL",
     "VEHICLE_POSITION_URL",
     "fetch_feed_bytes",
     "gtfs_realtime_pb2",
