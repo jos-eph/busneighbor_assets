@@ -59,6 +59,7 @@ body.landing {
   --hero: #f3f1ec;      /* Daybreak land */
   --panel: #e4eef5;     /* Daybreak water, lightened */
   --accent: #005a8c;    /* darker Okabe-Ito blue, for text */
+  --accent-fg: #ffffff; /* text on a solid --accent fill */
   --route: #0072b2;     /* Okabe-Ito blue, decorative line */
   --chip-bg: #0072b2;
   --chip-fg: #ffffff;
@@ -76,6 +77,7 @@ body.landing {
     --hero: #14253a;    /* Nightshift water */
     --panel: #171c24;
     --accent: #8ccbf2;
+    --accent-fg: #101216;
     --route: #4ba3db;
     --chip-bg: #8ccbf2;
     --chip-fg: #101216;
@@ -162,16 +164,28 @@ body.landing {
 }
 
 .landing .store-status {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* The one primary action in the hero. */
+.landing .store-cta {
   display: inline-flex;
   align-items: center;
   box-sizing: border-box;
   min-height: 44px;
-  margin: 0;
-  padding: 0.5rem 1rem;
-  border: 2px solid var(--text);
+  padding: 0.5rem 1.25rem;
+  /* Transparent until forced-colors mode draws it, so the button keeps an edge there. */
+  border: 2px solid transparent;
   border-radius: 0.5rem;
-  background: var(--bg);
+  background: var(--accent);
+  color: var(--accent-fg);
   font-weight: 600;
+  text-decoration: none;
+}
+
+.landing .store-cta:hover {
+  text-decoration: underline;
 }
 
 /* Apple badge, post-launch: 40 px tall, clear space = 1/4 of its height. */
@@ -188,6 +202,8 @@ body.landing {
 }
 
 .landing .store-note {
+  /* Own row: it qualifies both platforms, not just the one beside it. */
+  flex-basis: 100%;
   margin: 0;
   color: var(--muted);
 }
@@ -380,9 +396,11 @@ body.landing {
 
 @media (forced-colors: active) {
   .landing .route-chip,
-  .landing .phone,
-  .landing .store-status {
+  .landing .phone {
     border-color: CanvasText;
+  }
+  .landing .store-cta {
+    border-color: LinkText;
   }
   .landing a:focus-visible {
     outline-color: Highlight;
