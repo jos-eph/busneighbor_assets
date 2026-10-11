@@ -18,6 +18,12 @@ Dated releases (`septameta-<feed_start_date>`) carry the same document under
 `septameta_<feed_start_date>.json` for consumers that want to pin. Every asset
 ships a `.sha256` sidecar in `sha256sum -c` format.
 
+A build is not published if it would stop offering a route that the published
+document offers, either by dropping it from `route_list` or by adding it to
+`no_vehicle_positions`. The run fails instead, and a maintainer reruns it with
+`approve_removals` set to exactly the routes it lists. `check_septa_meta.py`
+makes that decision. Only the weekly workflow writes the `current` release.
+
 ```json
 {
   "meta": {
@@ -80,11 +86,16 @@ unparseable feed exits non-zero and writes nothing.
 ## septacoverage.json
 
 Which routes SEPTA actually publishes live vehicle positions for, measured
-rather than asserted. Published daily to the same rolling release:
+rather than asserted. Published daily to its own rolling release:
 
 ```
-https://github.com/jos-eph/busneighbor_assets/releases/download/current/septacoverage.json
+https://github.com/jos-eph/busneighbor_assets/releases/download/coverage/septacoverage.json
 ```
+
+A day whose aggregation trips any guard (fewer than 7 days observed, too many
+routes proposed for the deny-list, or a window that hasn't caught up with a
+feed change) records its state but does not publish this document. The last
+one that passed stays up.
 
 ```json
 {
