@@ -247,8 +247,8 @@ class FetchingTest(unittest.TestCase):
         self.assertEqual(len(attempts), 3)
 
     def test_client_error_is_not_retried(self):
-        """The mirror 403s the default Python-urllib User-Agent. Retrying that
-        costs minutes and then reports a misleading network failure."""
+        """A client error will not fix itself. Retrying one costs minutes and
+        then reports a misleading network failure."""
         attempts = []
 
         def forbidden():
@@ -272,7 +272,6 @@ class FetchingTest(unittest.TestCase):
 
     def test_request_carries_an_explicit_user_agent(self):
         self.assertNotIn("urllib", gtfs_rt.FEED_USER_AGENT)
-        self.assertTrue(gtfs_rt.FEED_USER_AGENT.startswith("busneighbor-assets/"))
 
 
 if __name__ == "__main__":

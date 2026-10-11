@@ -21,10 +21,10 @@ BACKOFF = 4
 def is_retryable(exc: Exception) -> bool:
     """Whether another attempt could plausibly succeed.
 
-    A 4xx will not fix itself: a wrong URL, or the User-Agent filter SEPTA's
-    mirror applies to `Python-urllib`. Retrying one costs two and a half
-    minutes and then reports the last failure, which reads like a network
-    fault rather than the request bug it is.
+    A 4xx will not fix itself: a wrong URL, or a request the server refuses.
+    Retrying one costs two and a half minutes and then reports the last
+    failure, which reads like a network fault rather than the request bug it
+    is.
     """
     if isinstance(exc, urllib.error.HTTPError):
         return exc.code >= 500

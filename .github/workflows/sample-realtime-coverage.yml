@@ -32,7 +32,7 @@ permissions:
 # run must never cancel the sample that follows it.
 
 env:
-  FEED_URL: https://septa-gtfs-mirror.mirrorkey.workers.dev/septa/rtVehiclePosition.pb
+  FEED_URL: https://www3.septa.org/gtfsrt/septa-pa-us/Vehicle/rtVehiclePosition.pb
 
 jobs:
   sample:
