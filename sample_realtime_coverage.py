@@ -64,6 +64,81 @@ def summarize(feed, *, feed_url: str, body_bytes: int,
     }
 
 
+# Columns of a positions snapshot, in row order. A row per vehicle rather than
+# an object per vehicle keeps the key names out of every one of ~750 rows.
+POSITION_FIELDS = (
+    "vehicle_id",
+    "route_id",
+    "trip_id",
+    "direction_id",
+    "lat",
+    "lon",
+    "bearing",
+    "speed",
+    "timestamp",
+    "stop_id",
+    "current_stop_sequence",
+    "current_status",
+)
+
+
+def _optional(message, field: str):
+    return getattr(message, field) if message.HasField(field) else None
+
+
+def position_row(vehicle) -> list:
+    """One vehicle as a POSITION_FIELDS row; None where the feed is silent."""
+    trip = vehicle.trip if vehicle.HasField("trip") else None
+    position = vehicle.position
+    bearing = _optional(position, "bearing")
+    speed = _optional(position, "speed")
+    status = None
+    if vehicle.HasField("current_status"):
+        status = vehicle.DESCRIPTOR.fields_by_name[
+            "current_status"].enum_type.values_by_number[
+                vehicle.current_status].name
+    return [
+        vehicle.vehicle.id if vehicle.HasField("vehicle") else None,
+        _optional(trip, "route_id") if trip else None,
+        _optional(trip, "trip_id") if trip else None,
+        _optional(trip, "direction_id") if trip else None,
+        # Six places is about 0.1 m, finer than the float32 the feed carries.
+        round(position.latitude, 6),
+        round(position.longitude, 6),
+        None if bearing is None else round(bearing, 1),
+        None if speed is None else round(speed, 2),
+        _optional(vehicle, "timestamp"),
+        _optional(vehicle, "stop_id"),
+        _optional(vehicle, "current_stop_sequence"),
+        status,
+    ]
+
+
+def positions_snapshot(feed, *, sampled_at: datetime.datetime) -> dict:
+    """Every vehicle with a valid position, from the feed already fetched."""
+    rows = [
+        position_row(entity.vehicle)
+        for entity in feed.entity
+        if entity.HasField("vehicle")
+        and gtfs_rt.has_valid_position(entity.vehicle)
+    ]
+    rows.sort(key=lambda row: (str(row[0]), row[1] or "", row[2] or ""))
+    return {
+        "sampled_at": sampled_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "feed_timestamp": feed.header.timestamp,
+        "fields": list(POSITION_FIELDS),
+        "vehicles": rows,
+    }
+
+
+def write_positions(document: dict, path: str) -> None:
+    parent = os.path.dirname(os.path.abspath(path))
+    os.makedirs(parent, exist_ok=True)
+    payload = json.dumps(document, separators=(",", ":")) + "\n"
+    with open(path, "w", encoding="utf-8") as handle:
+        handle.write(payload)
+
+
 def write_sample(document: dict, path: str) -> None:
     parent = os.path.dirname(os.path.abspath(path))
     os.makedirs(parent, exist_ok=True)
@@ -78,6 +153,10 @@ def main(argv: list[str] | None = None, *, sleep=time.sleep) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--feed-url", default=gtfs_rt.VEHICLE_POSITION_URL)
     parser.add_argument("--output", default=os.path.join("out", "sample.json"))
+    parser.add_argument(
+        "--positions-output",
+        help="also write every vehicle position from the same fetch here",
+    )
     parser.add_argument(
         "--pb",
         help="parse this local .pb file instead of fetching (for debugging)",
@@ -97,11 +176,12 @@ def main(argv: list[str] | None = None, *, sleep=time.sleep) -> int:
         print(f"Feed is not parseable: {exc}", file=sys.stderr)
         return 1
 
+    sampled_at = utc_now()
     document = summarize(
         feed,
         feed_url=args.pb or args.feed_url,
         body_bytes=len(body),
-        sampled_at=utc_now(),
+        sampled_at=sampled_at,
     )
 
     # An empty feed is an outage, not a measurement. Recording it would let a
@@ -115,6 +195,12 @@ def main(argv: list[str] | None = None, *, sleep=time.sleep) -> int:
     # correct answer, and a sampler that refused to record quiet hours would
     # bias every count it produces toward the deny-list.
     write_sample(document, args.output)
+    if args.positions_output:
+        # Same body, same sampled_at: one fetch serves both documents.
+        positions = positions_snapshot(feed, sampled_at=sampled_at)
+        write_positions(positions, args.positions_output)
+        print(f"Wrote {len(positions['vehicles'])} positions to "
+              f"{args.positions_output}", file=sys.stderr)
 
     print(
         f"{document['entities']} entities, "

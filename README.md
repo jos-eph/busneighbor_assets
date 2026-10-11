@@ -183,10 +183,44 @@ Detours are SEPTA's records verbatim, except that one listed identically under
 several routes is stored once. All text is kept as published, HTML entities
 and whitespace included. This is an internal archive, not a consumer API.
 
+## Vehicle position archive
+
+Every coverage sample also keeps the vehicle positions it was computed from,
+taken from the same fetch, in one file per UTC day on the
+`vehicle-positions` release. Files older than 50 days are deleted.
+
+```
+https://github.com/jos-eph/busneighbor_assets/releases/download/vehicle-positions/septapositions_<YYYY-MM-DD>.json
+```
+
+```json
+{
+  "date": "2026-10-11",
+  "fields": ["vehicle_id", "route_id", "trip_id", "direction_id", "lat", "lon",
+             "bearing", "speed", "timestamp", "stop_id",
+             "current_stop_sequence", "current_status"],
+  "samples": [
+    {
+      "sampled_at": "2026-10-11T19:43:58Z",
+      "feed_timestamp": 1791746102,
+      "vehicles": [
+        ["3641", "42", "879622", 0, 39.950264, -75.199646, 196.8, 8.12,
+         1791746100, "21435", 26, "IN_TRANSIT_TO"]
+      ]
+    }
+  ]
+}
+```
+
+Each vehicle is a row in `fields` order, with `null` where the feed is silent,
+and only vehicles with a valid position are kept. `timestamp` is the
+vehicle's own report time, which can lag `sampled_at`. This is an internal
+archive, not a consumer API.
+
 ## Dependencies
 
 Everything except the samplers is **stdlib-only**, including
-`merge_service_alerts.py`. Only `sample_realtime_coverage.py` and
+`merge_service_alerts.py` and `merge_vehicle_positions.py`. Only `sample_realtime_coverage.py` and
 `sample_service_alerts.py` have dependencies, pinned with hashes in
 `requirements.txt`:
 
@@ -204,9 +238,9 @@ rather than a hand-rolled wire-format reader, and anything that grows a second
 | Workflow | Cadence | Permissions | Dependencies |
 | --- | --- | --- | --- |
 | `release-septa-meta` | weekly | `contents: write` | none |
-| `sample-realtime-coverage` | 8× daily | `contents: read`; `publish-alerts` job `contents: write` | `requirements.txt`, except `publish-alerts` |
+| `sample-realtime-coverage` | 8× daily | `contents: read`; `publish-*` jobs `contents: write` | `requirements.txt`, except `publish-*` |
 | `aggregate-realtime-coverage` | daily | `contents: write` | none |
 
-Only the sampler workflow installs a third-party package. Its one job that
-can write, `publish-alerts`, installs nothing and runs only this repository's
-stdlib code.
+Only the sampler workflow installs a third-party package. Its jobs that can
+write, `publish-alerts` and `publish-positions`, install nothing and run only
+this repository's stdlib code and `publish_day_file.sh`.
