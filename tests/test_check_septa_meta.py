@@ -48,57 +48,81 @@ class OfferedRoutesTest(unittest.TestCase):
 
 class CheckTest(unittest.TestCase):
     def test_unchanged_offer_is_safe(self):
-        safe, _ = checker.check(LIVE, LIVE, set())
+        safe, _ = checker.check(LIVE, [("live", LIVE)], set())
         self.assertTrue(safe)
 
     def test_added_route_is_safe(self):
         candidate = document(["L1", "2", "4", "17", "23", "99"], ["L1"])
-        safe, messages = checker.check(candidate, LIVE, set())
+        safe, messages = checker.check(candidate, [("live", LIVE)], set())
         self.assertTrue(safe)
         self.assertIn("99", " ".join(messages))
 
     def test_route_leaving_route_list_is_refused(self):
         candidate = document(["L1", "2", "4", "23"], ["L1"])
-        safe, messages = checker.check(candidate, LIVE, set())
+        safe, messages = checker.check(candidate, [("live", LIVE)], set())
         self.assertFalse(safe)
         self.assertIn("17", " ".join(messages))
 
     def test_route_joining_the_deny_list_is_refused(self):
         candidate = document(["L1", "2", "4", "17", "23"], ["L1", "4"])
-        safe, _ = checker.check(candidate, LIVE, set())
+        safe, _ = checker.check(candidate, [("live", LIVE)], set())
         self.assertFalse(safe)
 
     def test_route_leaving_the_deny_list_is_safe(self):
         candidate = document(["L1", "2", "4", "17", "23"], [])
-        safe, _ = checker.check(candidate, LIVE, set())
+        safe, _ = checker.check(candidate, [("live", LIVE)], set())
         self.assertTrue(safe)
 
     def test_exact_approval_allows_the_removal(self):
         candidate = document(["L1", "2", "23"], ["L1"])
-        safe, _ = checker.check(candidate, LIVE, {"4", "17"})
+        safe, _ = checker.check(candidate, [("live", LIVE)], {"4", "17"})
         self.assertTrue(safe)
 
     def test_partial_approval_does_not_apply(self):
         candidate = document(["L1", "2", "23"], ["L1"])
-        safe, _ = checker.check(candidate, LIVE, {"4"})
+        safe, _ = checker.check(candidate, [("live", LIVE)], {"4"})
         self.assertFalse(safe)
 
     def test_broader_approval_does_not_apply(self):
         candidate = document(["L1", "2", "4", "23"], ["L1"])
-        safe, _ = checker.check(candidate, LIVE, {"17", "23"})
+        safe, _ = checker.check(candidate, [("live", LIVE)], {"17", "23"})
         self.assertFalse(safe)
 
     def test_candidate_the_app_would_reject_is_refused(self):
-        safe, _ = checker.check({"buses": {"route_list": []}}, LIVE, set())
+        safe, _ = checker.check({"buses": {"route_list": []}}, [("live", LIVE)], set())
         self.assertFalse(safe)
 
     def test_first_publish_is_safe(self):
         safe, _ = checker.check(LIVE, None, set())
         self.assertTrue(safe)
 
-    def test_unparseable_live_copy_may_be_replaced(self):
-        safe, _ = checker.check(LIVE, {"buses": {}}, set())
-        self.assertTrue(safe)
+    def test_unparseable_live_copy_alone_is_refused(self):
+        # Devices still hold the last good copy; an unusable live file is not
+        # permission to publish something smaller.
+        safe, messages = checker.check(document(["2"]),
+                                       [("live", {"buses": {}})], set())
+        self.assertFalse(safe)
+        self.assertIn("no readable", " ".join(messages))
+
+    def test_unparseable_live_copy_falls_back_to_the_dated_release(self):
+        candidate = document(["L1", "2", "4", "23"], ["L1"])
+        safe, messages = checker.check(
+            candidate, [("live", {"buses": {}}), ("dated", LIVE)], set())
+        self.assertFalse(safe)
+        self.assertIn("17", " ".join(messages))
+
+    def test_missing_live_copy_still_checks_the_dated_release(self):
+        candidate = document(["2"])
+        safe, _ = checker.check(candidate, [("dated", LIVE)], set())
+        self.assertFalse(safe)
+
+    def test_every_baseline_must_survive(self):
+        older = document(["2", "4", "17", "23", "99"])
+        candidate = document(["L1", "2", "4", "17", "23"], ["L1"])
+        safe, messages = checker.check(
+            candidate, [("live", LIVE), ("dated", older)], set())
+        self.assertFalse(safe)
+        self.assertIn("99", " ".join(messages))
 
 
 class ParseApprovalTest(unittest.TestCase):
@@ -141,8 +165,27 @@ class MainTest(unittest.TestCase):
         self.assertEqual(
             self.run_main(candidate, LIVE, "--approve-removals", "17"), 0)
 
-    def test_non_json_live_copy_may_be_replaced(self):
-        self.assertEqual(self.run_main(LIVE, raw_published="<html>"), 0)
+    def test_non_json_live_copy_alone_is_refused(self):
+        self.assertEqual(self.run_main(LIVE, raw_published="<html>"), 1)
+
+    def test_repeated_published_flags_are_all_checked(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = {}
+            for name, doc in (("candidate", document(["L1", "2"], ["L1"])),
+                              ("live", LIVE),
+                              ("dated", LIVE)):
+                paths[name] = os.path.join(tmp, f"{name}.json")
+                with open(paths[name], "w", encoding="utf-8") as handle:
+                    json.dump(doc, handle)
+            missing = os.path.join(tmp, "missing.json")
+            with contextlib.redirect_stderr(io.StringIO()):
+                code = checker.main([
+                    "--candidate", paths["candidate"],
+                    "--published", paths["live"],
+                    "--published", missing,
+                    "--published", paths["dated"],
+                    "--approve-removals", "4,17,23"])
+        self.assertEqual(code, 0)
 
     def test_published_or_first_publish_is_required(self):
         with contextlib.redirect_stderr(io.StringIO()):

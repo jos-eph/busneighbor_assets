@@ -21,8 +21,13 @@ ships a `.sha256` sidecar in `sha256sum -c` format.
 A build is not published if it would stop offering a route that the published
 document offers, either by dropping it from `route_list` or by adding it to
 `no_vehicle_positions`. The run fails instead, and a maintainer reruns it with
-`approve_removals` set to exactly the routes it lists. `check_septa_meta.py`
-makes that decision. Only the weekly workflow writes the `current` release.
+`approve_removals` set to exactly the routes it lists. The build is compared
+against both the live copy and the newest dated release, and is refused
+outright when neither can be read. `check_septa_meta.py` makes that decision.
+
+Only the weekly workflow writes the `current` release, and only from `main`:
+its job runs in the `septameta-release` environment, which holds the
+`RELEASE_SEPTA_META_ENABLED` kill switch and deploys from `main` alone.
 
 ```json
 {
