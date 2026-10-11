@@ -8,6 +8,8 @@ on:
       - 'PRIVACY_POLICY.md'
       - 'SUPPORT.md'
       - 'index.html'
+      - 'robots.txt'
+      - 'sitemap.xml'
       - 'images/**'
       - 'template.html'
       - 'style.css'
@@ -41,14 +43,16 @@ jobs:
             --to=html5 \
             --template=template.html \
             --metadata pagetitle="Privacy Policy" \
+            --metadata canonical="https://bus.dydx.org/bn_privacy.html" \
             --output=_site/bn_privacy.html
           pandoc SUPPORT.md \
             --from=markdown \
             --to=html5 \
             --template=template.html \
             --metadata pagetitle="Support" \
+            --metadata canonical="https://bus.dydx.org/support.html" \
             --output=_site/support.html
-          cp style.css index.html _site/
+          cp style.css index.html robots.txt sitemap.xml _site/
           cp -r images _site/
 
       - name: Upload Pages Artifact
