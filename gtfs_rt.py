@@ -28,6 +28,9 @@ import fetching
 VEHICLE_POSITION_URL = (
     "https://www3.septa.org/gtfsrt/septa-pa-us/Vehicle/rtVehiclePosition.pb"
 )
+SERVICE_ALERTS_URL = (
+    "https://www3.septa.org/gtfsrt/septa-pa-us/Service/rtServiceAlerts.pb"
+)
 
 FEED_USER_AGENT = "Researcher/0.1"
 
@@ -76,6 +79,7 @@ def has_valid_position(vehicle) -> bool:
 __all__ = [
     "DecodeError",
     "FEED_USER_AGENT",
+    "SERVICE_ALERTS_URL",
     "VEHICLE_POSITION_URL",
     "fetch_feed_bytes",
     "gtfs_realtime_pb2",

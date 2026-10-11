@@ -12,27 +12,37 @@ name: Sample real-time coverage
 #     10:17, 13:17, 16:17 and 19:17 local, an hour earlier in EST. Either way
 #     two of them fall inside Owl service, which is the window nothing else
 #     measures.
-#   * Each run uploads one small JSON artifact. Nothing is published and
-#     nothing is committed — this workflow holds contents: read.
+#   * Each run uploads one small JSON artifact. Nothing is committed.
+#   * Once a day, the 14:17 UTC slot also archives the text of every service
+#     alert to the 'service-alerts' release as septaalerts_<date>.json. That
+#     slot has its own cron line so the job can tell it apart; it is midday
+#     service in Philadelphia, when the alert list is most representative.
 #   * Artifacts expire after 2 days. The aggregator reads the previous UTC day,
 #     so 1 day would expire them roughly half an hour before it runs.
 #   * This is the only workflow in the repository that installs a third-party
-#     package. The release workflow keeps contents: write and stays
-#     stdlib-only, so the job that can write here runs no third-party code.
+#     package. Only publish-alerts holds contents: write, and it installs and
+#     checks out nothing, so the job that can write runs no third-party code.
 
 on:
   schedule:
-    - cron: '17 2,5,8,11,14,17,20,23 * * *'
+    - cron: '17 2,5,8,11,17,20,23 * * *'
+    - cron: '17 14 * * *'   # also archives alerts; the alerts job matches this string
   workflow_dispatch:
+    inputs:
+      sample_alerts:
+        description: 'Also archive service alerts'
+        type: boolean
+        default: false
 
 permissions:
-  contents: read   # this workflow publishes nothing
+  contents: read   # publish-alerts raises this for itself alone
 
 # No concurrency group on purpose: the slots are three hours apart, and a stuck
 # run must never cancel the sample that follows it.
 
 env:
   FEED_URL: https://www3.septa.org/gtfsrt/septa-pa-us/Vehicle/rtVehiclePosition.pb
+  ALERTS_URL: https://www3.septa.org/gtfsrt/septa-pa-us/Service/rtServiceAlerts.pb
 
 jobs:
   sample:
@@ -87,3 +97,88 @@ jobs:
           path: out/sample.json
           retention-days: 2
           if-no-files-found: error
+
+  alerts:
+    # Independent of `sample`, so a vehicle feed outage does not cost a day of
+    # alerts, or the reverse. github.event.schedule is the cron line verbatim.
+    if: >-
+      github.event.schedule == '17 14 * * *' ||
+      (github.event_name == 'workflow_dispatch' && inputs.sample_alerts)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      utc_date: ${{ steps.snapshot.outputs.utc_date }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install --require-hashes -r requirements.txt
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Snapshot the alerts
+        id: snapshot
+        run: |
+          set -euo pipefail
+          UTC_DATE="$(python sample_service_alerts.py \
+            --feed-url "${ALERTS_URL}" \
+            --output ./out/alerts.json)"
+          echo "utc_date=${UTC_DATE}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload snapshot
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: alerts-${{ github.run_id }}-${{ github.run_attempt }}
+          path: out/alerts.json
+          retention-days: 2
+          if-no-files-found: error
+
+  publish-alerts:
+    # Stdlib and gh only: no checkout, no install. This is the one job here
+    # that can write, so it runs nothing but first-party tooling.
+    needs: alerts
+    if: vars.RELEASE_ALERTS_ENABLED != 'false'   # kill switch; unset means on
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write   # required to create the release and upload assets
+
+    steps:
+      - name: Download snapshot
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333  # v8.0.2
+        with:
+          name: alerts-${{ github.run_id }}-${{ github.run_attempt }}
+          path: out
+
+      - name: Publish to the 'service-alerts' release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          UTC_DATE: ${{ needs.alerts.outputs.utc_date }}
+        run: |
+          set -euo pipefail
+          if ! printf '%s' "${UTC_DATE}" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'; then
+            echo "::error::Snapshot date must be YYYY-MM-DD, got '${UTC_DATE}'"
+            exit 1
+          fi
+          if ! gh release view service-alerts --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release create service-alerts \
+              --repo "${GITHUB_REPOSITORY}" \
+              --title "Service alert archive" \
+              --notes "One snapshot of SEPTA's service alerts per day, as septaalerts_<YYYY-MM-DD>.json. Internal archive, NOT a consumer API."
+          fi
+          # One asset per UTC day: a manual rerun replaces that day's snapshot
+          # rather than adding a second one.
+          ASSET="septaalerts_${UTC_DATE}.json"
+          cp out/alerts.json "${ASSET}"
+          gh release upload service-alerts --clobber \
+            --repo "${GITHUB_REPOSITORY}" "${ASSET}"
+          echo "Published ${ASSET}"

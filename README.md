@@ -121,11 +121,41 @@ a pipeline outage into an app outage.
 `septameta.json` changes only when SEPTA does, which is why the two live in
 separate files.
 
+## Service alert archive
+
+Once a day, `sample_service_alerts.py` snapshots the text of every SEPTA
+service alert to the `service-alerts` release:
+
+```
+https://github.com/jos-eph/busneighbor_assets/releases/download/service-alerts/septaalerts_<YYYY-MM-DD>.json
+```
+
+```json
+{
+  "sampled_at": "2026-10-11T14:17:05Z",
+  "feed_timestamp": 1791743783,
+  "alerts": [
+    {
+      "id": "133350",
+      "header": "Shuttle Busing Between Norristown Transit Center and Bridgeport Station",
+      "description": "Bus service replaces train service from ...",
+      "routes": ["M1"]
+    },
+    { "id": "TU869197_2026-10-11", "header": "Trip cancellation for trip 869197.", "routes": [] }
+  ]
+}
+```
+
+`description` is omitted when it repeats `header`. `routes` lists each route
+the alert names once; alerts scoped only to a trip or stop have none. Text is
+kept as published, HTML entities included. The file itself is compact JSON.
+It is an internal archive, not a consumer API.
+
 ## Dependencies
 
-Everything except the sampler is **stdlib-only**. Only
-`sample_realtime_coverage.py` has dependencies, pinned with hashes in
-`requirements.txt`:
+Everything except the samplers is **stdlib-only**. Only
+`sample_realtime_coverage.py` and `sample_service_alerts.py` have
+dependencies, pinned with hashes in `requirements.txt`:
 
 ```bash
 pip install --require-hashes -r requirements.txt
@@ -141,8 +171,8 @@ rather than a hand-rolled wire-format reader, and anything that grows a second
 | Workflow | Cadence | Permissions | Dependencies |
 | --- | --- | --- | --- |
 | `release-septa-meta` | weekly | `contents: write` | none |
-| `sample-realtime-coverage` | 8× daily | `contents: read` | `requirements.txt` |
+| `sample-realtime-coverage` | 8× daily, alerts 1× daily | `contents: read`; `publish-alerts` job `contents: write` | `requirements.txt`, except `publish-alerts` |
 | `aggregate-realtime-coverage` | daily | `contents: write` | none |
 
-Only the sampler installs a third-party package, and it is the one workflow
-that cannot write to the repository.
+Only the sampler workflow installs a third-party package. Its one job that
+can write, `publish-alerts`, checks out and installs nothing.
