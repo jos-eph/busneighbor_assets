@@ -18,10 +18,12 @@ import sys
 import tempfile
 import unittest
 import urllib.error
+import zipfile
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import fetching
+import gtfs_static
 
 try:
     import gtfs_rt
@@ -196,7 +198,30 @@ class PositionsTest(unittest.TestCase):
             "bearing": 196.8, "speed": 8.12, "timestamp": 1791746100,
             "stop_id": "21435", "current_stop_sequence": 26,
             "current_status": "IN_TRANSIT_TO",
+            "direction": None, "trip_headsign": None, "stop_name": None,
         })
+
+    def test_names_come_from_the_static_bundle(self):
+        feed = gtfs_rt.gtfs_realtime_pb2.FeedMessage()
+        feed.header.gtfs_realtime_version = "2.0"
+        vehicle = feed.entity.add(id="3025").vehicle
+        vehicle.trip.trip_id = "879705"
+        vehicle.trip.route_id = "42"
+        vehicle.trip.direction_id = 1
+        vehicle.position.latitude, vehicle.position.longitude = PHILADELPHIA
+        vehicle.stop_id = "311"
+        names = gtfs_static.Names(
+            stops={"311": "Pine St & 3rd St"},
+            headsigns={"879705": "Wycombe"},
+            directions={("42", "1"): "Westbound"})
+
+        document = sampler.positions_snapshot(feed, sampled_at=SAMPLED_AT,
+                                              names=names)
+
+        record = dict(zip(document["fields"], document["vehicles"][0]))
+        self.assertEqual(
+            (record["direction"], record["trip_headsign"], record["stop_name"]),
+            ("Westbound", "Wycombe", "Pine St & 3rd St"))
 
     def test_unset_fields_are_null_not_zero(self):
         feed = gtfs_rt.parse_feed(make_feed([(None, *PHILADELPHIA)]))
@@ -261,6 +286,44 @@ class MainTest(unittest.TestCase):
                 snapshot = json.load(handle)
             self.assertEqual(snapshot["sampled_at"], sample["sampled_at"])
             self.assertEqual(len(snapshot["vehicles"]), 2)
+
+    def test_positions_are_named_from_a_bundle(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            pb = os.path.join(tmp, "feed.pb")
+            with open(pb, "wb") as handle:
+                handle.write(make_feed([tracked("47")]))
+            bundle = os.path.join(tmp, "bus.zip")
+            with zipfile.ZipFile(bundle, "w") as feed_zip:
+                feed_zip.writestr("routes.txt", "route_id\n47\n")
+                feed_zip.writestr("stops.txt", "stop_id,stop_name\n")
+                feed_zip.writestr("trips.txt", "trip_id,trip_headsign\n")
+            positions = os.path.join(tmp, "positions.json")
+            code, _ = self._run(["--pb", pb, "--output",
+                                 os.path.join(tmp, "sample.json"),
+                                 "--positions-output", positions,
+                                 "--gtfs-bundle", bundle])
+
+            self.assertEqual(code, 0)
+            with open(positions, encoding="utf-8") as handle:
+                self.assertIn("stop_name", json.load(handle)["fields"])
+
+    def test_an_unreadable_bundle_costs_names_not_the_sample(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            pb = os.path.join(tmp, "feed.pb")
+            with open(pb, "wb") as handle:
+                handle.write(make_feed([tracked("47")]))
+            bundle = os.path.join(tmp, "broken.zip")
+            with open(bundle, "wb") as handle:
+                handle.write(b"not a zip")
+            positions = os.path.join(tmp, "positions.json")
+            code, _ = self._run(["--pb", pb, "--output",
+                                 os.path.join(tmp, "sample.json"),
+                                 "--positions-output", positions,
+                                 "--gtfs-bundle", bundle])
+
+            self.assertEqual(code, 0)
+            with open(positions, encoding="utf-8") as handle:
+                self.assertEqual(len(json.load(handle)["vehicles"]), 1)
 
     def test_positions_are_optional(self):
         with tempfile.TemporaryDirectory() as tmp:
