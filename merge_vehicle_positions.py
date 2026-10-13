@@ -22,6 +22,9 @@ A blank cell means the feed did not say. Folding is idempotent: a snapshot
 whose sampled_at is already present is a no-op, so a rerun of the publishing
 job cannot double-count.
 
+--legacy-json converts a day file from the JSON format this archive used
+before 2026-10-13, every sample at once, naming it from --gtfs-bundle if given.
+
 Stdlib only; the publishing job installs nothing.
 """
 
@@ -34,6 +37,8 @@ import io
 import json
 import os
 import sys
+
+import gtfs_static
 
 COLUMNS = (
     "sampled_at",
@@ -160,6 +165,32 @@ def merge(day_rows: list[dict] | None, snapshot: dict) -> list[dict]:
     return sorted(day_rows + snapshot_rows(snapshot), key=_row_order)
 
 
+def legacy_snapshots(day: dict) -> list[dict]:
+    """The samples of a JSON day file from before the CSV, as snapshots."""
+    return [{"sampled_at": sample["sampled_at"],
+             "feed_timestamp": sample["feed_timestamp"],
+             "fields": day["fields"],
+             "vehicles": sample["vehicles"]}
+            for sample in day["samples"]]
+
+
+def with_names(snapshot: dict, names: gtfs_static.Names) -> dict:
+    """snapshot with the NAMES columns filled from names, where it lacks them."""
+    fields = snapshot["fields"]
+    if set(NAMES.values()) <= set(fields):
+        return snapshot
+    vehicles = []
+    for vehicle in snapshot["vehicles"]:
+        named = dict(zip(fields, vehicle))
+        vehicles.append(list(vehicle) + [
+            names.direction(named.get("route_id"), named.get("direction_id")),
+            names.headsign(named.get("trip_id")),
+            names.stop(named.get("stop_id")),
+        ])
+    return dict(snapshot, fields=list(fields) + list(NAMES.values()),
+                vehicles=vehicles)
+
+
 def render(rows: list[dict]) -> str:
     out = io.StringIO()
     writer = csv.DictWriter(out, fieldnames=COLUMNS, lineterminator="\n")
@@ -175,17 +206,33 @@ def _read(path: str) -> str:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--snapshot", required=True)
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("--snapshot")
+    source.add_argument("--legacy-json",
+                        help="a whole day file in the old JSON format")
+    parser.add_argument("--gtfs-bundle",
+                        help="with --legacy-json: name stops, trips and "
+                             "directions from this static GTFS bundle")
     parser.add_argument("--day", help="the day's existing file, if any")
     parser.add_argument("--output", required=True)
     args = parser.parse_args(argv)
 
-    snapshot = json.loads(_read(args.snapshot))
+    if args.snapshot:
+        snapshots = [json.loads(_read(args.snapshot))]
+    else:
+        snapshots = legacy_snapshots(json.loads(_read(args.legacy_json)))
+        if args.gtfs_bundle:
+            names = gtfs_static.load(args.gtfs_bundle)
+            snapshots = [with_names(snap, names) for snap in snapshots]
     try:
-        day = parse_day(_read(args.day)) if args.day else None
-        merged = merge(day, snapshot)
+        merged = parse_day(_read(args.day)) if args.day else None
+        for snapshot in snapshots:
+            merged = merge(merged, snapshot)
     except (KeyError, ValueError) as exc:
         print(f"::error::Cannot merge snapshot: {exc}", file=sys.stderr)
+        return 1
+    if not merged:
+        print("::error::Nothing to write", file=sys.stderr)
         return 1
 
     parent = os.path.dirname(os.path.abspath(args.output))
@@ -193,7 +240,7 @@ def main(argv: list[str] | None = None) -> int:
     with open(args.output, "w", encoding="utf-8", newline="") as handle:
         handle.write(render(merged))
     samples = len({row["sampled_at"] for row in merged})
-    print(f"{snapshot['sampled_at'][:10]}: {samples} samples, "
+    print(f"{merged[0]['sampled_at'][:10]}: {samples} samples, "
           f"{len(merged)} positions", file=sys.stderr)
     return 0
 

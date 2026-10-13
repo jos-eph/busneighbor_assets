@@ -11,6 +11,7 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import gtfs_static
 import merge_vehicle_positions as merger
 
 FIELDS = ["vehicle_id", "route_id", "trip_id", "direction_id", "lat", "lon",
@@ -136,6 +137,52 @@ class MergeTest(unittest.TestCase):
     def test_render_and_parse_round_trip(self):
         rows = merger.merge(None, snapshot())
         self.assertEqual(merger.parse_day(merger.render(rows)), rows)
+
+
+class LegacyTest(unittest.TestCase):
+    LEGACY = {"date": "2026-10-11", "fields": FIELDS, "samples": [
+        {"sampled_at": T1, "feed_timestamp": FEED_AT, "vehicles": [vehicle()]},
+        {"sampled_at": T2, "feed_timestamp": FEED_AT,
+         "vehicles": [vehicle("3025")]},
+    ]}
+
+    def test_every_old_sample_becomes_rows(self):
+        rows = None
+        for snap in merger.legacy_snapshots(self.LEGACY):
+            rows = merger.merge(rows, snap)
+
+        self.assertEqual(column(rows, "sampled_at"), [T1, T2])
+        self.assertEqual(column(rows, "vehicle_id"), ["3641", "3025"])
+
+    def test_names_are_filled_in_from_the_bundle(self):
+        names = gtfs_static.Names(stops={"311": "Pine St & 3rd St"},
+                                  headsigns={"950094": "Penn's Landing"},
+                                  directions={("42", "0"): "Eastbound"})
+        snap = merger.with_names(merger.legacy_snapshots(self.LEGACY)[0], names)
+        (row,) = merger.merge(None, snap)
+
+        self.assertEqual(
+            (row["direction"], row["trip_headsign"], row["stop_name"]),
+            ("Eastbound", "Penn's Landing", "Pine St & 3rd St"))
+
+    def test_conversion_joins_rows_already_in_csv(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            legacy = os.path.join(tmp, "day.json")
+            day = os.path.join(tmp, "day.csv")
+            later = "2026-10-11T08:17:00Z"
+            with open(legacy, "w", encoding="utf-8") as handle:
+                json.dump(self.LEGACY, handle)
+            with open(day, "w", encoding="utf-8") as handle:
+                handle.write(merger.render(merger.merge(None, snapshot(later))))
+            with contextlib.redirect_stderr(io.StringIO()):
+                code = merger.main(["--legacy-json", legacy, "--day", day,
+                                    "--output", day])
+            with open(day, encoding="utf-8") as handle:
+                rows = merger.parse_day(handle.read())
+
+        self.assertEqual(code, 0)
+        self.assertEqual(sorted(set(column(rows, "sampled_at"))),
+                         [T1, T2, later])
 
 
 class MainTest(unittest.TestCase):
