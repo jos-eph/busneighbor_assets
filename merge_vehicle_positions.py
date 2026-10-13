@@ -37,6 +37,7 @@ import io
 import json
 import os
 import sys
+import zipfile
 
 import gtfs_static
 
@@ -222,8 +223,13 @@ def main(argv: list[str] | None = None) -> int:
     else:
         snapshots = legacy_snapshots(json.loads(_read(args.legacy_json)))
         if args.gtfs_bundle:
-            names = gtfs_static.load(args.gtfs_bundle)
-            snapshots = [with_names(snap, names) for snap in snapshots]
+            try:
+                names = gtfs_static.load(args.gtfs_bundle)
+            except (OSError, ValueError, KeyError, zipfile.BadZipFile) as exc:
+                print(f"::warning::Converting without names: {exc}",
+                      file=sys.stderr)
+            else:
+                snapshots = [with_names(snap, names) for snap in snapshots]
     try:
         merged = parse_day(_read(args.day)) if args.day else None
         for snapshot in snapshots:

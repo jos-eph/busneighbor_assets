@@ -285,4 +285,8 @@ rather than a hand-rolled wire-format reader, and anything that grows a second
 
 Only the sampler workflow installs a third-party package. Its jobs that can
 write, `publish-alerts` and `publish-positions`, install nothing and run only
-this repository's stdlib code and `publish_day_file.sh`.
+this repository's stdlib code, `publish_day_file.sh` and
+`migrate_legacy_positions.sh`. Before 2026-10-13 the position archive was one
+JSON file per day; `migrate_legacy_positions.sh` converts any such file still
+on the release to CSV on the next run, deletes the JSON once its rows are all
+in the CSV, and does nothing once none are left.

@@ -20,7 +20,8 @@ name: Sample real-time coverage
 #     fetch (no second request), in septapositions_<date>.csv on the
 #     'vehicle-positions' release: one row per vehicle per sample, columns
 #     described in the README. Stop, trip and direction names come from the
-#     static GTFS bundle, downloaded once per UTC day and cached.
+#     static GTFS bundle, downloaded once per UTC day and cached. Day files
+#     left from the earlier JSON format are moved to CSV on the next run.
 #   * Both archives delete day files older than 50 days.
 #   * Artifacts expire after 2 days. The aggregator reads the previous UTC day,
 #     so 1 day would expire them roughly half an hour before it runs.
@@ -49,6 +50,7 @@ jobs:
     timeout-minutes: 10
     outputs:
       utc_date: ${{ steps.sample.outputs.utc_date }}
+      gtfs_cache_key: gtfs-bundle-${{ steps.today.outputs.date }}
 
     steps:
       - name: Checkout
@@ -246,6 +248,22 @@ jobs:
         with:
           name: positions-${{ github.run_id }}-${{ github.run_attempt }}
           path: snapshot
+
+      # The bundle the sample job cached, so days moved from JSON below get
+      # the same names as new ones. Restore only: this job never saves.
+      - name: Restore today's GTFS bundle
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+        with:
+          path: gtfs/gtfs_public.zip
+          key: ${{ needs.sample.outputs.gtfs_cache_key }}
+
+      - name: Move any JSON day files to CSV
+        # A no-op once none are left. A failure leaves the JSON for the next
+        # run to retry and must not cost today's positions.
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./migrate_legacy_positions.sh gtfs/gtfs_public.zip
 
       - name: Merge into the day's file, publish, prune
         env:

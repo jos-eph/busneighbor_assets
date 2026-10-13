@@ -33,6 +33,11 @@ if ! gh release view "${RELEASE}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1;
   # and stops the script, which is the right outcome.
   gh release create "${RELEASE}" --repo "${GITHUB_REPOSITORY}" \
     --title "${RELEASE}" --notes "${NOTES}"
+elif [ "$(gh release view "${RELEASE}" --repo "${GITHUB_REPOSITORY}" \
+    --json body --jq .body)" != "${NOTES}" ]; then
+  # Notes are otherwise set only at creation, so a changed description in
+  # the workflow would never reach an existing release.
+  gh release edit "${RELEASE}" --repo "${GITHUB_REPOSITORY}" --notes "${NOTES}"
 fi
 
 ASSET="${PREFIX}_${DAY}.${EXT}"
