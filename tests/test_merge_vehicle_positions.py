@@ -77,6 +77,22 @@ class SnapshotRowsTest(unittest.TestCase):
 
         self.assertEqual((row["vehicle_id"], row["route_id"]), ("3641", "42"))
 
+    def test_names_from_the_sampler_are_kept(self):
+        fields = FIELDS + ["direction", "trip_headsign", "stop_name"]
+        named = vehicle() + ["Westbound", "Wycombe", "Pine St & 3rd St"]
+        (row,) = merger.merge(None, snapshot(vehicles=[named], fields=fields))
+
+        self.assertEqual(
+            (row["direction"], row["trip_headsign"], row["stop_name"]),
+            ("Westbound", "Wycombe", "Pine St & 3rd St"))
+
+    def test_a_snapshot_without_names_leaves_them_blank(self):
+        (row,) = merger.merge(None, snapshot())
+
+        self.assertEqual(
+            (row["direction"], row["trip_headsign"], row["stop_name"]),
+            ("", "", ""))
+
     def test_a_snapshot_missing_a_needed_field_is_refused(self):
         with self.assertRaises(ValueError):
             merger.merge(None, snapshot(fields=FIELDS[:-1]))

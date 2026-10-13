@@ -21,8 +21,10 @@ import json
 import os
 import sys
 import time
+import zipfile
 
 import gtfs_rt
+import gtfs_static
 
 
 def utc_now() -> datetime.datetime:
@@ -79,6 +81,10 @@ POSITION_FIELDS = (
     "stop_id",
     "current_stop_sequence",
     "current_status",
+    # Names from the static GTFS bundle (gtfs_static); None without one.
+    "direction",
+    "trip_headsign",
+    "stop_name",
 )
 
 
@@ -86,8 +92,9 @@ def _optional(message, field: str):
     return getattr(message, field) if message.HasField(field) else None
 
 
-def position_row(vehicle) -> list:
+def position_row(vehicle, names: gtfs_static.Names | None = None) -> list:
     """One vehicle as a POSITION_FIELDS row; None where the feed is silent."""
+    names = names or gtfs_static.Names()
     trip = vehicle.trip if vehicle.HasField("trip") else None
     position = vehicle.position
     bearing = _optional(position, "bearing")
@@ -97,27 +104,35 @@ def position_row(vehicle) -> list:
         status = vehicle.DESCRIPTOR.fields_by_name[
             "current_status"].enum_type.values_by_number[
                 vehicle.current_status].name
+    route_id = _optional(trip, "route_id") if trip else None
+    trip_id = _optional(trip, "trip_id") if trip else None
+    direction_id = _optional(trip, "direction_id") if trip else None
+    stop_id = _optional(vehicle, "stop_id")
     return [
         vehicle.vehicle.id if vehicle.HasField("vehicle") else None,
-        _optional(trip, "route_id") if trip else None,
-        _optional(trip, "trip_id") if trip else None,
-        _optional(trip, "direction_id") if trip else None,
+        route_id,
+        trip_id,
+        direction_id,
         # Six places is about 0.1 m, finer than the float32 the feed carries.
         round(position.latitude, 6),
         round(position.longitude, 6),
         None if bearing is None else round(bearing, 1),
         None if speed is None else round(speed, 2),
         _optional(vehicle, "timestamp"),
-        _optional(vehicle, "stop_id"),
+        stop_id,
         _optional(vehicle, "current_stop_sequence"),
         status,
+        names.direction(route_id, direction_id),
+        names.headsign(trip_id),
+        names.stop(stop_id),
     ]
 
 
-def positions_snapshot(feed, *, sampled_at: datetime.datetime) -> dict:
+def positions_snapshot(feed, *, sampled_at: datetime.datetime,
+                       names: gtfs_static.Names | None = None) -> dict:
     """Every vehicle with a valid position, from the feed already fetched."""
     rows = [
-        position_row(entity.vehicle)
+        position_row(entity.vehicle, names)
         for entity in feed.entity
         if entity.HasField("vehicle")
         and gtfs_rt.has_valid_position(entity.vehicle)
@@ -149,6 +164,18 @@ def write_sample(document: dict, path: str) -> None:
         handle.write(payload)
 
 
+def _load_names(bundle_path: str | None) -> gtfs_static.Names | None:
+    """The bundle's names, or None. Names never cost a sample."""
+    if not bundle_path:
+        return None
+    try:
+        return gtfs_static.load(bundle_path)
+    except (OSError, ValueError, KeyError, zipfile.BadZipFile) as exc:
+        print(f"::warning::Positions recorded without names: {exc}",
+              file=sys.stderr)
+        return None
+
+
 def main(argv: list[str] | None = None, *, sleep=time.sleep) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--feed-url", default=gtfs_rt.VEHICLE_POSITION_URL)
@@ -156,6 +183,11 @@ def main(argv: list[str] | None = None, *, sleep=time.sleep) -> int:
     parser.add_argument(
         "--positions-output",
         help="also write every vehicle position from the same fetch here",
+    )
+    parser.add_argument(
+        "--gtfs-bundle",
+        help="name the stops, trips and directions in --positions-output "
+             "from this static GTFS bundle",
     )
     parser.add_argument(
         "--pb",
@@ -197,7 +229,8 @@ def main(argv: list[str] | None = None, *, sleep=time.sleep) -> int:
     write_sample(document, args.output)
     if args.positions_output:
         # Same body, same sampled_at: one fetch serves both documents.
-        positions = positions_snapshot(feed, sampled_at=sampled_at)
+        positions = positions_snapshot(feed, sampled_at=sampled_at,
+                                       names=_load_names(args.gtfs_bundle))
         write_positions(positions, args.positions_output)
         print(f"Wrote {len(positions['vehicles'])} positions to "
               f"{args.positions_output}", file=sys.stderr)

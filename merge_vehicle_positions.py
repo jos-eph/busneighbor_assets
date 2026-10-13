@@ -11,6 +11,8 @@ vehicle per sample, under a header of named columns. Against the snapshot it
 changes three things, each for a reader rather than a parser:
 
   * Epoch seconds become UTC ISO times (feed_time, reported_at).
+  * direction, trip_headsign and stop_name sit beside the ids they name,
+    when the sampler had the static GTFS bundle to look them up.
   * report_age_s, sampled_at minus reported_at, makes a stale vehicle obvious
     without arithmetic.
   * Rows run route by route (numbers in numeric order, then letters), so a
@@ -38,8 +40,10 @@ COLUMNS = (
     "feed_time",
     "route_id",
     "direction_id",
+    "direction",
     "vehicle_id",
     "trip_id",
+    "trip_headsign",
     "lat",
     "lon",
     "bearing_deg",
@@ -47,6 +51,7 @@ COLUMNS = (
     "reported_at",
     "report_age_s",
     "stop_id",
+    "stop_name",
     "stop_sequence",
     "status",
 )
@@ -66,6 +71,14 @@ COPIED = {
     "status": "current_status",
 }
 REQUIRED_FIELDS = frozenset(COPIED.values()) | {"timestamp"}
+
+# Names the sampler adds from the static GTFS bundle. Blank when a snapshot
+# was taken without one, or predates them.
+NAMES = {
+    "direction": "direction",
+    "trip_headsign": "trip_headsign",
+    "stop_name": "stop_name",
+}
 
 _ISO = "%Y-%m-%dT%H:%M:%SZ"
 
@@ -114,6 +127,8 @@ def snapshot_rows(snapshot: dict) -> list[dict]:
         named = dict(zip(fields, vehicle))
         reported = named["timestamp"]
         values = {column: _cell(named[field]) for column, field in COPIED.items()}
+        values.update({column: _cell(named.get(field))
+                       for column, field in NAMES.items()})
         values.update(
             sampled_at=sampled_at,
             feed_time=feed_time,

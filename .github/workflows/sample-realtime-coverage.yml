@@ -19,7 +19,8 @@ name: Sample real-time coverage
 #   * The vehicle positions behind each sample are kept too, from the same
 #     fetch (no second request), in septapositions_<date>.csv on the
 #     'vehicle-positions' release: one row per vehicle per sample, columns
-#     described in the README.
+#     described in the README. Stop, trip and direction names come from the
+#     static GTFS bundle, downloaded once per UTC day and cached.
 #   * Both archives delete day files older than 50 days.
 #   * Artifacts expire after 2 days. The aggregator reads the previous UTC day,
 #     so 1 day would expire them roughly half an hour before it runs.
@@ -76,14 +77,43 @@ jobs:
         # route count — which the aggregator would read as a coverage collapse.
         run: python -m unittest discover -s tests -v
 
+      - name: Note the UTC date
+        id: today
+        run: echo "date=$(date -u +%F)" >> "$GITHUB_OUTPUT"
+
+      # The static GTFS bundle names the stops, trips and directions in the
+      # positions archive. It is about 22 MB and changes every few weeks, so
+      # it is fetched once per UTC day and cached for the day's other runs.
+      - name: Restore today's GTFS bundle
+        id: gtfs-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+        with:
+          path: gtfs/gtfs_public.zip
+          key: gtfs-bundle-${{ steps.today.outputs.date }}
+
+      - name: Download the GTFS bundle
+        if: steps.gtfs-cache.outputs.cache-hit != 'true'
+        # Names are a convenience: a failed or slow download must never cost
+        # a sample. Its retries could otherwise outlast the job's timeout.
+        continue-on-error: true
+        timeout-minutes: 3
+        run: python gtfs_static.py --download gtfs/gtfs_public.zip
+
       - name: Sample the feed
         id: sample
         run: |
           set -euo pipefail
+          GTFS_ARGS=()
+          if [ -f gtfs/gtfs_public.zip ]; then
+            GTFS_ARGS=(--gtfs-bundle gtfs/gtfs_public.zip)
+          else
+            echo "::warning::No GTFS bundle; positions will have no names"
+          fi
           UTC_DATE="$(python sample_realtime_coverage.py \
             --feed-url "${FEED_URL}" \
             --output ./out/sample.json \
-            --positions-output ./out/positions.json)"
+            --positions-output ./out/positions.json \
+            "${GTFS_ARGS[@]}")"
           echo "utc_date=${UTC_DATE}" >> "$GITHUB_OUTPUT"
           echo "Sample belongs to UTC day ${UTC_DATE}"
 
