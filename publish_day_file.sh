@@ -2,11 +2,11 @@
 # Fold one snapshot into its UTC day's file on a rolling release, then delete
 # day files older than the retention window.
 #
-#   publish_day_file.sh RELEASE PREFIX MERGE_SCRIPT SNAPSHOT DAY KEEP_DAYS NOTES
+#   publish_day_file.sh RELEASE PREFIX MERGE_SCRIPT SNAPSHOT DAY KEEP_DAYS NOTES [EXT]
 #
-# The day file is <PREFIX>_<DAY>.json. It is read, merged by MERGE_SCRIPT
-# (--snapshot, optional --day, --output) and rewritten, so callers must not
-# run two of these against the same release at once.
+# The day file is <PREFIX>_<DAY>.<EXT>, EXT defaulting to json. It is read,
+# merged by MERGE_SCRIPT (--snapshot, optional --day, --output) and rewritten,
+# so callers must not run two of these against the same release at once.
 #
 # Every lookup fails the script on error. A failed download is never taken to
 # mean "no file yet": that would restart the day from this one snapshot and
@@ -16,11 +16,12 @@
 
 set -euo pipefail
 
-if [ "$#" -ne 7 ]; then
-  echo "usage: $0 RELEASE PREFIX MERGE_SCRIPT SNAPSHOT DAY KEEP_DAYS NOTES" >&2
+if [ "$#" -lt 7 ] || [ "$#" -gt 8 ]; then
+  echo "usage: $0 RELEASE PREFIX MERGE_SCRIPT SNAPSHOT DAY KEEP_DAYS NOTES [EXT]" >&2
   exit 2
 fi
 RELEASE="$1" PREFIX="$2" MERGE="$3" SNAPSHOT="$4" DAY="$5" KEEP_DAYS="$6" NOTES="$7"
+EXT="${8:-json}"
 
 if ! printf '%s' "${DAY}" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'; then
   echo "::error::Snapshot date must be YYYY-MM-DD, got '${DAY}'" >&2
@@ -34,7 +35,7 @@ if ! gh release view "${RELEASE}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1;
     --title "${RELEASE}" --notes "${NOTES}"
 fi
 
-ASSET="${PREFIX}_${DAY}.json"
+ASSET="${PREFIX}_${DAY}.${EXT}"
 WORK="$(mktemp -d)"
 trap 'rm -rf "${WORK}"' EXIT
 
@@ -63,7 +64,7 @@ CUTOFF="$(date -u -d "${DAY} -$((KEEP_DAYS - 1)) days" +%F)"
 mapfile -t ASSETS < <(gh release view "${RELEASE}" \
   --repo "${GITHUB_REPOSITORY}" --json assets --jq '.assets[].name')
 for asset in "${ASSETS[@]}"; do
-  [[ "${asset}" =~ ^${PREFIX}_([0-9]{4}-[0-9]{2}-[0-9]{2})\.json$ ]] || continue
+  [[ "${asset}" =~ ^${PREFIX}_([0-9]{4}-[0-9]{2}-[0-9]{2})\.${EXT}$ ]] || continue
   # ISO dates compare correctly as strings.
   if [[ "${BASH_REMATCH[1]}" < "${CUTOFF}" ]]; then
     echo "Deleting ${asset}"

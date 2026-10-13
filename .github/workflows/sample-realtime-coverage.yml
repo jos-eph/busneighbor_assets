@@ -17,8 +17,9 @@ name: Sample real-time coverage
 #     them into that UTC day's septaalerts_<date>.json on the 'service-alerts'
 #     release.
 #   * The vehicle positions behind each sample are kept too, from the same
-#     fetch (no second request), in septapositions_<date>.json on the
-#     'vehicle-positions' release.
+#     fetch (no second request), in septapositions_<date>.csv on the
+#     'vehicle-positions' release: one row per vehicle per sample, columns
+#     described in the README.
 #   * Both archives delete day files older than 50 days.
 #   * Artifacts expire after 2 days. The aggregator reads the previous UTC day,
 #     so 1 day would expire them roughly half an hour before it runs.
@@ -223,4 +224,5 @@ jobs:
         run: |
           ./publish_day_file.sh vehicle-positions septapositions \
             merge_vehicle_positions.py snapshot/positions.json "${DAY}" 50 \
-            "SEPTA vehicle positions from each coverage sample, one septapositions_<YYYY-MM-DD>.json per UTC day, kept for 50 days. Internal archive, NOT a consumer API."
+            "SEPTA vehicle positions from each coverage sample, one septapositions_<YYYY-MM-DD>.csv per UTC day, one row per vehicle per sample, kept for 50 days. Columns are described in the repository README. Internal archive, NOT a consumer API." \
+            csv
