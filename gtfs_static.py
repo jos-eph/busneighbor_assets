@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Readable names for the ids in the vehicle feed, from SEPTA's static GTFS.
+"""Readable names for the ids in the vehicle feed, from the static GTFS.
 
 The real-time feed says route 42, direction 1, trip 879705, stop 311; the
 static bundle says "Westbound", "Wycombe" and "Pine St & 3rd St". The
@@ -11,8 +11,8 @@ Three lookups, all from the bus feed inside the public bundle:
   * stops.txt       stop_id -> stop_name
   * trips.txt       trip_id -> trip_headsign
   * directions.txt  (route_id, direction_id) -> direction, e.g. "Northbound".
-                    Not part of core GTFS; SEPTA publishes it. Absent means
-                    no directions, not an error.
+                    Not part of core GTFS, but in the public bundle. Absent
+                    means no directions, not an error.
 
 Names are a convenience. The sampler treats any failure here as a warning and
 records positions without them.
@@ -53,7 +53,7 @@ class Names:
 
 
 def _rows(feed: zipfile.ZipFile, name: str):
-    # utf-8-sig: SEPTA's GTFS files start with a BOM, which would otherwise
+    # utf-8-sig: the bundle's GTFS files start with a BOM, which would otherwise
     # glue itself to the first column name.
     with feed.open(name) as raw:
         yield from csv.DictReader(io.TextIOWrapper(raw, encoding="utf-8-sig"))

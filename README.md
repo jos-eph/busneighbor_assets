@@ -202,41 +202,67 @@ and whitespace included. This is an internal archive, not a consumer API.
 ## Vehicle position archive
 
 Every coverage sample also keeps the vehicle positions it was computed from,
-taken from the same fetch, in one file per UTC day on the
+taken from the same fetch, in one CSV file per UTC day on the
 `vehicle-positions` release. Files older than 50 days are deleted.
 
 ```
-https://github.com/jos-eph/busneighbor_assets/releases/download/vehicle-positions/septapositions_<YYYY-MM-DD>.json
+https://github.com/jos-eph/busneighbor_assets/releases/download/vehicle-positions/septapositions_<YYYY-MM-DD>.csv
 ```
 
-```json
-{
-  "date": "2026-10-11",
-  "fields": ["vehicle_id", "route_id", "trip_id", "direction_id", "lat", "lon",
-             "bearing", "speed", "timestamp", "stop_id",
-             "current_stop_sequence", "current_status"],
-  "samples": [
-    {
-      "sampled_at": "2026-10-11T19:43:58Z",
-      "feed_timestamp": 1791746102,
-      "vehicles": [
-        ["3641", "42", "879622", 0, 39.950264, -75.199646, 196.8, 8.12,
-         1791746100, "21435", 26, "IN_TRANSIT_TO"]
-      ]
-    }
-  ]
-}
+Each row is one vehicle in one sample, so a day with eight samples of about
+900 vehicles is about 7,000 rows:
+
+```csv
+sampled_at,feed_time,route_id,direction_id,direction,vehicle_id,trip_id,trip_headsign,lat,lon,bearing_deg,speed_mps,reported_at,report_age_s,stop_id,stop_name,stop_sequence,status
+2026-10-13T14:21:16Z,2026-10-13T14:20:51Z,1,0,Northbound,3187,868479,Parx Casino via Decatur-Drummond,40.0383,-75.060493,40.2,13.54,2026-10-13T14:20:46Z,30,22486,Roosevelt Blvd & Longshore Av,61,IN_TRANSIT_TO
 ```
 
-Each vehicle is a row in `fields` order, with `null` where the feed is silent,
-and only vehicles with a valid position are kept. `timestamp` is the
-vehicle's own report time, which can lag `sampled_at`. This is an internal
-archive, not a consumer API.
+| Column | Meaning |
+| --- | --- |
+| `sampled_at` | When the sampler fetched the feed (UTC) |
+| `feed_time` | The time the feed itself reported (UTC) |
+| `route_id` | Route, such as `42`, `T1` or `D1` |
+| `direction_id` | `0` or `1`, as in GTFS |
+| `direction` | What that direction is called on that route, such as `Northbound` |
+| `vehicle_id` | The bus or trolley number |
+| `trip_id` | The scheduled trip the vehicle is running |
+| `trip_headsign` | Where that trip is going, as on the bus's sign |
+| `lat`, `lon` | Position in degrees, to 6 decimal places (about 0.1 m) |
+| `bearing_deg` | Heading in degrees clockwise from north |
+| `speed_mps` | Speed in meters per second |
+| `reported_at` | When the vehicle last reported its position (UTC) |
+| `report_age_s` | Seconds between `reported_at` and `sampled_at`: how stale the position was |
+| `stop_id` | The stop the vehicle is at or heading to |
+| `stop_name` | That stop's name |
+| `stop_sequence` | That stop's place in the trip, counting from 1 |
+| `status` | `STOPPED_AT`, `IN_TRANSIT_TO` or `INCOMING_AT` the stop |
+
+Times are UTC, written `YYYY-MM-DDTHH:MM:SSZ`. **A blank cell means the feed
+didn't say.** Expect many blanks: around 40% of vehicles report a position
+with no trip, which leaves every trip, stop and direction column empty for
+them, and `bearing_deg` is often missing. The three name columns come from the
+static GTFS bundle, which the sampler downloads once per UTC day; they are
+blank for a sample taken while it was unavailable. Only vehicles with a valid
+position are kept.
+
+Rows are in time order by sample, then by route, with numbered routes in
+numeric order before lettered ones, then by direction and vehicle number.
+Vehicles with no trip come last in each sample.
+
+To look at a day:
+
+- **In a spreadsheet:** open the `.csv` in Numbers, Excel or Google Sheets.
+- **In a terminal:** `vd septapositions_2026-10-13.csv` with
+  [VisiData](https://www.visidata.org/).
+- **Across many days:** with [DuckDB](https://duckdb.org/),
+  `SELECT route_id, count(*) FROM 'septapositions_*.csv' GROUP BY 1`.
+
+This is an internal archive, not a consumer API.
 
 ## Dependencies
 
 Everything except the samplers is **stdlib-only**, including
-`merge_service_alerts.py` and `merge_vehicle_positions.py`. Only `sample_realtime_coverage.py` and
+`merge_service_alerts.py`, `merge_vehicle_positions.py` and `gtfs_static.py`. Only `sample_realtime_coverage.py` and
 `sample_service_alerts.py` have dependencies, pinned with hashes in
 `requirements.txt`:
 
