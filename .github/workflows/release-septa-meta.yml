@@ -22,6 +22,9 @@ name: Release SEPTA meta
 #   * SEPTA reissues the same feed for weeks at a time, so a run whose output
 #     matches the published septameta.json publishes nothing.
 #   * Dated releases beyond the most recent 30 are pruned.
+#   * septashapes.json (route lines, from the same bundle) goes to `current`
+#     only, under the same gates, whenever it differs from the published copy
+#     apart from its `generated` time. It has no dated release.
 #   * A build that would stop offering any route the published document offers
 #     is NOT published, and the run fails. The app removes a route it stops
 #     seeing from the rider's saved selection, permanently. If SEPTA really
@@ -89,6 +92,10 @@ jobs:
           echo "start_date=${START_DATE}" >> "$GITHUB_OUTPUT"
           echo "START_DATE=${START_DATE}" >> "$GITHUB_ENV"
 
+      - name: Build septashapes.json
+        # Same bundle as septameta.json, so both describe one GTFS version.
+        run: python build_septa_shapes.py --gtfs-zip ./out/gtfs_public.zip --output-dir ./out
+
       - name: Decide whether to publish
         id: gate
         # Five independent conditions must hold:
@@ -100,6 +107,9 @@ jobs:
         #   5. check_septa_meta.py finds no route the app would stop offering,
         #      compared against both the live copy and the newest dated
         #      release, or the removals match approve_removals exactly.
+        # septashapes.json needs 1-3, no block from 5, and a difference from
+        # the copy on `current` (or no copy yet). Condition 4 doesn't apply:
+        # a first shapes publish happens while septameta.json is unchanged.
         # Every lookup fails the job on error. Treating a failed or missing
         # download as "nothing published" would skip check 5. Only a
         # repository with no release of either kind is a first publish.
@@ -126,6 +136,7 @@ jobs:
             BLOCKED=true
             echo "::error::Refusing to publish from ${GITHUB_REF}; septameta.json is published from main only. Use push_release=false for a build-only run."
           fi
+          ELIGIBLE="${PUBLISH}"
           if [ "${PUBLISH}" = "true" ]; then
             TAGS="$(gh release list --repo "${GITHUB_REPOSITORY}" --limit 1000 \
               --json tagName --jq '.[].tagName')"
@@ -181,16 +192,36 @@ jobs:
               BLOCKED=true
             fi
           fi
+          PUBLISH_SHAPES=false
+          if [ "${ELIGIBLE}" = "true" ] && [ "${BLOCKED}" = "false" ]; then
+            PUBLISH_SHAPES=true
+            CURRENT_ASSETS=""
+            if grep -Fxq current <<< "${TAGS}"; then
+              CURRENT_ASSETS="$(gh release view current --repo "${GITHUB_REPOSITORY}" \
+                --json assets --jq '.assets[].name')"
+            fi
+            if grep -Fxq septashapes.json <<< "${CURRENT_ASSETS}"; then
+              mkdir -p /tmp/published-shapes
+              gh release download current --repo "${GITHUB_REPOSITORY}" \
+                --pattern septashapes.json --dir /tmp/published-shapes --clobber
+              if python build_septa_shapes.py --compare \
+                   /tmp/published-shapes/septashapes.json ./out/septashapes.json; then
+                PUBLISH_SHAPES=false
+                echo "::notice::Skipping septashapes.json: identical to the published copy apart from its generated time."
+              fi
+            fi
+          fi
           echo "publish=${PUBLISH}" >> "$GITHUB_OUTPUT"
+          echo "publish_shapes=${PUBLISH_SHAPES}" >> "$GITHUB_OUTPUT"
           echo "blocked=${BLOCKED}" >> "$GITHUB_OUTPUT"
-          echo "Publish decision: ${PUBLISH}"
+          echo "Publish decision: ${PUBLISH}; septashapes.json: ${PUBLISH_SHAPES}"
 
       - name: Generate sha256 sidecars
         # `sha256sum` output format — consumers verify with `sha256sum -c`.
         run: |
           set -euo pipefail
           cd ./out
-          for f in septameta.json "septameta_${START_DATE}.json"; do
+          for f in septameta.json "septameta_${START_DATE}.json" septashapes.json; do
             sha256sum "${f}" > "${f}.sha256"
             echo "sha256(${f}) = $(awk '{print $1}' "${f}.sha256")"
           done
@@ -206,6 +237,7 @@ jobs:
             echo "workflow_run_url: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
             echo "source_url: ${SOURCE_URL}"
             echo "septameta_sha256: $(awk '{print $1}' ./out/septameta.json.sha256)"
+            echo "septashapes_sha256: $(awk '{print $1}' ./out/septashapes.json.sha256)"
           } > "./out/septameta_${START_DATE}.run.txt"
           cat "./out/septameta_${START_DATE}.run.txt"
 
@@ -214,7 +246,9 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
           name: septameta-${{ steps.build.outputs.start_date }}
-          path: ./out/septameta*.json
+          path: |
+            ./out/septameta*.json
+            ./out/septashapes.json
           retention-days: 14
 
       - name: Create or update the dated release
@@ -246,9 +280,11 @@ jobs:
           fi
 
       - name: Update the 'current' rolling release
-        if: steps.gate.outputs.publish == 'true'
+        if: steps.gate.outputs.publish == 'true' || steps.gate.outputs.publish_shapes == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUBLISH: ${{ steps.gate.outputs.publish }}
+          PUBLISH_SHAPES: ${{ steps.gate.outputs.publish_shapes }}
         run: |
           set -euo pipefail
           if ! gh release view current --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
@@ -257,10 +293,15 @@ jobs:
               --title "Current SEPTA meta (rolling)" \
               --notes "Rolling release: septameta.json is overwritten by every successful weekly build. Pin to a dated septameta-<start_date> release for immutability."
           fi
+          ASSETS=()
+          if [ "${PUBLISH}" = "true" ]; then
+            ASSETS+=(./out/septameta.json ./out/septameta.json.sha256)
+          fi
+          if [ "${PUBLISH_SHAPES}" = "true" ]; then
+            ASSETS+=(./out/septashapes.json ./out/septashapes.json.sha256)
+          fi
           gh release upload current --clobber \
-            --repo "${GITHUB_REPOSITORY}" \
-            ./out/septameta.json \
-            ./out/septameta.json.sha256
+            --repo "${GITHUB_REPOSITORY}" "${ASSETS[@]}"
 
       - name: Prune dated releases beyond the most recent 30
         # Keep the 30 most recent dated releases; never prune `current`. Sort by
