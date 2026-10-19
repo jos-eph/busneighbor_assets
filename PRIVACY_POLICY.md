@@ -1,6 +1,6 @@
 # BusNeighbor — Privacy Policy
 
-**Effective date:** `September 18, 2026`
+**Effective date:** `October 18, 2026`
 
 BusNeighbor is a free app that shows Philadelphia public transit vehicle positions, service alerts, and a map. It is built for the general public to enjoy, but with thoughtful touches for blind and low-vision riders. This policy explains what BusNeighbor does with information on your phone, and what it sends over the network and to whom.
 
@@ -12,7 +12,7 @@ BusNeighbor is published by `Joseph D. Mirarchi`, an individual. There is no com
 
 - **No accounts, no advertising, no analytics, no crash reporting, no tracking.**
 - **Your location never leaves your device.** It is used only to draw the map and to speak the nearest stop, and only while you are using the app.
-- BusNeighbor does fetch transit data and map images over the internet. Like any app that loads data, those requests reveal your device's IP address and what you asked for. The table below says exactly what each service can see.
+- BusNeighbor does fetch transit data and map images over the internet, while you're using it. Like any app that loads data, those requests reveal your device's IP address and what you asked for. The table below says exactly what each service can see, and how often the app asks.
 - **Nothing about you is stored on any server, and nothing is ever sold or shared for advertising.**
 - If you download the offline map, BusNeighbor stops making map requests entirely.
 
@@ -48,6 +48,8 @@ Your phone may include them in its own system backup — to your iCloud or Googl
 
 If you choose to download the offline map, roughly 36 MB of map data is stored on your device. Map tiles you have viewed may also be cached on your device so they load faster and use less data. Both are removed when you uninstall the app, and both can be cleared from within the app.
 
+If you turn on route lines, a copy of the file describing every route's regular path (a few hundred KB) is kept in the app's cache, so the lines show without a download each time. Your phone may clear it, and it is removed when you uninstall the app.
+
 ---
 
 ## What leaves your device, and who receives it
@@ -58,11 +60,11 @@ Here is every service BusNeighbor contacts, and the most that each one can see.
 
 | Service                                 | Who runs it                  | Why BusNeighbor contacts it                                                                                  | What that service can see                                                                                                                         |
 | --------------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **BusNeighbor vehicle-position mirror** | Me, using Cloudflare Workers | To fetch real-time vehicle positions and service alerts, mirrored from SEPTA                                 | Your IP address and the time of the request. The file covers the entire SEPTA system, so **the request does not reveal which routes you follow**. |
+| **BusNeighbor vehicle-position mirror** | Me, using Cloudflare Workers | To fetch real-time vehicle positions, every 20 seconds or when you tap refresh, and service alerts, whenever the copy the app holds is more than 10 minutes old (it checks once a minute). Both are mirrored from SEPTA | Your IP address and the time of the request. The file covers the entire SEPTA system, so **the request does not reveal which routes you follow**. |
 | **GitHub Releases** (`jos-eph/lovmaps`) | GitHub, Inc.                 | To download the offline map, or — if you have not downloaded it — to stream pieces of it as you move the map | Your IP address, and, when streaming, **which portions of the map file you request**, which corresponds to the areas you pan to                   |
-| **GitHub Releases** (`jos-eph/busneighbor_assets`) | GitHub, Inc. | To check for an updated list of routes, at most once a day | Your IP address and the time of the request. Everyone gets the same file, so **the request does not reveal which routes you follow**. |
+| **GitHub Releases** (`jos-eph/busneighbor_assets`) | GitHub, Inc. | To check for an updated list of routes, at most once a day. If you turn on route lines, also to check for an updated file of every route's regular path, at most once a day; with route lines off, that file is never requested | Your IP address and the time of the request. Everyone gets the same files, so **the requests do not reveal which routes you follow**. |
 
-All of these requests use HTTPS.
+All of these requests use HTTPS. BusNeighbor doesn't fetch anything in the background on its own: when you switch to another app or lock your phone, it stops checking for vehicles and alerts until you return. An offline map download you started may keep going for a short while.
 
 **One thing follows from this table that is worth saying plainly.** 
 
@@ -167,3 +169,4 @@ Questions about this policy, or about privacy in BusNeighbor:
 | August 29, 2026     | First published. |
 | September 15, 2026  | Removed SEPTA call (now fully mirrored); cosmetic improvements; minor text changes. |
 | September 18, 2026  | Listed the daily route-list check on GitHub Releases, which was missing from the table. |
+| October 18, 2026    | Added the optional route lines file (fetched at most once a day, only when route lines are on, and cached on the device) and stated how often each request is made. |
