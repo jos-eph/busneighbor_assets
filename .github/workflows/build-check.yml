@@ -1,0 +1,55 @@
+name: Build check
+
+# Builds septameta.json and septashapes.json for a pull request that touches
+# the builders, and keeps both as an artifact. Publishes nothing: the release
+# workflow's environment deploys from main only, so this is how a branch gets
+# a real build.
+
+on:
+  pull_request:
+    paths:
+      - 'build_septa_*.py'
+      - 'check_septa_meta.py'
+      - 'fetching.py'
+      - 'tests/**'
+      - '.github/workflows/release-septa-meta.yml'
+      - '.github/workflows/build-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_URL: https://www3.septa.org/developer/gtfs_public.zip
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: '3.12'
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Build
+        run: |
+          set -euo pipefail
+          python build_septa_meta.py --source-url "${SOURCE_URL}" --output-dir ./out
+          python build_septa_shapes.py --gtfs-zip ./out/gtfs_public.zip --output-dir ./out
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: build-check
+          path: |
+            ./out/septameta.json
+            ./out/septashapes.json
+          retention-days: 14

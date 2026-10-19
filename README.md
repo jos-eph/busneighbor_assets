@@ -73,6 +73,49 @@ shape changing.
 The build runs `python build_septa_meta.py`; `python -m unittest discover -s tests`
 covers it.
 
+## septashapes.json
+
+The regular line of every bus route, per direction, built by the same weekly
+workflow from the same bundle and published to the same `current` release:
+
+```
+https://github.com/jos-eph/busneighbor_assets/releases/download/current/septashapes.json
+```
+
+```json
+{
+  "v": 1,
+  "gtfs_version": "v202609271",
+  "generated": "2026-10-18T06:00:00Z",
+  "routes": {
+    "64": [
+      {
+        "dir": 0,
+        "name": "Eastbound",
+        "primary": "<encoded polyline>",
+        "variants": ["<encoded polyline>"],
+        "stops": ["1234", "..."]
+      }
+    ]
+  }
+}
+```
+
+`primary` is the shape most trips in that direction use; `variants` are the
+other shapes trips use, such as branches and short turns. Both are Google
+encoded polylines at precision 5, simplified with Douglas-Peucker at 5 m.
+`dir` is the GTFS `direction_id`, `name` comes from `directions.txt` (empty
+when absent), and `stops` follows `route_stops.txt` order. Routes are in
+`route_sort_order`; a route with no trips is left out.
+
+The schema is a contract: any change bumps `v`, and readers reject a `v` they
+don't know. A build is published only when it differs from the live copy
+apart from `generated`. There is no dated release.
+
+`python build_septa_shapes.py --gtfs-zip <bundle>` builds it locally. The
+`Build check` workflow builds both documents for a pull request that touches
+the builders and keeps them as an artifact, without publishing.
+
 ## Real-time coverage sampling
 
 `sample_realtime_coverage.py` records which routes SEPTA is currently
