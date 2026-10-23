@@ -70,6 +70,32 @@ feed is the intended replacement; when it lands, `source` becomes `"observed"`
 and `observed_through` carries the last measured date, without the document's
 shape changing.
 
+`directions` names each route's directions as riders see them, keyed by GTFS
+`direction_id`, in `route_list` order:
+
+```json
+"directions": {
+  "64": { "0": "Westbound", "1": "Eastbound" },
+  "310": { "0": "Loop" }
+}
+```
+
+The words come from the bundle's `directions.txt`, with
+`direction_overrides.json` on top for corrections. Only Northbound,
+Southbound, Eastbound, Westbound, Loop, Inbound, and Outbound are carried. A route with no usable word is left out and
+listed in the build log, and the build still publishes: consumers fall back
+to their own names.
+
+`alternate_feed_host` is a bare hostname, or `null`, set by hand in
+`remote_control.json`. It names a live-feed host for the app to try only when
+every host built into it fails, so moving hosts doesn't have to wait for an
+app release.
+
+Both fields are newer than the first app release that reads this document,
+and older releases ignore them. Consumers should read only the keys they
+know. `check_septa_meta.py` refuses a build with malformed direction words or
+an `alternate_feed_host` that isn't a bare hostname.
+
 The build runs `python build_septa_meta.py`; `python -m unittest discover -s tests`
 covers it.
 

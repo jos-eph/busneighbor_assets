@@ -2,8 +2,8 @@
 """Build septameta.json — SEPTA bus/Metro route list plus feed metadata.
 
 Reads the SEPTA public GTFS bundle (an outer zip containing google_bus.zip and
-google_rail.zip), takes routes.txt and feed_info.txt from the bus feed, and
-writes:
+google_rail.zip), takes routes.txt, feed_info.txt, and directions.txt from the
+bus feed, and writes:
 
     septameta.json                    rolling name
     septameta_<feed_start_date>.json  dated name (identical bytes)
@@ -18,6 +18,7 @@ import csv
 import io
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -44,6 +45,43 @@ DEFAULT_OVERRIDES_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "realtime_overrides.json"
 )
 OVERRIDE_SOURCES = ("manual", "observed")
+
+# Hand-kept corrections to directions.txt, by route and direction id. An
+# override wins over the feed. Committed, so every change is reviewable.
+DEFAULT_DIRECTION_OVERRIDES_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "direction_overrides.json"
+)
+
+# Operator controls carried in the document. Today one: alternate_feed_host,
+# a live-feed host the app tries only when every host built into it fails.
+DEFAULT_REMOTE_CONTROL_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "remote_control.json"
+)
+
+# The direction words consumers know. The app points a bus marker's arrow
+# for the four compass words and shows none for the rest. Anything else in
+# directions.txt is dropped rather than shown, and an override naming
+# anything else fails the build.
+DIRECTION_WORDS = frozenset({
+    "Northbound", "Southbound", "Eastbound", "Westbound",
+    "Loop", "Inbound", "Outbound",
+})
+DIRECTION_IDS = ("0", "1")
+
+# A bare hostname: no scheme, port, path, or userinfo. The app checks the
+# same shape before using one.
+BARE_HOSTNAME = re.compile(
+    r"^(?=.{1,253}$)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?"
+    r"(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$"
+)
+
+
+def is_direction_word(value) -> bool:
+    return isinstance(value, str) and value in DIRECTION_WORDS
+
+
+def is_bare_hostname(value) -> bool:
+    return isinstance(value, str) and BARE_HOSTNAME.match(value) is not None
 
 def download(url: str, dest: str, *, sleep=time.sleep) -> None:
     """Fetch url to dest, retrying with exponential backoff.
@@ -141,6 +179,88 @@ def feed_meta(feed: zipfile.ZipFile) -> dict[str, str]:
     return meta
 
 
+def direction_names(feed: zipfile.ZipFile) -> dict[tuple[str, int], str]:
+    """directions.txt as {(route_id, direction_id): name}. An absent file
+    means no names, not an error."""
+    if "directions.txt" not in feed.namelist():
+        return {}
+    return {
+        (row["route_id"], int(row["direction_id"])): row["direction"]
+        for row in _read_csv(feed, "directions.txt")
+        if row.get("route_id") and row.get("direction_id") and row.get("direction")
+    }
+
+
+def _load_json_object(path: str, what: str) -> dict:
+    try:
+        with open(path, encoding="utf-8") as handle:
+            data = json.load(handle)
+    except FileNotFoundError as exc:
+        raise ValueError(f"{what} file not found: {path}") from exc
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"{what} file {path} is not valid JSON: {exc}") from exc
+    if not isinstance(data, dict):
+        raise ValueError(f"{what} file {path} must contain a JSON object")
+    return data
+
+
+def direction_overrides(path: str) -> dict[str, dict[str, str]]:
+    """Read and validate direction_overrides.json: {route: {"0"|"1": word}}.
+
+    A malformed file fails the build: it is short, hand-kept, and committed,
+    so a bad entry is a mistake to catch, not a feed quirk to tolerate.
+    """
+    data = _load_json_object(path, "direction overrides")
+    for route_id, words in data.items():
+        if not isinstance(words, dict) or not words:
+            raise ValueError(
+                f"direction overrides {path}: {route_id!r} needs an object of "
+                f"direction ids to words")
+        for direction_id, word in words.items():
+            if direction_id not in DIRECTION_IDS:
+                raise ValueError(
+                    f"direction overrides {path}: {route_id!r} has direction "
+                    f"id {direction_id!r}; expected one of {DIRECTION_IDS}")
+            if not is_direction_word(word):
+                raise ValueError(
+                    f"direction overrides {path}: {route_id!r}/{direction_id} "
+                    f"has {word!r}, not a direction word")
+    return data
+
+
+def directions(names: dict[tuple[str, int], str], routes: list[str],
+               overrides: dict[str, dict[str, str]]) -> dict:
+    """{route: {"0": word, "1": word}} in route_list order.
+
+    The feed's directions.txt names, with overrides on top. A route with no
+    usable name is simply absent: the app then falls back to its own table,
+    and a missing word costs a rider far less than a blocked publish.
+    """
+    out = {}
+    for route_id in routes:
+        words = {
+            str(direction_id): name
+            for (route, direction_id), name in sorted(names.items())
+            if route == route_id and str(direction_id) in DIRECTION_IDS
+            and is_direction_word(name)
+        }
+        words.update(overrides.get(route_id, {}))
+        if words:
+            out[route_id] = {d: words[d] for d in DIRECTION_IDS if d in words}
+    return out
+
+
+def remote_control(path: str) -> dict:
+    """Read and validate remote_control.json; returns its fields."""
+    data = _load_json_object(path, "remote control")
+    host = data.get("alternate_feed_host")
+    if host is not None and not is_bare_hostname(host):
+        raise ValueError(
+            f"remote control {path}: alternate_feed_host must be null or a bare "
+            f"lowercase hostname, got {host!r}")
+    return {"alternate_feed_host": host}
+
+
 def realtime_overrides(path: str) -> dict:
     """Read and validate realtime_overrides.json.
 
@@ -204,10 +324,15 @@ def apply_overrides(overrides: dict, routes: list[str], path: str) -> dict:
     }
 
 
-def build(bundle_path: str, overrides_path: str = DEFAULT_OVERRIDES_PATH) -> dict:
+def build(bundle_path: str, overrides_path: str = DEFAULT_OVERRIDES_PATH,
+          direction_overrides_path: str = DEFAULT_DIRECTION_OVERRIDES_PATH,
+          remote_control_path: str = DEFAULT_REMOTE_CONTROL_PATH) -> dict:
     feed = open_bus_feed(bundle_path)
     routes = route_list(feed)
     overrides = realtime_overrides(overrides_path)
+    words = directions(direction_names(feed), routes,
+                       direction_overrides(direction_overrides_path))
+    controls = remote_control(remote_control_path)
 
     # realtime is a sibling of buses, not a child: it is a claim about SEPTA's
     # infrastructure, not about the GTFS feed, and it does not travel with the
@@ -218,6 +343,10 @@ def build(bundle_path: str, overrides_path: str = DEFAULT_OVERRIDES_PATH) -> dic
             "route_list": routes,
         },
         "realtime": apply_overrides(overrides, routes, overrides_path),
+        # Both added after the first app release that reads this document;
+        # older apps ignore keys they don't know.
+        "directions": words,
+        "alternate_feed_host": controls["alternate_feed_host"],
     }
 
 
@@ -253,6 +382,16 @@ def main(argv: list[str] | None = None) -> int:
         default=DEFAULT_OVERRIDES_PATH,
         help="realtime_overrides.json to read the deny-list from",
     )
+    parser.add_argument(
+        "--direction-overrides",
+        default=DEFAULT_DIRECTION_OVERRIDES_PATH,
+        help="direction_overrides.json to correct directions.txt with",
+    )
+    parser.add_argument(
+        "--remote-control",
+        default=DEFAULT_REMOTE_CONTROL_PATH,
+        help="remote_control.json with the alternate feed host",
+    )
     args = parser.parse_args(argv)
 
     bundle = args.gtfs_zip
@@ -262,7 +401,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Downloading {args.source_url}", file=sys.stderr)
         download(args.source_url, bundle)
 
-    document = build(bundle, args.overrides)
+    document = build(bundle, args.overrides, args.direction_overrides,
+                     args.remote_control)
     rolling, dated = write_outputs(document, args.output_dir)
 
     meta = document["meta"]
@@ -273,6 +413,12 @@ def main(argv: list[str] | None = None) -> int:
         f"{len(buses['route_list'])} routes, "
         f"feed {meta['version']} ({meta['start_date']}–{meta['end_date']}), "
         f"{len(denied)} routes without vehicle positions ({realtime['source']})",
+        file=sys.stderr,
+    )
+    unnamed = [r for r in buses["route_list"] if r not in document["directions"]]
+    print(
+        f"direction words for {len(document['directions'])} routes"
+        + (f"; none for {', '.join(unnamed)}" if unnamed else ""),
         file=sys.stderr,
     )
     print(f"Wrote {rolling} and {dated}", file=sys.stderr)

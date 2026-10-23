@@ -16,6 +16,12 @@ unreadable is skipped, and having none readable at all refuses the publish.
 both a route leaving route_list and a route joining the deny-list can take it
 off a rider's screen.
 
+It also checks the two fields newer apps read, directions and
+alternate_feed_host. A malformed one refuses the publish, since it is a build
+bug. A route with no direction words only produces a notice: the app falls
+back to its own table, and a missing word costs a rider far less than a
+route list that stops updating.
+
 Stdlib only, like the rest of the release workflow.
 """
 
@@ -24,6 +30,8 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+
+import build_septa_meta
 
 EXIT_SAFE = 0
 EXIT_UNSAFE = 1
@@ -75,6 +83,32 @@ def offered_routes(document) -> list[str]:
     return offered
 
 
+def extra_field_problems(document, route_list: list[str]) -> tuple[list[str], list[str]]:
+    """(errors, notices) for directions and alternate_feed_host. Both are
+    optional, so an older document without them has no problems."""
+    errors, notices = [], []
+    words = document.get("directions")
+    if words is not None:
+        if not isinstance(words, dict):
+            errors.append("directions must be an object")
+        else:
+            for route_id, by_direction in words.items():
+                if not isinstance(by_direction, dict) or not by_direction or any(
+                        d not in build_septa_meta.DIRECTION_IDS
+                        or not build_septa_meta.is_direction_word(w)
+                        for d, w in by_direction.items()):
+                    errors.append(f"directions[{route_id!r}] is malformed: {by_direction!r}")
+            unnamed = [r for r in route_list if r not in words]
+            if unnamed:
+                notices.append(
+                    f"no direction words for {len(unnamed)} route(s): "
+                    f"{', '.join(unnamed)}; the app falls back to its own table")
+    host = document.get("alternate_feed_host")
+    if host is not None and not build_septa_meta.is_bare_hostname(host):
+        errors.append(f"alternate_feed_host must be null or a bare hostname, got {host!r}")
+    return errors, notices
+
+
 def parse_approval(raw: str | None) -> set[str]:
     return {r.strip() for r in (raw or "").split(",") if r.strip()}
 
@@ -94,6 +128,12 @@ def check(candidate, baselines: list | None,
         new = offered_routes(candidate)
     except ValueError as exc:
         return False, [f"candidate would be rejected by the app: {exc}"]
+
+    errors, notices = extra_field_problems(
+        candidate, _as_dict(candidate.get("buses")).get("route_list") or [])
+    if errors:
+        return False, errors
+    messages.extend(notices)
 
     if baselines is None:
         messages.append(f"first publish: {len(new)} routes offered")
