@@ -216,7 +216,8 @@ class ExtraFieldsTest(unittest.TestCase):
         self.assertIn("no direction words for 4 route(s)", " ".join(messages))
 
     def test_malformed_directions_refuse_the_publish(self):
-        for words in ({"2": {"0": "northbound"}}, {"2": {"3": "Loop"}},
+        for words in ({"2": {"0": "northbound"}}, {"2": {"0": "Northbuond"}},
+                      {"2": {"3": "Loop"}},
                       {"2": {}}, {"2": "Loop"}, ["2"]):
             with self.subTest(words=words):
                 safe, _ = checker.check(self.with_fields(directions=words),

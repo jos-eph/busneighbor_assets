@@ -81,8 +81,8 @@ shape changing.
 ```
 
 The words come from the bundle's `directions.txt`, with
-`direction_overrides.json` on top for corrections. Only capitalized words of
-up to 24 characters are carried. A route with no usable word is left out and
+`direction_overrides.json` on top for corrections. Only Northbound,
+Southbound, Eastbound, Westbound, Loop, Inbound, and Outbound are carried. A route with no usable word is left out and
 listed in the build log, and the build still publishes: consumers fall back
 to their own names.
 

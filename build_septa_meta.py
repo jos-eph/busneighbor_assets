@@ -58,10 +58,14 @@ DEFAULT_REMOTE_CONTROL_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "remote_control.json"
 )
 
-# A direction word as riders see it: capitalized words, e.g. "Northbound" or
-# "Loop". Anything else in directions.txt is dropped rather than shown.
-DIRECTION_WORD = re.compile(r"^[A-Z][a-z]+(?: [A-Z][a-z]+)*$")
-MAX_DIRECTION_WORD_CHARS = 24
+# The direction words consumers know. The app points a bus marker's arrow
+# for the four compass words and shows none for the rest. Anything else in
+# directions.txt is dropped rather than shown, and an override naming
+# anything else fails the build.
+DIRECTION_WORDS = frozenset({
+    "Northbound", "Southbound", "Eastbound", "Westbound",
+    "Loop", "Inbound", "Outbound",
+})
 DIRECTION_IDS = ("0", "1")
 
 # A bare hostname: no scheme, port, path, or userinfo. The app checks the
@@ -73,8 +77,7 @@ BARE_HOSTNAME = re.compile(
 
 
 def is_direction_word(value) -> bool:
-    return (isinstance(value, str) and len(value) <= MAX_DIRECTION_WORD_CHARS
-            and DIRECTION_WORD.match(value) is not None)
+    return isinstance(value, str) and value in DIRECTION_WORDS
 
 
 def is_bare_hostname(value) -> bool:

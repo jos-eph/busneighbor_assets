@@ -294,10 +294,12 @@ class DirectionsTest(unittest.TestCase):
         words = build_septa_meta.directions({}, ["R1"], {"GONE": {"0": "Loop"}})
         self.assertEqual(words, {})
 
-    def test_direction_word_shape(self):
-        for word in ("Northbound", "Loop", "Inbound", "Clockwise Loop"):
+    def test_only_the_known_words_are_direction_words(self):
+        for word in ("Northbound", "Southbound", "Eastbound", "Westbound",
+                     "Loop", "Inbound", "Outbound"):
             self.assertTrue(build_septa_meta.is_direction_word(word), word)
-        for word in ("", "northbound", "North-bound", "N", "X" * 30, None, 3):
+        for word in ("", "northbound", "Northbuond", "Clockwise Loop", "N",
+                     " Loop", None, 3):
             self.assertFalse(build_septa_meta.is_direction_word(word), word)
 
 
@@ -313,6 +315,7 @@ class DirectionOverridesFileTest(unittest.TestCase):
             {"R1": {}},
             {"R1": {"2": "Northbound"}},
             {"R1": {"0": "northbound"}},
+            {"R1": {"0": "Northbuond"}},
             ["R1"],
         ]
         with tempfile.TemporaryDirectory() as tmp:
