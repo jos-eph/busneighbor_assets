@@ -1,0 +1,6 @@
+{
+  "53": {"0": "Northbound", "1": "Southbound"},
+  "68": {"0": "Southbound", "1": "Northbound"},
+  "133": {"0": "Eastbound", "1": "Westbound"},
+  "D1": {"0": "Westbound", "1": "Eastbound"}
+}

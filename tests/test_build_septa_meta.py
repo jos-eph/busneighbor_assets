@@ -195,7 +195,8 @@ class DocumentTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             document = build_septa_meta.build(
                 self._bundle(tmp), self._overrides(tmp))
-        self.assertEqual(list(document), ["meta", "buses", "realtime"])
+        self.assertEqual(list(document), [
+            "meta", "buses", "realtime", "directions", "alternate_feed_host"])
         self.assertEqual(list(document["meta"]), ["start_date", "end_date", "version"])
         buses = document["buses"]
         self.assertEqual(list(buses), ["route_list"])
@@ -242,6 +243,126 @@ class DocumentTest(unittest.TestCase):
             finally:
                 sys.stdout, sys.stderr = stdout, stderr
             self.assertEqual(printed.strip(), "20260823")
+
+
+def write_json(path, value):
+    with open(path, "w", encoding="utf-8") as handle:
+        json.dump(value, handle)
+    return path
+
+
+DIRECTIONS_HEADER = "route_id,direction_id,direction,direction_name\n"
+
+
+class DirectionNamesTest(unittest.TestCase):
+    def test_reads_directions_txt(self):
+        feed = open_feed(make_feed(extra={"directions.txt": (
+            DIRECTIONS_HEADER
+            + "R1,0,Northbound,To Center City\n"
+            + "R1,1,Southbound,To South Philly\n")}))
+        self.assertEqual(build_septa_meta.direction_names(feed),
+                         {("R1", 0): "Northbound", ("R1", 1): "Southbound"})
+
+    def test_no_file_means_no_names(self):
+        self.assertEqual(build_septa_meta.direction_names(open_feed(make_feed())), {})
+
+
+class DirectionsTest(unittest.TestCase):
+    names = {("R1", 0): "Northbound", ("R1", 1): "Southbound",
+             ("R2", 0): "Loop", ("R3", 0): "not a word!"}
+
+    def test_feed_names_in_route_order(self):
+        words = build_septa_meta.directions(self.names, ["R2", "R1", "R3"], {})
+        self.assertEqual(list(words), ["R2", "R1"])
+        self.assertEqual(words["R1"], {"0": "Northbound", "1": "Southbound"})
+        self.assertEqual(words["R2"], {"0": "Loop"})
+
+    def test_a_route_without_usable_names_is_absent(self):
+        words = build_septa_meta.directions(self.names, ["R3", "R9"], {})
+        self.assertEqual(words, {})
+
+    def test_overrides_win_per_direction(self):
+        words = build_septa_meta.directions(
+            self.names, ["R1"], {"R1": {"1": "Eastbound"}})
+        self.assertEqual(words["R1"], {"0": "Northbound", "1": "Eastbound"})
+
+    def test_an_override_can_name_a_route_the_feed_does_not(self):
+        words = build_septa_meta.directions({}, ["R9"], {"R9": {"0": "Inbound"}})
+        self.assertEqual(words, {"R9": {"0": "Inbound"}})
+
+    def test_overrides_for_routes_no_longer_listed_are_ignored(self):
+        words = build_septa_meta.directions({}, ["R1"], {"GONE": {"0": "Loop"}})
+        self.assertEqual(words, {})
+
+    def test_direction_word_shape(self):
+        for word in ("Northbound", "Loop", "Inbound", "Clockwise Loop"):
+            self.assertTrue(build_septa_meta.is_direction_word(word), word)
+        for word in ("", "northbound", "North-bound", "N", "X" * 30, None, 3):
+            self.assertFalse(build_septa_meta.is_direction_word(word), word)
+
+
+class DirectionOverridesFileTest(unittest.TestCase):
+    def test_the_committed_file_is_valid(self):
+        overrides = build_septa_meta.direction_overrides(
+            build_septa_meta.DEFAULT_DIRECTION_OVERRIDES_PATH)
+        self.assertTrue(overrides)
+
+    def test_malformed_entries_fail_the_build(self):
+        bad = [
+            {"R1": "Northbound"},
+            {"R1": {}},
+            {"R1": {"2": "Northbound"}},
+            {"R1": {"0": "northbound"}},
+            ["R1"],
+        ]
+        with tempfile.TemporaryDirectory() as tmp:
+            for value in bad:
+                with self.subTest(value=value):
+                    path = write_json(os.path.join(tmp, "d.json"), value)
+                    with self.assertRaises(ValueError):
+                        build_septa_meta.direction_overrides(path)
+
+
+class RemoteControlTest(unittest.TestCase):
+    def test_the_committed_file_names_no_host(self):
+        self.assertEqual(
+            build_septa_meta.remote_control(build_septa_meta.DEFAULT_REMOTE_CONTROL_PATH),
+            {"alternate_feed_host": None})
+
+    def test_a_bare_hostname_is_carried(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = write_json(os.path.join(tmp, "r.json"),
+                              {"alternate_feed_host": "backup.example"})
+            self.assertEqual(build_septa_meta.remote_control(path),
+                             {"alternate_feed_host": "backup.example"})
+
+    def test_anything_but_a_bare_hostname_fails_the_build(self):
+        bad = ["https://backup.example", "backup.example/x", "backup.example:8443",
+               "user@backup.example", "BACKUP.EXAMPLE", "localhost", "", 42]
+        with tempfile.TemporaryDirectory() as tmp:
+            for host in bad:
+                with self.subTest(host=host):
+                    path = write_json(os.path.join(tmp, "r.json"),
+                                      {"alternate_feed_host": host})
+                    with self.assertRaises(ValueError):
+                        build_septa_meta.remote_control(path)
+
+
+class DocumentDirectionsTest(unittest.TestCase):
+    def test_directions_reach_the_document(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            feed = make_feed(routes_csv(enough_routes()), extra={
+                "directions.txt": DIRECTIONS_HEADER + "R1,0,Westbound,x\n"})
+            bundle = make_bundle(feed, os.path.join(tmp, "bundle.zip"))
+            overrides = make_overrides(os.path.join(tmp, "o.json"))
+            directions = write_json(os.path.join(tmp, "d.json"),
+                                    {"R2": {"1": "Eastbound"}})
+            control = write_json(os.path.join(tmp, "r.json"),
+                                 {"alternate_feed_host": None})
+            document = build_septa_meta.build(bundle, overrides, directions, control)
+        self.assertEqual(document["directions"],
+                         {"R1": {"0": "Westbound"}, "R2": {"1": "Eastbound"}})
+        self.assertIsNone(document["alternate_feed_host"])
 
 
 class RealtimeOverridesTest(unittest.TestCase):

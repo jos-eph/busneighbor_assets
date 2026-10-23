@@ -195,3 +195,44 @@ class MainTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ExtraFieldsTest(unittest.TestCase):
+    def with_fields(self, **fields):
+        candidate = document(["L1", "2", "4", "17", "23"], ["L1"])
+        candidate.update(fields)
+        return candidate
+
+    def test_a_document_without_them_is_fine(self):
+        safe, _ = checker.check(LIVE, [("live", LIVE)], set())
+        self.assertTrue(safe)
+
+    def test_routes_without_words_are_a_notice_not_a_refusal(self):
+        candidate = self.with_fields(
+            directions={"2": {"0": "Northbound", "1": "Southbound"}},
+            alternate_feed_host=None)
+        safe, messages = checker.check(candidate, [("live", LIVE)], set())
+        self.assertTrue(safe)
+        self.assertIn("no direction words for 4 route(s)", " ".join(messages))
+
+    def test_malformed_directions_refuse_the_publish(self):
+        for words in ({"2": {"0": "northbound"}}, {"2": {"3": "Loop"}},
+                      {"2": {}}, {"2": "Loop"}, ["2"]):
+            with self.subTest(words=words):
+                safe, _ = checker.check(self.with_fields(directions=words),
+                                        [("live", LIVE)], set())
+                self.assertFalse(safe)
+
+    def test_a_bad_alternate_host_refuses_the_publish(self):
+        for host in ("https://x.example", "x.example/p", 7):
+            with self.subTest(host=host):
+                safe, _ = checker.check(
+                    self.with_fields(alternate_feed_host=host),
+                    [("live", LIVE)], set())
+                self.assertFalse(safe)
+
+    def test_a_bare_alternate_host_is_fine(self):
+        safe, _ = checker.check(
+            self.with_fields(alternate_feed_host="backup.example"),
+            [("live", LIVE)], set())
+        self.assertTrue(safe)

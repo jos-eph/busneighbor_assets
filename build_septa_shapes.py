@@ -170,15 +170,8 @@ def stops_by_direction(feed: zipfile.ZipFile) -> dict[tuple[str, int], list[str]
     return {key: [stop for _, stop in sorted(rows)] for key, rows in ordered.items()}
 
 
-def direction_names(feed: zipfile.ZipFile) -> dict[tuple[str, int], str]:
-    """Absent directions.txt means no names, not an error."""
-    if "directions.txt" not in feed.namelist():
-        return {}
-    return {
-        (row["route_id"], int(row["direction_id"])): row["direction"]
-        for row in _rows(feed, "directions.txt")
-        if row.get("route_id") and row.get("direction_id") and row.get("direction")
-    }
+# One reader for directions.txt, shared with septameta.json's direction words.
+direction_names = build_septa_meta.direction_names
 
 
 def _direction_entry(key, counts, points, stops, names) -> dict:
