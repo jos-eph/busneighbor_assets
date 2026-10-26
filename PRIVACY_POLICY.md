@@ -1,6 +1,6 @@
 # BusNeighbor — Privacy Policy
 
-**Effective date:** `October 18, 2026`
+**Effective date:** `October 25, 2026`
 
 BusNeighbor is a free app that shows Philadelphia public transit vehicle positions, service alerts, and a map. It is built for the general public to enjoy, but with thoughtful touches for blind and low-vision riders. This policy explains what BusNeighbor does with information on your phone, and what it sends over the network and to whom.
 
@@ -13,7 +13,7 @@ BusNeighbor is published by `Joseph D. Mirarchi`, an individual. There is no com
 - **No accounts, no advertising, no analytics, no crash reporting, no tracking.**
 - **Your location never leaves your device.** It is used only to draw the map and to speak the nearest stop, and only while you are using the app.
 - BusNeighbor does fetch transit data and map images over the internet, while you're using it. Like any app that loads data, those requests reveal your device's IP address and what you asked for. The table below says exactly what each service can see, and how often the app asks.
-- **Nothing about you is stored on any server, and nothing is ever sold or shared for advertising.**
+- **Nothing about you is ever sold or shared for advertising.** The most any server keeps is the IP address and time of a request. For the mirror I run, Cloudflare deletes even that within about a month.
 - If you download the offline map, BusNeighbor stops making map requests entirely.
 
 ---
@@ -81,7 +81,9 @@ Whenever you pan the map without having downloaded the offline map, some third p
 
 The vehicle-position mirror is mine. It runs as a Cloudflare Worker under my Cloudflare account, which means Cloudflare operates the servers that receive your request and acts as my service provider in doing so.
 
-I have not turned on request logging or log export for that Worker, so **no record of individual requests is kept for me to look at**. Cloudflare shows me aggregate counts — how many requests came in, how much bandwidth was used — which do not identify anyone. I do not have, do not keep, and do not want a list of who used the app or when.
+I have not turned on request logging or log export for that Worker, and I keep no request records of my own. Because the mirror answers at my own custom domain, Cloudflare does keep a sample of recent requests for that domain's security dashboard: the IP address each one came from, the time, which file was requested (the same files for everyone), and whether my security rules let it through. Those rules limit how fast any one address can make requests and block abusive or automated traffic, so the mirror stays up for everyone. Cloudflare keeps this sample for every custom domain it serves, I can't turn it off, and it is deleted after about 31 days. I look at it only to keep the mirror running and to stop abuse, never to identify anyone. I do not keep a list of who used the app or when.
+
+Cloudflare handles what it receives under its own privacy policy: <https://www.cloudflare.com/privacypolicy/>
 
 ### About the other services
 
@@ -112,7 +114,7 @@ I do not send these services anything about you beyond what your device's own re
 
 ## Keeping and deleting information
 
-**I hold no data about you, so there is nothing on my side to retain or delete.** There is no account to close and no deletion request to make.
+**Apart from the short-lived request sample Cloudflare keeps for the mirror, described above, I hold no data about you.** I can't match an IP address to a person, so I can't find one rider's entries to delete. They expire on their own within about 31 days. There is no account to close.
 
 On your device:
 
@@ -142,9 +144,9 @@ BusNeighbor is a general-audience transit app. It is not directed to children, a
 
 BusNeighbor is distributed in the United States only. It is not offered in the European Union or the United Kingdom. Because it is built around the SEPTA network, all intended users are in Pennsylvania, New Jersey, and Delaware.
 
-New Jersey and Delaware have comprehensive consumer privacy laws. As of this writing, Pennsylvania does not. Those laws reach organizations holding personal data about tens of thousands of a state's residents — and **I hold personal data about no one.** No threshold is met, and no reading of any of them changes a word of this policy.
+New Jersey and Delaware have comprehensive consumer privacy laws. As of this writing, Pennsylvania does not. Those laws reach organizations holding personal data about tens of thousands of a state's residents. **The only personal data involved here is the expiring IP sample described above, and BusNeighbor is far below those thresholds.**
 
-If you live in New Jersey or Delaware and want to exercise a privacy right — to see, correct, or delete what I hold about you — there is nothing to act on, because there is nothing held. Write to me at the address below if you would like that confirmed directly.
+If you live in New Jersey or Delaware and want to exercise a privacy right — to see, correct, or delete what I hold about you — the only thing held is that sample, which I can't link to you and which deletes itself within about a month. Write to me at the address below if you would like that confirmed directly.
 
 ---
 
@@ -174,3 +176,4 @@ Questions about this policy, or about privacy in BusNeighbor:
 | September 15, 2026  | Removed SEPTA call (now fully mirrored); cosmetic improvements; minor text changes. |
 | September 18, 2026  | Listed the daily route-list check on GitHub Releases, which was missing from the table. |
 | October 18, 2026    | Added the route paths file (fetched at most once a day, only for features that use it, and cached on the device), recent bus positions for detours, and how often each request is made. |
+| October 25, 2026    | The vehicle-position mirror now uses a custom domain, secant.cc. Explained that Cloudflare keeps a short-lived sample of requests to custom domains, including IP addresses, for security, and deletes it after about 31 days. |
