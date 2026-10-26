@@ -81,7 +81,7 @@ Whenever you pan the map without having downloaded the offline map, some third p
 
 The vehicle-position mirror is mine. It runs as a Cloudflare Worker under my Cloudflare account, which means Cloudflare operates the servers that receive your request and acts as my service provider in doing so.
 
-I have not turned on request logging or log export for that Worker, and I keep no request records of my own. Cloudflare does keep a sample of recent requests for my account's security dashboard: the IP address each one came from, the time, which file was requested (the same files for everyone), and whether my security rules let it through. Those rules limit how fast any one address can make requests and block abusive or automated traffic, so the mirror stays up for everyone. Cloudflare provides this sample on every account, I can't turn it off, and it is deleted after about 31 days. I look at it only to keep the mirror running and to stop abuse, never to identify anyone. I do not keep a list of who used the app or when.
+I have not turned on request logging or log export for that Worker, and I keep no request records of my own. Because the mirror answers at my own custom domain, Cloudflare does keep a sample of recent requests for that domain's security dashboard: the IP address each one came from, the time, which file was requested (the same files for everyone), and whether my security rules let it through. Those rules limit how fast any one address can make requests and block abusive or automated traffic, so the mirror stays up for everyone. Cloudflare keeps this sample for every custom domain it serves, I can't turn it off, and it is deleted after about 31 days. I look at it only to keep the mirror running and to stop abuse, never to identify anyone. I do not keep a list of who used the app or when.
 
 Cloudflare handles what it receives under its own privacy policy: <https://www.cloudflare.com/privacypolicy/>
 
@@ -176,4 +176,4 @@ Questions about this policy, or about privacy in BusNeighbor:
 | September 15, 2026  | Removed SEPTA call (now fully mirrored); cosmetic improvements; minor text changes. |
 | September 18, 2026  | Listed the daily route-list check on GitHub Releases, which was missing from the table. |
 | October 18, 2026    | Added the route paths file (fetched at most once a day, only for features that use it, and cached on the device), recent bus positions for detours, and how often each request is made. |
-| October 25, 2026    | Explained that Cloudflare keeps a short-lived sample of requests to the vehicle-position mirror, including IP addresses, for security, and deletes it after about 31 days. |
+| October 25, 2026    | The vehicle-position mirror now uses a custom domain. Explained that Cloudflare keeps a short-lived sample of requests to custom domains, including IP addresses, for security, and deletes it after about 31 days. |
