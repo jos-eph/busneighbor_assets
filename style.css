@@ -196,6 +196,13 @@ body.landing {
   width: auto;
 }
 
+.landing .store-alt {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
 .landing .store-note {
   /* Own row: it qualifies both platforms, not just the one beside it. */
   flex-basis: 100%;
