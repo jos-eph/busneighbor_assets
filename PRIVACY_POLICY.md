@@ -176,4 +176,4 @@ Questions about this policy, or about privacy in BusNeighbor:
 | September 15, 2026  | Removed SEPTA call (now fully mirrored); cosmetic improvements; minor text changes. |
 | September 18, 2026  | Listed the daily route-list check on GitHub Releases, which was missing from the table. |
 | October 18, 2026    | Added the route paths file (fetched at most once a day, only for features that use it, and cached on the device), recent bus positions for detours, and how often each request is made. |
-| October 25, 2026    | The vehicle-position mirror now uses a custom domain. Explained that Cloudflare keeps a short-lived sample of requests to custom domains, including IP addresses, for security, and deletes it after about 31 days. |
+| October 25, 2026    | The vehicle-position mirror now uses a custom domain, secant.cc. Explained that Cloudflare keeps a short-lived sample of requests to custom domains, including IP addresses, for security, and deletes it after about 31 days. |
