@@ -1,6 +1,6 @@
 # BusNeighbor — Privacy Policy
 
-**Effective date:** `October 25, 2026`
+**Effective date:** `October 29, 2026`
 
 BusNeighbor is a free app that shows Philadelphia public transit vehicle positions, service alerts, and a map. It is built for the general public to enjoy, but with thoughtful touches for blind and low-vision riders. This policy explains what BusNeighbor does with information on your phone, and what it sends over the network and to whom.
 
@@ -11,7 +11,7 @@ BusNeighbor is published by `Joseph D. Mirarchi`, an individual. There is no com
 ## The short version
 
 - **No accounts, no advertising, no analytics, no crash reporting, no tracking.**
-- **Your location never leaves your device.** It is used only to draw the map and to speak the nearest stop, and only while you are using the app.
+- **Your location never leaves your device.** It is used only to draw the map, to show which way you're facing, and to speak the nearest stop, and only while you are using the app.
 - BusNeighbor does fetch transit data and map images over the internet, while you're using it. Like any app that loads data, those requests reveal your device's IP address and what you asked for. The table below says exactly what each service can see, and how often the app asks.
 - **Nothing about you is ever sold or shared for advertising.** The most any server keeps is the IP address and time of a request. For the mirror I run, Cloudflare deletes even that within about a month.
 - If you download the offline map, BusNeighbor stops making map requests entirely.
@@ -25,10 +25,11 @@ BusNeighbor is published by `Joseph D. Mirarchi`, an individual. There is no com
 You have the option to use BusNeighbor without granting location permission. If you choose to grant location permission, BusNeighbor uses your device's location to:
 
 - center the map where you are,
-- show which vehicles are near you, and
-- announce the nearest SEPTA stop and its distance, so you can orient yourself.
+- show which vehicles are near you,
+- announce the nearest SEPTA stop and its distance, so you can orient yourself, and
+- show which way you're facing, using your phone's compass, or the direction you're moving while you travel.
 
-All three happen **entirely on your device**. Your location is held only in the app's memory while the app is running. It is never written to storage, never included in any network request, and never transmitted to me or to anyone else.
+All four happen **entirely on your device**. Your location is held only in the app's memory while the app is running. It is never written to storage, never included in any network request, and never transmitted to me or to anyone else.
 
 BusNeighbor uses location **only while you are using the app**. It does not request or use background location.
 
@@ -38,9 +39,11 @@ Location permission is optional. If you decline it, the app still works: the map
 
 The nearest-stop announcement is computed on your device from a list of pre-populated stops built into the app. No internet connection is needed for it, and nothing is sent anywhere to produce it.
 
+When the map is centered on you, the announcement can also say where the stop is relative to the way you're facing, such as "on your right". The compass reading behind this, and behind the pointer that shows which way you're facing, is used on your device only. It is never stored or sent anywhere, and no extra permission is needed. You can turn it off with **Show facing direction** in the map style settings.
+
 ### Your settings
 
-Your route selections, map style, marker style, and accessibility preferences are saved on your device, using your operating system's standard app-preferences storage. **They are never sent to me.**
+Your route selections, map style, marker style, facing-direction setting, and accessibility preferences are saved on your device, using your operating system's standard app-preferences storage. **They are never sent to me.**
 
 Your phone may include them in its own system backup — to your iCloud or Google account, under your control and governed by Apple's or Google's terms. That is what lets your settings come back if you restore or replace your device. You can turn this off in your device's backup settings. I have no access to those backups.
 
@@ -173,6 +176,7 @@ Questions about this policy, or about privacy in BusNeighbor:
 | Date                | What changed     |
 | --------------------|----------------  |
 | August 29, 2026     | First published. |
+| October 29, 2026    | Added the compass, used on your device only to show which way you're facing. |
 | September 15, 2026  | Removed SEPTA call (now fully mirrored); cosmetic improvements; minor text changes. |
 | September 18, 2026  | Listed the daily route-list check on GitHub Releases, which was missing from the table. |
 | October 18, 2026    | Added the route paths file (fetched at most once a day, only for features that use it, and cached on the device), recent bus positions for detours, and how often each request is made. |
