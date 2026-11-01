@@ -120,7 +120,7 @@ jobs:
           echo "Sample belongs to UTC day ${UTC_DATE}"
 
       - name: Upload sample
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
         with:
           # The date comes from the sampler's own sampled_at rather than from a
           # separate date step, so a run straddling midnight files itself
@@ -132,7 +132,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload positions
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
         with:
           name: positions-${{ github.run_id }}-${{ github.run_attempt }}
           path: out/positions.json
@@ -173,7 +173,7 @@ jobs:
           echo "utc_date=${UTC_DATE}" >> "$GITHUB_OUTPUT"
 
       - name: Upload snapshot
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
         with:
           name: alerts-${{ github.run_id }}-${{ github.run_attempt }}
           path: out/alerts.json
