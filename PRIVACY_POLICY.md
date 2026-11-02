@@ -1,6 +1,6 @@
 # BusNeighbor — Privacy Policy
 
-**Effective date:** `October 29, 2026`
+**Effective date:** `November 2, 2026`
 
 BusNeighbor is a free app that shows Philadelphia public transit vehicle positions, service alerts, and a map. It is built for the general public to enjoy, but with thoughtful touches for blind and low-vision riders. This policy explains what BusNeighbor does with information on your phone, and what it sends over the network and to whom.
 
@@ -107,6 +107,10 @@ I do not send these services anything about you beyond what your device's own re
 - **No background location.**
 - **No transmission of your location**, to anyone, for any purpose.
 
+### Crash reports Apple and Google may share with me
+
+If you have turned on Apple's "Share With App Developers" setting on your iPhone, Apple may give me crash and performance reports about BusNeighbor. On Android, if your device is set to share usage and diagnostics data with Google, Google may give me crash and performance statistics about BusNeighbor through Google Play Console. Apple and Google collect these under their own terms. BusNeighbor contains no crash-reporting code and sends nothing itself. The reports contain no location and nothing that identifies you to me. You can turn this off in your phone's settings: on iPhone, under Settings → Privacy & Security → Analytics & Improvements; on Android, in your device's Google usage and diagnostics setting.
+
 ---
 
 ## Sharing with third parties
@@ -176,8 +180,9 @@ Questions about this policy, or about privacy in BusNeighbor:
 | Date                | What changed     |
 | --------------------|----------------  |
 | August 29, 2026     | First published. |
-| October 29, 2026    | Added the compass, used on your device only to show which way you're facing. |
 | September 15, 2026  | Removed SEPTA call (now fully mirrored); cosmetic improvements; minor text changes. |
 | September 18, 2026  | Listed the daily route-list check on GitHub Releases, which was missing from the table. |
 | October 18, 2026    | Added the route paths file (fetched at most once a day, only for features that use it, and cached on the device), recent bus positions for detours, and how often each request is made. |
 | October 25, 2026    | The vehicle-position mirror now uses a custom domain, secant.cc. Explained that Cloudflare keeps a short-lived sample of requests to custom domains, including IP addresses, for security, and deletes it after about 31 days. |
+| October 29, 2026    | Added the compass, used on your device only to show which way you're facing. |
+| November 2, 2026    | Explained the crash reports Apple and Google may share with me. |
