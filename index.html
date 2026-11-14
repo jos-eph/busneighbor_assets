@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light dark">
   <title>BusNeighbor — Accessible live Philadelphia bus tracker</title>
-  <meta name="description" content="BusNeighbor is a free, real-time map of Philadelphia's buses and trolleys, built for blind and low-vision riders and clearer for everyone. No ads.">
+  <meta name="description" content="BusNeighbor is a free, real-time map of Philadelphia's buses and trolleys, with detours and route lines, built for blind and low-vision riders and clearer for everyone. No ads.">
   <link rel="canonical" href="https://bus.dydx.org/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="BusNeighbor">
   <meta property="og:url" content="https://bus.dydx.org/">
   <meta property="og:title" content="BusNeighbor — Live Philly buses for everyone">
-  <meta property="og:description" content="Live Philly buses for everyone. Built for VoiceOver, compatible with large text, and high contrast. Nothing collected.">
+  <meta property="og:description" content="Live Philly buses, detours, and route lines. Built for screen readers, large text, and high contrast. No ads, no tracking.">
   <meta property="og:image" content="https://bus.dydx.org/images/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -23,7 +23,7 @@
     "@type": "MobileApplication",
     "name": "BusNeighbor",
     "url": "https://bus.dydx.org/",
-    "description": "BusNeighbor is a free, real-time map of Philadelphia's buses and trolleys, built for blind and low-vision riders and clearer for everyone. No ads.",
+    "description": "BusNeighbor is a free, real-time map of Philadelphia's buses and trolleys, with detours and route lines, built for blind and low-vision riders and clearer for everyone. No ads.",
     "image": "https://bus.dydx.org/images/icon-192.png",
     "applicationCategory": "TravelApplication",
     "operatingSystem": "iOS, Android",
@@ -44,17 +44,17 @@
         <img class="app-icon" src="images/icon-192.png" width="88" height="88" alt="">
         <h1>BusNeighbor</h1>
         <p class="tagline">Live Philly buses for everyone.</p>
-        <p class="lede">BusNeighbor shows where Philadelphia's buses and trolleys are right now, on a map
-          with data refreshed every 30 seconds. Pick the routes you ride and keep them in view.</p>
+        <p class="lede">BusNeighbor shows where Philadelphia's buses and trolleys are right now, where
+          detours send them, and the line each route follows, on a map with data refreshed every 30
+          seconds. Pick the routes you ride and keep them in view.</p>
         <div class="store-slot">
           <a class="store-badge" href="https://apps.apple.com/app/busneighbor/id6812131455"><img src="images/app-store-badge.svg" width="120" height="40" alt="Download on the App Store"></a>
-          <a class="store-cta" href="mailto:bus@dydx.org?subject=Join%20the%20Android%20Beta&amp;body=Hi%2C%0A%0AI%27d%20like%20to%20join%20the%20Android%20beta.%20Here%27s%20my%20Gmail%20address%20or%20other%20address%20I%20type%20into%20Google%20Play%3A%0A%0A">Join the Android beta</a>
-          <p class="store-alt">Or <a href="https://groups.google.com/g/busneighbor-android">join the Google group</a> yourself.</p>
+          <a class="store-badge store-badge-play" href="https://play.google.com/store/apps/details?id=org.dydx.busneighbor_flutter"><img src="images/google-play-badge.png" width="155" height="60" alt="Get it on Google Play"></a>
           <p class="store-note">Free. Philadelphia region only.</p>
         </div>
       </div>
       <div class="phone hero-shot">
-        <img src="images/shot-live-map.jpg" width="330" height="717" alt="BusNeighbor's map of Center City Philadelphia, with buses on several routes, each marked with its route number.">
+        <img src="images/shot-route-lines.jpg" width="330" height="717" alt="BusNeighbor's map of Center City Philadelphia, with each selected route drawn as a colored line and its buses marked with the route number.">
       </div>
     </div>
   </header>
@@ -64,16 +64,56 @@
       <div class="route">
         <span class="route-chip" aria-hidden="true">23</span>
 
-        <section aria-labelledby="read" class="read">
-          <div class="read-text">
+        <section aria-labelledby="detours" class="feature-block">
+          <div>
+            <h2 id="detours">Detours you can read</h2>
+            <p class="new-tag">New in version 1.1</p>
+            <p>When a route is detoured, BusNeighbor shows where the bus goes instead, in words and on
+              the map.</p>
+            <ul class="features">
+              <li>
+                <span class="feature-icon"><svg aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V14h7V7h7"/><path d="M16 4l3 3-3 3"/><path d="M5 10V3" stroke-dasharray="2 3"/></svg></span>
+                <span>Each detour is a card that lists the streets the bus takes instead, turn by turn, and
+                  says whether it's in effect now.</span>
+              </li>
+              <li>
+                <span class="feature-icon"><svg aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 19l5-4 5 4"/><path d="M7 12l5-4 5 4"/><path d="M7 5l5-4 5 4"/></svg></span>
+                <span>Marks on the map show which way recent buses actually went, and the details say
+                  where they left the regular route.</span>
+              </li>
+              <li>
+                <span class="feature-icon"><svg aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h6l4 5h8"/><path d="M3 17h8l3-5"/></svg></span>
+                <span>Each route you pick is drawn as a line in one of six colors, under the street names
+                  so the names stay readable.</span>
+              </li>
+              <li>
+                <span class="feature-icon"><svg aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a12 12 0 0 1 16 0"/><path d="M7.5 13.5a7 7 0 0 1 9 0"/><circle cx="12" cy="17.5" r="1.5" fill="currentColor" stroke="none"/><path d="M3 3l18 18"/></svg></span>
+                <span>If the live feed stops, the map says so and shows when the last update arrived.</span>
+              </li>
+            </ul>
+          </div>
+          <ul class="shot-pair">
+            <li class="phone"><img src="images/shot-detour-card.jpg" width="330" height="717" alt="A detour card for a westbound bus, marked In effect now, listing four steps: via Vare, turn right on 33rd, turn left on Grays Ferry, and back on the regular route."></li>
+            <li class="phone"><img src="images/shot-detour-marks.jpg" width="330" height="717" alt="The same detour on the map: arrows show the street the buses took, and the skipped part of the regular route is dashed."></li>
+          </ul>
+        </section>
+
+        <section aria-labelledby="read" class="feature-block">
+          <div>
             <h2 id="read">Made to be read, not just seen</h2>
             <p>BusNeighbor is designed for riders who are blind or have low vision, and that makes it
               clearer for everyone.</p>
             <ul class="features">
               <li>
                 <span class="feature-icon"><svg aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg></span>
-                <span>Every control works with VoiceOver, and the nearest vehicles can be read out as a list:
-                  route, intersection, and distance.</span>
+                <span>Every control works with screen readers, including VoiceOver and TalkBack, and the
+                  nearest vehicles can be read out as a list: route, intersection, and distance.</span>
+              </li>
+              <li>
+                <span class="feature-icon"><svg aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="14" r="3"/><circle cx="12" cy="14" r="7"/><path d="M8.5 4.5a8 8 0 0 1 7 0"/></svg></span>
+                <span>Pan the map, and BusNeighbor announces the nearest stop and how far away it is.
+                  Centered on you, it also says whether the stop is ahead, behind you, or to your side,
+                  and your location marker shows which way you're facing.</span>
               </li>
               <li>
                 <span class="feature-icon"><svg aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5" fill="currentColor"/></svg></span>
@@ -87,21 +127,22 @@
             </ul>
           </div>
           <ul class="shot-pair">
-            <li class="phone"><img src="images/shot-closest-vehicles.jpg" width="330" height="717" alt="The Closest Vehicles list in dark mode: each row shows a route, the intersection the vehicle is near, and how far away it is."></li>
-            <li class="phone"><img src="images/shot-palettes.jpg" width="330" height="717" alt="The map theme picker, with a grid of map palettes and the Dot, Chip, and Circle marker styles."></li>
+            <li class="phone"><img src="images/shot-closest-large-text.jpg" width="330" height="717" alt="The Closest Vehicles list at a very large text size: route 38, 1150 feet east, at Market Street and 12th Street, westbound; route 17, 0.6 miles east, at Market Street and 8th Street, southbound."></li>
+            <li class="phone"><img src="images/shot-facing.jpg" width="330" height="717" alt="The location marker beside City Hall, with a crescent on one side showing which way the phone is facing."></li>
           </ul>
         </section>
 
         <section aria-labelledby="privacy" class="privacy">
-          <h2 id="privacy">Nothing collected</h2>
+          <h2 id="privacy">No ads, no tracking</h2>
           <ul class="nos">
             <li>No accounts</li>
             <li>No ads</li>
             <li>No analytics</li>
             <li>No tracking</li>
           </ul>
-          <p>Location is optional, is never requested when the app opens, and never leaves your phone.
-            The <a href="bn_privacy.html">privacy policy</a> is short and in plain English.</p>
+          <p>Location is optional and is never requested when the app opens. Your position and the
+            direction you're facing stay on your phone. The <a href="bn_privacy.html">privacy policy</a>
+            is short and in plain English.</p>
         </section>
 
         <section aria-labelledby="maker" class="maker">
@@ -132,6 +173,9 @@
       </nav>
       <p>BusNeighbor is not affiliated with, endorsed by, or operated by SEPTA. Map data ©
         OpenStreetMap contributors.</p>
+      <p>Apple and the Apple logo are trademarks of Apple Inc., registered in the U.S. and other
+        countries. App Store is a service mark of Apple Inc. Google Play and the Google Play logo are
+        trademarks of Google LLC.</p>
       <p>© 2026 Joseph D. Mirarchi</p>
     </div>
   </footer>

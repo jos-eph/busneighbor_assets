@@ -59,7 +59,6 @@ body.landing {
   --hero: #f3f1ec;      /* Daybreak land */
   --panel: #e4eef5;     /* Daybreak water, lightened */
   --accent: #005a8c;    /* darker Okabe-Ito blue, for text */
-  --accent-fg: #ffffff; /* text on a solid --accent fill */
   --route: #0072b2;     /* Okabe-Ito blue, decorative line */
   --chip-bg: #0072b2;
   --chip-fg: #ffffff;
@@ -77,7 +76,6 @@ body.landing {
     --hero: #14253a;    /* Nightshift water */
     --panel: #171c24;
     --accent: #8ccbf2;
-    --accent-fg: #101216;
     --route: #4ba3db;
     --chip-bg: #8ccbf2;
     --chip-fg: #101216;
@@ -163,26 +161,6 @@ body.landing {
   margin-top: 1.75rem;
 }
 
-/* The one primary action in the hero. */
-.landing .store-cta {
-  display: inline-flex;
-  align-items: center;
-  box-sizing: border-box;
-  min-height: 44px;
-  padding: 0.5rem 1.25rem;
-  /* Transparent until forced-colors mode draws it, so the button keeps an edge there. */
-  border: 2px solid transparent;
-  border-radius: 0.5rem;
-  background: var(--accent);
-  color: var(--accent-fg);
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.landing .store-cta:hover {
-  text-decoration: underline;
-}
-
 /* Apple badge: 40 px tall, clear space = 1/4 of its height. */
 .landing .store-badge {
   display: inline-block;
@@ -196,11 +174,13 @@ body.landing {
   width: auto;
 }
 
-.landing .store-alt {
-  flex-basis: 100%;
-  margin: 0;
-  font-size: 0.9rem;
-  color: var(--muted);
+/* Google's badge file has its clear space built in: 60 px tall draws a 40 px badge. */
+.landing .store-badge-play {
+  padding: 0;
+}
+
+.landing .store-badge-play img {
+  height: 60px;
 }
 
 .landing .store-note {
@@ -298,8 +278,8 @@ body.landing {
   max-width: 40rem;
 }
 
-/* Made to be read */
-.landing .read {
+/* Feature sections: text beside a pair of screenshots */
+.landing .feature-block {
   display: grid;
   gap: 2rem;
 }
@@ -331,6 +311,18 @@ body.landing {
   color: var(--accent);
 }
 
+.landing .new-tag {
+  display: inline-block;
+  margin: 0 0 1rem;
+  padding: 0.15rem 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 1rem;
+  background: var(--panel);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
 .landing .shot-pair {
   list-style: none;
   padding: 0;
@@ -341,7 +333,7 @@ body.landing {
 }
 
 @media (min-width: 60rem) {
-  .landing .read {
+  .landing .feature-block {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 3rem;
     align-items: start;
@@ -349,7 +341,7 @@ body.landing {
   .landing .shot-pair { grid-template-columns: repeat(2, 13rem); }
 }
 
-/* Nothing collected */
+/* No ads, no tracking */
 .landing .nos {
   list-style: none;
   padding: 0;
@@ -400,9 +392,6 @@ body.landing {
   .landing .route-chip,
   .landing .phone {
     border-color: CanvasText;
-  }
-  .landing .store-cta {
-    border-color: LinkText;
   }
   .landing a:focus-visible {
     outline-color: Highlight;
