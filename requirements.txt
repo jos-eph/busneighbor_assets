@@ -4,8 +4,9 @@
 #
 # Install with: pip install --require-hashes -r requirements.txt
 # Only the sampler workflow installs these; see README for why.
-gtfs-realtime-bindings==2.2.0 \
-    --hash=sha256:4f222a962bcb8715d9305cc08e7f7662cc70e7479f377e2694439a50724bc676
+gtfs-realtime-bindings==3.0.0 \
+    --hash=sha256:a270f236e92c13dd1d633492bcee397dcc2361d83cdcc19f9c94fb7c0082ed8b \
+    --hash=sha256:bfa7426ed537b374bbfe410a99e788cdef1b7009fe1e5aae2e3e0bc9fdca7d73
 protobuf==7.36.2 \
     --hash=sha256:497d0463ff3316681da6c0b9e8d06cb465d61abce00b613ab42226175644d1bb \
     --hash=sha256:89f23aa53c24553a2416fd4fd1ec06f74fa42b14b546d8883128813f775bbfd2 \
