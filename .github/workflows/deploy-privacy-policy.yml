@@ -52,7 +52,7 @@ jobs:
             --template=template.html \
             --metadata pagetitle="Support" \
             --metadata canonical="https://bus.dydx.org/support.html" \
-            --variable description="Get help with BusNeighbor, the free live Philadelphia bus and trolley tracker. Email bus@dydx.org with questions or problems." \
+            --variable description="Get help with BusNeighbor, the free live SEPTA bus and trolley tracker for Philadelphia. Email bus@dydx.org with questions or problems." \
             --output=_site/support.html
           cp style.css index.html robots.txt sitemap.xml _site/
           cp -r images _site/
