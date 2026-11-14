@@ -44,6 +44,7 @@ jobs:
             --template=template.html \
             --metadata pagetitle="Privacy Policy" \
             --metadata canonical="https://bus.dydx.org/bn_privacy.html" \
+            --variable description="BusNeighbor's privacy policy in plain English: no accounts, ads, analytics, crash reporting, or tracking, and your location never leaves your phone." \
             --output=_site/bn_privacy.html
           pandoc SUPPORT.md \
             --from=markdown \
@@ -51,6 +52,7 @@ jobs:
             --template=template.html \
             --metadata pagetitle="Support" \
             --metadata canonical="https://bus.dydx.org/support.html" \
+            --variable description="Get help with BusNeighbor, the free live Philadelphia bus and trolley tracker. Email bus@dydx.org with questions or problems." \
             --output=_site/support.html
           cp style.css index.html robots.txt sitemap.xml _site/
           cp -r images _site/

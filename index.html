@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light dark">
-  <title>BusNeighbor — Accessible live Philadelphia bus tracker</title>
-  <meta name="description" content="BusNeighbor is a free, real-time map of Philadelphia's buses and trolleys, with detours and route lines, built for blind and low-vision riders and clearer for everyone. No ads.">
+  <title>BusNeighbor — Live Philadelphia bus and trolley tracker</title>
+  <meta name="description" content="A free live map of every Philadelphia bus and trolley route, with detours. Built for blind and low-vision riders, and clearer for everyone. No ads.">
   <link rel="canonical" href="https://bus.dydx.org/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="BusNeighbor">
@@ -23,12 +23,16 @@
     "@type": "MobileApplication",
     "name": "BusNeighbor",
     "url": "https://bus.dydx.org/",
-    "description": "BusNeighbor is a free, real-time map of Philadelphia's buses and trolleys, with detours and route lines, built for blind and low-vision riders and clearer for everyone. No ads.",
+    "description": "A free live map of every Philadelphia bus and trolley route, with detours. Built for blind and low-vision riders, and clearer for everyone. No ads.",
     "image": "https://bus.dydx.org/images/icon-192.png",
     "applicationCategory": "TravelApplication",
     "operatingSystem": "iOS, Android",
     "isAccessibleForFree": true,
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "sameAs": [
+      "https://apps.apple.com/app/busneighbor/id6812131455",
+      "https://play.google.com/store/apps/details?id=org.dydx.busneighbor_flutter"
+    ],
     "author": { "@type": "Person", "name": "Joseph D. Mirarchi" }
   }
   </script>
@@ -43,7 +47,7 @@
       <div class="hero-text">
         <img class="app-icon" src="images/icon-192.png" width="88" height="88" alt="">
         <h1>BusNeighbor</h1>
-        <p class="tagline">Live Philly buses for everyone.</p>
+        <p class="tagline">Live Philadelphia buses and trolleys, for everyone.</p>
         <p class="lede">BusNeighbor shows where Philadelphia's buses and trolleys are right now, where
           detours send them, and the line each route follows, on a map with data refreshed every 30
           seconds. Pick the routes you ride and keep them in view.</p>
@@ -63,6 +67,15 @@
     <div class="wrap">
       <div class="route">
         <span class="route-chip" aria-hidden="true">23</span>
+
+        <section aria-labelledby="routes">
+          <h2 id="routes">Track any Philadelphia bus or trolley route live</h2>
+          <p>BusNeighbor covers every route that reports live positions, in the city and the
+            surrounding counties: buses, the T1 through T5 trolleys, the G1 on Girard Avenue, the D1
+            and D2 in Delaware County, and the M1 to Norristown.</p>
+          <p>Pick the routes you ride, like the 17, 23, or 47, and BusNeighbor shows where each
+            vehicle is, which way it's going, and how old the data is.</p>
+        </section>
 
         <section aria-labelledby="detours" class="feature-block">
           <div>
