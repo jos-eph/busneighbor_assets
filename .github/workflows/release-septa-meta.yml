@@ -25,16 +25,25 @@ name: Release SEPTA meta
 #   * septashapes.json (route lines, from the same bundle) goes to `current`
 #     only, under the same gates, whenever it differs from the published copy
 #     apart from its `generated` time. It has no dated release.
-#   * A build that would stop offering any route the published document offers
-#     is NOT published, and the run fails. The app removes a route it stops
-#     seeing from the rider's saved selection, permanently. If SEPTA really
-#     retired those routes, rerun by hand with approve_removals set to exactly
-#     the route ids the failure lists. See check_septa_meta.py.
+#   * A build that would stop offering a route the published document offers
+#     needs approval. The app removes a route it stops seeing from the rider's
+#     saved selection, permanently. Until someone approves, the build is
+#     published with those routes kept (plan_septa_release.py), so nothing
+#     else waits on the decision. The run then pauses in the
+#     `septameta-removals` environment; approving it there publishes the build
+#     exactly as it was made. The run summary describes each change.
+#   * A run that finds the same removal already waiting does not ask again. A
+#     run that finds a different build cancels the older request and asks anew.
+#   * approve_removals, set to exactly the removed route ids, publishes
+#     without the pause. rehearse_approval walks through the pause and
+#     publishes nothing.
 #   * Only this workflow writes to the `current` release, and only from main.
 #     The job runs in the `septameta-release` environment, which is limited to
 #     main and holds RELEASE_SEPTA_META_ENABLED. A copy of this workflow on an
 #     older branch has no environment, sees the switch as unset, and publishes
 #     nothing.
+#   * `septameta-removals` must keep a required reviewer. The run checks this
+#     before it asks, because an environment without one approves itself.
 
 on:
   schedule:
@@ -49,22 +58,38 @@ on:
         description: 'Route ids the build may stop offering, comma-separated; must match the removals exactly'
         type: string
         default: ''
+      rehearse_approval:
+        description: 'Walk through the approval pause and publish nothing'
+        type: boolean
+        default: false
 
 permissions:
-  contents: write   # required to create releases and upload assets
-
-concurrency:
-  group: release-septa-meta
-  cancel-in-progress: false   # never let a manual run clobber a scheduled run mid-flight
+  contents: read   # the publishing jobs raise this for themselves alone
 
 env:
   SOURCE_URL: https://www3.septa.org/developer/gtfs_public.zip
+  REMOVALS_ENVIRONMENT: septameta-removals
 
 jobs:
   release:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: septameta-release
+    permissions:
+      contents: write   # create releases and upload assets
+      actions: write    # cancel a run waiting on an older build
+    # On the publishing jobs, not the workflow: a run paused for approval
+    # must not hold up the runs that follow it.
+    concurrency:
+      group: release-septa-meta
+      cancel-in-progress: false   # never let a manual run clobber a scheduled run mid-flight
+    outputs:
+      ask: ${{ steps.gate.outputs.ask }}
+      artifact: ${{ steps.gate.outputs.artifact }}
+      rehearsal: ${{ steps.gate.outputs.rehearsal }}
+      pending: ${{ steps.gate.outputs.pending }}
+      published_sha256: ${{ steps.gate.outputs.published_sha256 }}
+      start_date: ${{ steps.build.outputs.start_date }}
 
     steps:
       - name: Checkout
@@ -107,6 +132,8 @@ jobs:
         #   5. check_septa_meta.py finds no route the app would stop offering,
         #      compared against both the live copy and the newest dated
         #      release, or the removals match approve_removals exactly.
+        #      plan_septa_release.py runs first and keeps unapproved removals
+        #      in the document, so what reaches this check offers them still.
         # septashapes.json needs 1-3, no block from 5, and a difference from
         # the copy on `current` (or no copy yet). Condition 4 doesn't apply:
         # a first shapes publish happens while septameta.json is unchanged.
@@ -117,12 +144,19 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EVENT_NAME: ${{ github.event_name }}
           INPUT_PUSH_RELEASE: ${{ inputs.push_release }}
+          INPUT_REHEARSE: ${{ inputs.rehearse_approval }}
           APPROVE_REMOVALS: ${{ inputs.approve_removals }}
           KILL_SWITCH: ${{ vars.RELEASE_SEPTA_META_ENABLED }}
         run: |
           set -euo pipefail
           PUBLISH=true
           BLOCKED=false
+          REHEARSAL=false
+          if [ "${EVENT_NAME}" = "workflow_dispatch" ] && [ "${INPUT_REHEARSE}" = "true" ]; then
+            REHEARSAL=true
+            PUBLISH=false
+            echo "::notice::Rehearsal: pausing for approval, publishing nothing."
+          fi
           if [ "${EVENT_NAME}" = "workflow_dispatch" ] && [ "${INPUT_PUSH_RELEASE}" != "true" ]; then
             PUBLISH=false
             echo "::notice::Skipping publish: workflow_dispatch with push_release=false (build-only)"
@@ -137,6 +171,9 @@ jobs:
             echo "::error::Refusing to publish from ${GITHUB_REF}; septameta.json is published from main only. Use push_release=false for a build-only run."
           fi
           ELIGIBLE="${PUBLISH}"
+          PLAN_ARGS=()
+          HAVE_CURRENT=false
+          PREVIOUS_NAMES=/nonexistent/route_names.json
           if [ "${PUBLISH}" = "true" ]; then
             TAGS="$(gh release list --repo "${GITHUB_REPOSITORY}" --limit 1000 \
               --json tagName --jq '.[].tagName')"
@@ -150,10 +187,7 @@ jobs:
                 gh release download current --repo "${GITHUB_REPOSITORY}" \
                   --pattern septameta.json --dir /tmp/published --clobber
                 BASELINES+=(--published /tmp/published/septameta.json)
-                if cmp -s /tmp/published/septameta.json ./out/septameta.json; then
-                  PUBLISH=false
-                  echo "::notice::Skipping publish: build is identical to the published septameta.json (SEPTA feed ${START_DATE} unchanged)."
-                fi
+                HAVE_CURRENT=true
               else
                 echo "::warning::'current' has no septameta.json; checking against the newest dated release instead."
               fi
@@ -172,7 +206,16 @@ jobs:
               else
                 echo "::warning::${NEWEST} has no ${DATED_ASSET}."
               fi
+              # Names from the last release, so the report can still name a
+              # route that has left the feed.
+              NAMES_ASSET="route_names_${NEWEST#septameta-}.json"
+              if grep -Fxq "${NAMES_ASSET}" <<< "${DATED_ASSETS}"; then
+                gh release download "${NEWEST}" --repo "${GITHUB_REPOSITORY}" \
+                  --pattern "${NAMES_ASSET}" --dir /tmp/published --clobber
+                PREVIOUS_NAMES="/tmp/published/${NAMES_ASSET}"
+              fi
             fi
+            PLAN_ARGS=("${BASELINES[@]}")
 
             if [ "${#BASELINES[@]}" -eq 0 ]; then
               if grep -Fxq current <<< "${TAGS}" || [ -n "${NEWEST}" ]; then
@@ -185,6 +228,37 @@ jobs:
               fi
             fi
           fi
+
+          # Sets the candidate aside in ./out/pure. If it drops routes nobody
+          # has approved, ./out is rewritten with those routes kept.
+          PLAN="$(python plan_septa_release.py --output-dir ./out --pure-dir ./out/pure \
+            "${PLAN_ARGS[@]}" --approve-removals "${APPROVE_REMOVALS}")"
+          PENDING="$(sed -n 's/^pending=//p' <<< "${PLAN}")"
+          CANDIDATE_SHA="$(sed -n 's/^candidate_sha256=//p' <<< "${PLAN}")"
+
+          # The report informs and decides nothing, so nothing here may fail
+          # the run.
+          mkdir -p /tmp/coverage
+          gh release download coverage --repo "${GITHUB_REPOSITORY}" \
+            --pattern septacoverage.json --dir /tmp/coverage --clobber \
+            || echo "::warning::No coverage document; the report will say unknown."
+          if python report_route_changes.py \
+               --candidate ./out/pure/septameta.json --to-publish ./out/septameta.json \
+               "${PLAN_ARGS[@]}" --gtfs-zip ./out/gtfs_public.zip \
+               --previous-names "${PREVIOUS_NAMES}" \
+               --coverage /tmp/coverage/septacoverage.json --pending "${PENDING}" \
+               --names-output "./out/route_names_${START_DATE}.json" \
+               --report-output ./out/route_changes.md; then
+            cat ./out/route_changes.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning::Could not write the route change report."
+          fi
+
+          if [ "${PUBLISH}" = "true" ] && [ "${HAVE_CURRENT}" = "true" ] \
+               && cmp -s /tmp/published/septameta.json ./out/septameta.json; then
+            PUBLISH=false
+            echo "::notice::Skipping publish: build is identical to the published septameta.json (SEPTA feed ${START_DATE} unchanged)."
+          fi
           if [ "${PUBLISH}" = "true" ]; then
             if ! python check_septa_meta.py --candidate ./out/septameta.json \
                    "${BASELINES[@]}" --approve-removals "${APPROVE_REMOVALS}"; then
@@ -192,6 +266,46 @@ jobs:
               BLOCKED=true
             fi
           fi
+
+          # Ask for approval once per build. A run already waiting on this
+          # exact candidate stands; one waiting on another build is replaced.
+          ASK=false
+          UNGUARDED=false
+          ARTIFACT="septameta-removal-${CANDIDATE_SHA}"
+          if [ "${REHEARSAL}" = "true" ]; then
+            ASK=true
+            ARTIFACT="septameta-rehearsal-${GITHUB_RUN_ID}"
+          elif [ -n "${PENDING}" ] && [ "${ELIGIBLE}" = "true" ] && [ "${BLOCKED}" = "false" ]; then
+            ASK=true
+            WAITING="$(gh run list --repo "${GITHUB_REPOSITORY}" \
+              --workflow release-septa-meta.yml --status waiting --limit 50 \
+              --json databaseId --jq '.[].databaseId')"
+            while IFS= read -r RUN; do
+              if [ -z "${RUN}" ] || [ "${RUN}" = "${GITHUB_RUN_ID}" ]; then
+                continue
+              fi
+              HELD="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN}/artifacts" \
+                --jq '.artifacts[].name')"
+              if grep -Fxq "${ARTIFACT}" <<< "${HELD}"; then
+                ASK=false
+                echo "::notice::Removing ${PENDING} is already waiting for approval: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${RUN}"
+              elif grep -q '^septameta-removal-' <<< "${HELD}"; then
+                echo "::notice::Canceling run ${RUN}: it is waiting on an older build."
+                gh run cancel "${RUN}" --repo "${GITHUB_REPOSITORY}"
+              fi
+            done <<< "${WAITING}"
+          fi
+          if [ "${ASK}" = "true" ]; then
+            RULES="$(gh api "repos/${GITHUB_REPOSITORY}/environments/${REMOVALS_ENVIRONMENT}" \
+              --jq '.protection_rules[].type')"
+            if ! grep -Fxq required_reviewers <<< "${RULES}"; then
+              # The routes are still kept, so the rest of the build goes out.
+              ASK=false
+              UNGUARDED=true
+              echo "::error::Environment ${REMOVALS_ENVIRONMENT} has no required reviewer, so it cannot hold a removal for approval."
+            fi
+          fi
+
           PUBLISH_SHAPES=false
           if [ "${ELIGIBLE}" = "true" ] && [ "${BLOCKED}" = "false" ]; then
             PUBLISH_SHAPES=true
@@ -213,7 +327,15 @@ jobs:
           fi
           echo "publish=${PUBLISH}" >> "$GITHUB_OUTPUT"
           echo "publish_shapes=${PUBLISH_SHAPES}" >> "$GITHUB_OUTPUT"
+          if [ "${UNGUARDED}" = "true" ]; then
+            BLOCKED=true
+          fi
           echo "blocked=${BLOCKED}" >> "$GITHUB_OUTPUT"
+          echo "ask=${ASK}" >> "$GITHUB_OUTPUT"
+          echo "artifact=${ARTIFACT}" >> "$GITHUB_OUTPUT"
+          echo "rehearsal=${REHEARSAL}" >> "$GITHUB_OUTPUT"
+          echo "pending=${PENDING}" >> "$GITHUB_OUTPUT"
+          echo "published_sha256=$(sha256sum ./out/septameta.json | awk '{print $1}')" >> "$GITHUB_OUTPUT"
           echo "Publish decision: ${PUBLISH}; septashapes.json: ${PUBLISH_SHAPES}"
 
       - name: Generate sha256 sidecars
@@ -251,6 +373,16 @@ jobs:
             ./out/septashapes.json
           retention-days: 14
 
+      - name: Set the candidate aside for approval
+        # Kept longer than a review can stay open, which is 30 days.
+        if: steps.gate.outputs.ask == 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: ${{ steps.gate.outputs.artifact }}
+          path: ./out/pure/
+          if-no-files-found: error
+          retention-days: 35
+
       - name: Create or update the dated release
         if: steps.gate.outputs.publish == 'true'
         env:
@@ -263,6 +395,9 @@ jobs:
             "./out/septameta_${START_DATE}.json.sha256"
             "./out/septameta_${START_DATE}.run.txt"
           )
+          if [ -f "./out/route_names_${START_DATE}.json" ]; then
+            ASSETS+=("./out/route_names_${START_DATE}.json")
+          fi
           if gh release view "${TAG}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
             # SEPTA revised the feed inside an effective window it had already
             # opened, so the dated file has to be corrected in place: the
@@ -332,5 +467,109 @@ jobs:
         # Last, so the build artifact above is still uploaded for inspection.
         if: steps.gate.outputs.blocked == 'true'
         run: |
-          echo "::error::septameta.json was not published. See 'Decide whether to publish' for why."
+          echo "::error::Publishing was blocked. See 'Decide whether to publish' for why."
           exit 1
+
+  await-approval:
+    # Does nothing itself. The environment's required reviewer is the pause.
+    needs: release
+    if: needs.release.outputs.ask == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: septameta-removals
+    permissions: {}
+    steps:
+      - name: Record the approval
+        env:
+          PENDING: ${{ needs.release.outputs.pending }}
+        run: |
+          echo "Approved to stop offering ${PENDING:-nothing (rehearsal)}."
+
+  publish-removal:
+    # Publishes the candidate the release job set aside, never a rebuild, so
+    # what was approved is what goes out.
+    needs: [release, await-approval]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: septameta-release
+    permissions:
+      contents: write
+    concurrency:
+      group: release-septa-meta
+      cancel-in-progress: false
+    env:
+      START_DATE: ${{ needs.release.outputs.start_date }}
+      PENDING: ${{ needs.release.outputs.pending }}
+
+    steps:
+      - name: Fetch the approved candidate
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333  # v8.0.2
+        with:
+          name: ${{ needs.release.outputs.artifact }}
+          path: ./approved
+
+      - name: Publish the approved candidate
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REHEARSAL: ${{ needs.release.outputs.rehearsal }}
+          EXPECTED_SHA256: ${{ needs.release.outputs.published_sha256 }}
+          KILL_SWITCH: ${{ vars.RELEASE_SEPTA_META_ENABLED }}
+        run: |
+          set -euo pipefail
+          cd ./approved
+          DATED="septameta_${START_DATE}.json"
+          for f in septameta.json "${DATED}"; do
+            sha256sum "${f}" > "${f}.sha256"
+            echo "sha256(${f}) = $(awk '{print $1}' "${f}.sha256")"
+          done
+          if [ "${REHEARSAL}" = "true" ]; then
+            echo "::notice::Rehearsal: the approval step works. Nothing was published."
+            exit 0
+          fi
+          if [ "${KILL_SWITCH}" != "true" ]; then
+            echo "::error::RELEASE_SEPTA_META_ENABLED is not 'true'; not publishing."
+            exit 1
+          fi
+          if [ "${GITHUB_REF}" != "refs/heads/main" ]; then
+            echo "::error::Refusing to publish from ${GITHUB_REF}."
+            exit 1
+          fi
+
+          # Days may have passed. If a later run has published since, this
+          # candidate is stale and the approval belongs to that run instead.
+          mkdir -p /tmp/live
+          gh release download current --repo "${GITHUB_REPOSITORY}" \
+            --pattern septameta.json --dir /tmp/live --clobber
+          LIVE_SHA256="$(sha256sum /tmp/live/septameta.json | awk '{print $1}')"
+          if [ "${LIVE_SHA256}" != "${EXPECTED_SHA256}" ]; then
+            echo "::error::The published septameta.json has changed since this run asked, so this approval no longer applies. Approve the newer run instead."
+            exit 1
+          fi
+
+          {
+            echo "start_date: ${START_DATE}"
+            echo "generated_at_utc: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            echo "git_sha: ${GITHUB_SHA}"
+            echo "git_ref: ${GITHUB_REF}"
+            echo "workflow_run_url: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "source_url: ${SOURCE_URL}"
+            echo "septameta_sha256: $(awk '{print $1}' septameta.json.sha256)"
+            echo "removals_approved: ${PENDING}"
+          } > "septameta_${START_DATE}.run.txt"
+          cat "septameta_${START_DATE}.run.txt"
+
+          TAG="septameta-${START_DATE}"
+          DATED_ASSETS=("${DATED}" "${DATED}.sha256" "septameta_${START_DATE}.run.txt")
+          if gh release view "${TAG}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release upload "${TAG}" --clobber \
+              --repo "${GITHUB_REPOSITORY}" "${DATED_ASSETS[@]}"
+          else
+            gh release create "${TAG}" \
+              --repo "${GITHUB_REPOSITORY}" \
+              --title "SEPTA meta ${START_DATE}" \
+              --notes "SEPTA route list and feed window for the service period starting ${START_DATE}. Built from ${SOURCE_URL} by workflow run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}." \
+              "${DATED_ASSETS[@]}"
+          fi
+          gh release upload current --clobber \
+            --repo "${GITHUB_REPOSITORY}" septameta.json septameta.json.sha256
+          echo "::notice::Published without ${PENDING}."
