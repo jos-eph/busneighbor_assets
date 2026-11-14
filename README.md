@@ -166,10 +166,10 @@ rather than asserted. Published daily to its own rolling release:
 https://github.com/jos-eph/busneighbor_assets/releases/download/coverage/septacoverage.json
 ```
 
-A day whose aggregation trips any guard (fewer than 7 days observed, too many
-routes proposed for the deny-list, or a window that hasn't caught up with a
-feed change) records its state but does not publish this document. The last
-one that passed stays up.
+A day with fewer than 3 samples is not recorded. A day whose aggregation trips
+any guard (fewer than 7 days observed, too many routes proposed for the
+deny-list, or a window that hasn't caught up with a feed change) records its
+state but does not publish this document. The last one that passed stays up.
 
 ```json
 {
@@ -278,8 +278,8 @@ taken from the same fetch, in one CSV file per UTC day on the
 https://github.com/jos-eph/busneighbor_assets/releases/download/vehicle-positions/septapositions_<YYYY-MM-DD>.csv
 ```
 
-Each row is one vehicle in one sample, so a day with eight samples of about
-900 vehicles is about 7,000 rows:
+Each row is one vehicle in one sample, so a day with three samples of about
+900 vehicles is about 2,700 rows:
 
 ```csv
 sampled_at,feed_time,route_id,direction_id,direction,vehicle_id,trip_id,trip_headsign,lat,lon,bearing_deg,speed_mps,reported_at,report_age_s,stop_id,stop_name,stop_sequence,status

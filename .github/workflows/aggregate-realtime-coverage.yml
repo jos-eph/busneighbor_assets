@@ -5,9 +5,9 @@ name: Aggregate real-time coverage
 # septameta.json's realtime.overrides.no_vehicle_positions.
 #
 # Behavior summary:
-#   * Runs at 01:40 UTC and aggregates the PREVIOUS UTC day, whose last sample
-#     slot was 23:17 UTC. That is 2h20m of slack against cron delay, and it
-#     sits comfortably inside the sampler's 2-day artifact retention.
+#   * Scheduled for 01:40 UTC; aggregates the PREVIOUS UTC day. Scheduled runs
+#     often start hours late. The sampler's 2-day artifact retention is what
+#     keeps the previous day's samples available regardless.
 #   * Manual run via workflow_dispatch; pass an explicit date to re-aggregate a
 #     past day, or push_release=false for a collect-and-build smoke test.
 #   * Publishing is gated by repo variable RELEASE_COVERAGE_ENABLED, which must
@@ -119,10 +119,10 @@ jobs:
           COUNT="$(find samples -name '*.json' | wc -l)"
           echo "Collected ${COUNT} sample(s) for ${DAY}"
 
-          # Fail here rather than letting the aggregator call it a thin day, so
-          # the cause reads "collection failed" and not "SEPTA was quiet".
-          if [ "${COUNT}" -lt 4 ]; then
-            echo "::error::Only ${COUNT} sample(s) collected for ${DAY}; expected 8. Artifacts may have expired, or the sampler is down."
+          # Zero samples means the sampler produced nothing. One or two is a
+          # thin day, which the aggregator records as a warning.
+          if [ "${COUNT}" -eq 0 ]; then
+            echo "::error::No samples collected for ${DAY}. The sampler did not run, or its artifacts have expired."
             exit 1
           fi
 
@@ -155,13 +155,12 @@ jobs:
           CODE=$?
           set -e
 
-          # Exit 2 means a guard tripped: do not act on the proposal, but the
-          # evidence is still true and still worth publishing. Only a hard
-          # failure (1) stops the run.
+          # Exit 2 means a guard tripped: do not act on the proposal, and
+          # withhold septacoverage.json. Only a hard failure (1) stops the run.
           case "${CODE}" in
             0) echo "guards=passed" >> "$GITHUB_OUTPUT" ;;
             2) echo "guards=tripped" >> "$GITHUB_OUTPUT"
-               echo "::warning::A guard tripped for ${DAY}: the coverage document is still published, but the proposed deny-list must not be applied. Expected while the window is filling — days_observed has to reach 7." ;;
+               echo "::warning::A guard tripped for ${DAY}: the coverage document is withheld and the last good one stays up. The proposed deny-list must not be applied. Expected while the window is filling — days_observed has to reach 7." ;;
             *) echo "::error::Aggregator failed with exit ${CODE}"; exit "${CODE}" ;;
           esac
 
