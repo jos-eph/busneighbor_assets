@@ -70,7 +70,7 @@ def write_septameta(path, route_list=ROUTE_LIST, meta=None):
     return path
 
 
-def state_with(days, window_days=28, min_samples=4):
+def state_with(days, window_days=28, min_samples=agg.MIN_SAMPLES_PER_DAY):
     return {
         "window_days": window_days,
         "min_samples_per_day": min_samples,
@@ -133,7 +133,7 @@ class StateTest(unittest.TestCase):
     def test_rerunning_a_date_replaces_rather_than_doubles(self):
         summary = {"date": "2026-09-01", "samples": 8,
                    "positions_by_route": {"47": 100}}
-        state = agg.empty_state(28, 4)
+        state = agg.empty_state(28, agg.MIN_SAMPLES_PER_DAY)
         state = agg.fold_into_state(state, summary, FEED_VERSION, 28)
         state = agg.fold_into_state(state, summary, FEED_VERSION, 28)
         self.assertEqual(state["days"]["2026-09-01"]["positions_by_route"],
@@ -141,7 +141,7 @@ class StateTest(unittest.TestCase):
         self.assertEqual(len(state["days"]), 1)
 
     def test_a_twenty_ninth_day_evicts_the_oldest(self):
-        state = agg.empty_state(28, 4)
+        state = agg.empty_state(28, agg.MIN_SAMPLES_PER_DAY)
         base = datetime.date(2026, 9, 1)
         for offset in range(29):
             date = (base + datetime.timedelta(days=offset)).isoformat()
@@ -155,7 +155,7 @@ class StateTest(unittest.TestCase):
         self.assertIn("2026-09-29", state["days"])
 
     def test_days_are_stored_in_date_order(self):
-        state = agg.empty_state(28, 4)
+        state = agg.empty_state(28, agg.MIN_SAMPLES_PER_DAY)
         for date in ("2026-09-03", "2026-09-01", "2026-09-02"):
             state = agg.fold_into_state(
                 state, {"date": date, "samples": 8, "positions_by_route": {}},
@@ -300,9 +300,20 @@ class MainTest(unittest.TestCase):
                 os.path.exists(os.path.join(tmp, "out",
                                             "realtime_overrides.json")))
 
+    def test_a_day_at_the_minimum_is_recorded(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            a_day(os.path.join(tmp, "samples"), count=agg.MIN_SAMPLES_PER_DAY)
+            code, _ = self._run(tmp, ["--min-days-observed", "1"])
+
+            self.assertEqual(code, agg.EXIT_OK)
+            for name in ("septacoverage_state.json", "septacoverage.json"):
+                self.assertTrue(
+                    os.path.exists(os.path.join(tmp, "out", name)), name)
+
     def test_a_thin_day_is_not_recorded_and_exits_zero(self):
         with tempfile.TemporaryDirectory() as tmp:
-            a_day(os.path.join(tmp, "samples"), count=3)
+            a_day(os.path.join(tmp, "samples"),
+                  count=agg.MIN_SAMPLES_PER_DAY - 1)
             code, _ = self._run(tmp)
 
             self.assertEqual(code, agg.EXIT_OK)

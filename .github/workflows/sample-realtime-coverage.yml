@@ -5,9 +5,9 @@ name: Sample real-time coverage
 # let a separate daily job fold the samples into a rolling window.
 #
 # Behavior summary:
-#   * Eight slots a day, three hours apart, at :17 past. GitHub's scheduler is
-#     heavily contended on the hour and routinely runs 10-20 minutes late
-#     there; for a sampler, punctuality is the product.
+#   * Eight slots a day, three hours apart, at :17 past to stay off the
+#     contended top of the hour. GitHub starts scheduled runs late, often by
+#     hours, and skips some, so a typical day yields three or four samples.
 #   * The slots are UTC, so in EDT they land at 22:17, 01:17, 04:17, 07:17,
 #     10:17, 13:17, 16:17 and 19:17 local, an hour earlier in EST. Either way
 #     two of them fall inside Owl service, which is the window nothing else
@@ -75,7 +75,7 @@ jobs:
 
       - name: Run unit tests
         # After the install and before the fetch, so a bad dependency bump
-        # fails loudly eight times a day rather than quietly zeroing every
+        # fails loudly on every run rather than quietly zeroing every
         # route count — which the aggregator would read as a coverage collapse.
         run: python -m unittest discover -s tests -v
 
