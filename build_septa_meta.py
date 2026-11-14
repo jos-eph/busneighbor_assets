@@ -159,6 +159,18 @@ def route_list(feed: zipfile.ZipFile) -> list[str]:
     return routes
 
 
+def route_names(feed: zipfile.ZipFile) -> dict[str, str]:
+    """{route_id: name} from routes.txt, preferring the long name."""
+    names = {}
+    for row in _read_csv(feed, "routes.txt"):
+        route_id = (row.get("route_id") or "").strip()
+        name = ((row.get("route_long_name") or "").strip()
+                or (row.get("route_short_name") or "").strip())
+        if route_id and name:
+            names[route_id] = name
+    return names
+
+
 def feed_meta(feed: zipfile.ZipFile) -> dict[str, str]:
     """feed_start_date, feed_end_date and feed_version from feed_info.txt."""
     rows = _read_csv(feed, "feed_info.txt")

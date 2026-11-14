@@ -109,6 +109,39 @@ def extra_field_problems(document, route_list: list[str]) -> tuple[list[str], li
     return errors, notices
 
 
+def union_offered(baselines: list) -> tuple[list[str], int, list[str]]:
+    """(routes, readable, messages): every route some readable baseline
+    offers, in first-seen order, and how many baselines could be read."""
+    old: list[str] = []
+    readable = 0
+    messages = []
+    for name, baseline in baselines:
+        try:
+            if isinstance(baseline, _Unparseable):
+                raise ValueError(baseline.reason)
+            offered = offered_routes(baseline)
+        except ValueError as exc:
+            messages.append(f"baseline {name} is unusable ({exc}); ignoring it")
+            continue
+        readable += 1
+        old.extend(r for r in offered if r not in old)
+    return old, readable, messages
+
+
+def load_baselines(paths: list[str]) -> list:
+    """(path, document) pairs; a file that cannot be read stays in the list
+    as unusable, so the caller can tell "none readable" from "none given"."""
+    baselines = []
+    for path in paths:
+        try:
+            baselines.append((path, _load(path)))
+        except OSError as exc:
+            baselines.append((path, _Unparseable(f"unreadable: {exc}")))
+        except json.JSONDecodeError as exc:
+            baselines.append((path, _Unparseable(f"not JSON: {exc}")))
+    return baselines
+
+
 def parse_approval(raw: str | None) -> set[str]:
     return {r.strip() for r in (raw or "").split(",") if r.strip()}
 
@@ -139,18 +172,8 @@ def check(candidate, baselines: list | None,
         messages.append(f"first publish: {len(new)} routes offered")
         return True, messages
 
-    old: list[str] = []
-    readable = 0
-    for name, baseline in baselines:
-        try:
-            if isinstance(baseline, _Unparseable):
-                raise ValueError(baseline.reason)
-            offered = offered_routes(baseline)
-        except ValueError as exc:
-            messages.append(f"baseline {name} is unusable ({exc}); ignoring it")
-            continue
-        readable += 1
-        old.extend(r for r in offered if r not in old)
+    old, readable, skipped = union_offered(baselines)
+    messages.extend(skipped)
 
     # Devices still hold whatever they last parsed, so "nothing readable to
     # compare against" is not permission to publish anything at all.
@@ -210,16 +233,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"::error::Candidate unreadable: {exc}", file=sys.stderr)
         return EXIT_UNSAFE
 
-    baselines = None
-    if args.published:
-        baselines = []
-        for path in args.published:
-            try:
-                baselines.append((path, _load(path)))
-            except OSError as exc:
-                baselines.append((path, _Unparseable(f"unreadable: {exc}")))
-            except json.JSONDecodeError as exc:
-                baselines.append((path, _Unparseable(f"not JSON: {exc}")))
+    baselines = load_baselines(args.published) if args.published else None
 
     safe, messages = check(candidate, baselines,
                            parse_approval(args.approve_removals))

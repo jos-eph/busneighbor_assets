@@ -10,6 +10,8 @@ on:
     paths:
       - 'build_septa_*.py'
       - 'check_septa_meta.py'
+      - 'plan_septa_release.py'
+      - 'report_route_changes.py'
       - 'fetching.py'
       - 'tests/**'
       - '.github/workflows/release-septa-meta.yml'

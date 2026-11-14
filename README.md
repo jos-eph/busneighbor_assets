@@ -18,12 +18,22 @@ Dated releases (`septameta-<feed_start_date>`) carry the same document under
 `septameta_<feed_start_date>.json` for consumers that want to pin. Every asset
 ships a `.sha256` sidecar in `sha256sum -c` format.
 
-A build is not published if it would stop offering a route that the published
-document offers, either by dropping it from `route_list` or by adding it to
-`no_vehicle_positions`. The run fails instead, and a maintainer reruns it with
-`approve_removals` set to exactly the routes it lists. The build is compared
-against both the live copy and the newest dated release, and is refused
-outright when neither can be read. `check_septa_meta.py` makes that decision.
+A build that would stop offering a route the published document offers,
+either by dropping it from `route_list` or by adding it to
+`no_vehicle_positions`, needs a maintainer's approval. Until then the build is
+published with those routes kept, so the rest of the feed is not held back.
+The run pauses in the `septameta-removals` environment and its summary lists
+each change: the route's name, how often the vehicle feed has carried it, and
+whether it looks like a rename. Approving the run publishes the build exactly
+as it was made. A later run that finds the same removal waiting does not ask
+again.
+
+The build is compared against both the live copy and the newest dated release,
+and is refused outright when neither can be read. `check_septa_meta.py` makes
+that decision, `plan_septa_release.py` keeps the pending routes, and
+`report_route_changes.py` writes the summary. Dated releases also carry
+`route_names_<feed_start_date>.json`, which lets a later summary name a route
+that has left the feed.
 
 Only the weekly workflow writes the `current` release, and only from `main`:
 its job runs in the `septameta-release` environment, which holds the
