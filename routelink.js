@@ -4,7 +4,8 @@
 // Same-origin copy of the route catalog, written into the site by the Pages
 // build. The release asset itself cannot be fetched from a browser: it sends
 // no Access-Control-Allow-Origin header.
-export const ROUTE_LIST_URL = 'septameta.json';
+// Root-relative, so the route pages under /route/ find it too.
+export const ROUTE_LIST_URL = '/septameta.json';
 
 export const LINK_BASE = 'https://bus.dydx.org/go';
 export const APP_LINK_BASE = 'busneighbor://go';
@@ -56,7 +57,8 @@ function el(tag, props = {}, ...children) {
   return node;
 }
 
-export async function initSharePage(root = document) {
+/** `preselect`: routes chosen when the page opens, as on a route's own page. */
+export async function initSharePage(root = document, { preselect = [] } = {}) {
   const picker = root.getElementById('route-picker');
   const filter = root.getElementById('route-filter');
   const status = root.getElementById('route-status');
@@ -122,7 +124,7 @@ export async function initSharePage(root = document) {
     try {
       routes = await fetchRoutes();
       // Start from a link's routes when the page is opened with ?routes=.
-      for (const id of parseRoutes(location.search)) {
+      for (const id of [...preselect, ...parseRoutes(location.search)]) {
         if (routes.includes(id)) selected.add(id);
       }
       render();
