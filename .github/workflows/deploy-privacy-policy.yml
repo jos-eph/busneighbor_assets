@@ -17,6 +17,9 @@ on:
       - 'go.html'
       - 'routelink.js'
       - 'routelink.css'
+      - 'routepage.css'
+      - 'route_page.html'
+      - 'build_route_pages.py'
       - '.github/workflows/deploy-privacy-policy.yml'
   # The route pages read septameta.json from the site, so redeploy whenever a
   # release finishes. The daily run covers a release paused for approval.
@@ -66,7 +69,7 @@ jobs:
             --variable description="Get help with BusNeighbor, the free live SEPTA bus and trolley tracker for Philadelphia. Email bus@dydx.org with questions or problems." \
             --output=_site/support.html
           cp style.css index.html robots.txt sitemap.xml _site/
-          cp share.html go.html routelink.js routelink.css _site/
+          cp share.html go.html routelink.js routelink.css routepage.css _site/
           cp -r images _site/
 
       # Browsers can't fetch the release asset (no CORS header), so the site
@@ -77,6 +80,19 @@ jobs:
           curl -fsSL --retry 3 -o _site/septameta.json \
             https://github.com/jos-eph/busneighbor_assets/releases/download/current/septameta.json
           python3 -c "import json; assert json.load(open('_site/septameta.json'))['buses']['route_list']"
+
+      # One page per route, at /route/<id>. Route 47 only while the design is
+      # reviewed.
+      - name: Build the route pages
+        run: |
+          mkdir -p /tmp/route-data
+          for f in septashapes.json route_names.json; do
+            curl -fsSL --retry 3 -o "/tmp/route-data/${f}" \
+              "https://github.com/jos-eph/busneighbor_assets/releases/download/current/${f}"
+          done
+          python3 build_route_pages.py --meta _site/septameta.json \
+            --shapes /tmp/route-data/septashapes.json --names /tmp/route-data/route_names.json \
+            --output-dir _site/route --routes 47
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v5
