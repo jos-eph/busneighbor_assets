@@ -325,8 +325,26 @@ jobs:
               fi
             fi
           fi
+          # Route names for the website, kept on 'current' even when the
+          # route list is unchanged.
+          PUBLISH_NAMES=false
+          NAMES="./out/route_names_${START_DATE}.json"
+          if [ "${ELIGIBLE}" = "true" ] && [ "${BLOCKED}" = "false" ]; then
+            if grep -Fxq current <<< "${TAGS}" && [ -s "${NAMES}" ]; then
+              PUBLISH_NAMES=true
+              if grep -Fxq route_names.json <<< "${CURRENT_ASSETS}"; then
+                mkdir -p /tmp/published-names
+                gh release download current --repo "${GITHUB_REPOSITORY}" \
+                  --pattern route_names.json --dir /tmp/published-names --clobber
+                if cmp -s /tmp/published-names/route_names.json "${NAMES}"; then
+                  PUBLISH_NAMES=false
+                fi
+              fi
+            fi
+          fi
           echo "publish=${PUBLISH}" >> "$GITHUB_OUTPUT"
           echo "publish_shapes=${PUBLISH_SHAPES}" >> "$GITHUB_OUTPUT"
+          echo "publish_names=${PUBLISH_NAMES}" >> "$GITHUB_OUTPUT"
           if [ "${UNGUARDED}" = "true" ]; then
             BLOCKED=true
           fi
@@ -437,6 +455,16 @@ jobs:
           fi
           gh release upload current --clobber \
             --repo "${GITHUB_REPOSITORY}" "${ASSETS[@]}"
+
+      - name: Publish route names to 'current'
+        if: steps.gate.outputs.publish_names == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          cp "./out/route_names_${START_DATE}.json" ./out/route_names.json
+          gh release upload current --clobber \
+            --repo "${GITHUB_REPOSITORY}" ./out/route_names.json
 
       - name: Prune dated releases beyond the most recent 30
         # Keep the 30 most recent dated releases; never prune `current`. Sort by
