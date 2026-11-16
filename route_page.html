@@ -28,7 +28,7 @@
   <header class="hero">
     <div class="wrap hero-grid">
       <div class="hero-text">
-        <p class="brand"><a href="/"><img src="/images/icon-192.png" width="40" height="40" alt="">BusNeighbor</a></p>
+        <!-- #include brand.html -->
         <h1><span class="route-badge">$route_id</span> <span class="nowrap">SEPTA Route $route_id</span></h1>
         <p class="tagline">$name_html</p>
         <p class="lede">See where every Route $route_id $vehicle is right now, which way it's heading, and
@@ -36,8 +36,7 @@
           app built for riders who are blind or have low vision, and that makes it clearer for
           everyone.</p>
         <div class="store-slot">
-          <a class="store-badge" href="https://apps.apple.com/app/busneighbor/id6812131455"><img src="/images/app-store-badge.svg" width="120" height="40" alt="Download on the App Store"></a>
-          <a class="store-badge store-badge-play" href="https://play.google.com/store/apps/details?id=org.dydx.busneighbor_flutter"><img src="/images/google-play-badge.png" width="155" height="60" alt="Get it on Google Play"></a>
+          <!-- #include store-badges.html -->
           <p class="store-note">Free. No ads, no accounts, no tracking.</p>
         </div>
         <p class="open-app"><span>Have the app?</span> <a class="button outline-button" href="$go_url">Open Route $route_id in BusNeighbor</a></p>
@@ -103,24 +102,7 @@
     </div>
   </main>
 
-  <footer>
-    <div class="wrap">
-      <nav aria-label="Site">
-        <ul class="footer-links">
-          <li><a href="/">BusNeighbor</a></li>
-          <li><a href="/support.html">Support</a></li>
-          <li><a href="/bn_privacy.html">Privacy policy</a></li>
-          <li><a href="mailto:bus@dydx.org">bus@dydx.org</a></li>
-        </ul>
-      </nav>
-      <p>BusNeighbor is not affiliated with, endorsed by, or operated by SEPTA. Route data from
-        SEPTA's public schedule.</p>
-      <p>Apple and the Apple logo are trademarks of Apple Inc., registered in the U.S. and other
-        countries. App Store is a service mark of Apple Inc. Google Play and the Google Play logo are
-        trademarks of Google LLC.</p>
-      <p>© 2026 Joseph D. Mirarchi</p>
-    </div>
-  </footer>
+  <!-- #include footer.html -->
   <script type="module">
     import { initSharePage } from '/routelink.js';
     initSharePage(document, { preselect: ['$route_id'] });

@@ -7,46 +7,56 @@
   <title>BusNeighbor — Make a route link</title>
   <meta name="description" content="Pick bus and trolley routes and get a link that opens BusNeighbor showing them.">
   <link rel="canonical" href="https://bus.dydx.org/share.html">
-  <link rel="icon" href="images/icon-192.png">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="routelink.css">
+  <link rel="icon" href="/images/icon-192.png">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/routelink.css">
 </head>
-<body>
+<body class="landing tool-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <header class="tool-header">
+    <div class="wrap">
+      <!-- #include brand.html -->
+    </div>
+  </header>
+
   <main id="main-content">
-    <p><a href="./">BusNeighbor</a></p>
-    <h1>Make a route link</h1>
-    <p>Pick the routes to show. The link opens BusNeighbor with those routes on the map. Anyone who
-      opens it is asked before their own routes are replaced.</p>
+    <div class="wrap">
+      <h1>Make a route link</h1>
+      <p>Pick the routes to show. The link opens BusNeighbor with those routes on the map. Anyone
+        who opens it is asked before their own routes are replaced.</p>
 
-    <form id="route-form">
-      <fieldset class="picker-panel">
-        <legend>Choose routes</legend>
-        <button id="route-clear" class="text-button" type="button" disabled>Clear all</button>
-        <label class="filter-label" for="route-filter">Find a route</label>
-        <input id="route-filter" type="search" inputmode="search" autocomplete="off" spellcheck="false" placeholder="Route number, like 47">
-        <div id="route-picker" class="route-options"></div>
-      </fieldset>
+      <form id="route-form">
+        <fieldset class="picker-panel">
+          <legend>Choose routes</legend>
+          <button id="route-clear" class="text-button" type="button" disabled>Clear all</button>
+          <label class="filter-label" for="route-filter">Find a route</label>
+          <input id="route-filter" type="search" inputmode="search" autocomplete="off" spellcheck="false" placeholder="Route number, like 47">
+          <div id="route-picker" class="route-options"></div>
+        </fieldset>
 
-      <p id="route-status" role="status" aria-live="polite">Loading the route list…</p>
-      <button id="route-retry" type="button" hidden>Try again</button>
-    </form>
+        <p id="route-status" role="status" aria-live="polite">Loading the route list…</p>
+        <button id="route-retry" type="button" hidden>Try again</button>
+      </form>
 
-    <section id="link-result" aria-labelledby="link-heading" hidden>
-      <h2 id="link-heading">Your link</h2>
-      <label for="link-output">Link</label>
-      <input id="link-output" type="url" readonly>
-      <div class="link-actions">
-        <button id="link-copy" type="button">Copy link</button>
-        <button id="link-share" type="button" hidden>Share</button>
-        <a id="link-open" class="button" href="busneighbor://go">Open in BusNeighbor</a>
+      <div id="link-result" hidden>
+        <h2>Your link</h2>
+        <label for="link-output">Link</label>
+        <input id="link-output" type="url" readonly>
+        <div class="link-actions">
+          <button id="link-copy" type="button">Copy link</button>
+          <button id="link-share" type="button" hidden>Share</button>
+          <a id="link-open" class="button" href="busneighbor://go">Open in BusNeighbor</a>
+        </div>
+        <p class="hint">“Open in BusNeighbor” works on a phone with the app installed.</p>
       </div>
-      <p class="hint">“Open in BusNeighbor” works on a phone with the app installed.</p>
-    </section>
 
-    <noscript><p>This page needs JavaScript to load the route list.</p></noscript>
+      <noscript><p>This page needs JavaScript to load the route list.</p></noscript>
+    </div>
   </main>
+
+  <!-- #include footer.html -->
   <script type="module">
-    import { initSharePage } from './routelink.js';
+    import { initSharePage } from '/routelink.js';
     initSharePage();
   </script>
 </body>

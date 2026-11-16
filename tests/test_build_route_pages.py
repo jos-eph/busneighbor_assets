@@ -72,6 +72,8 @@ class BuildTest(unittest.TestCase):
         self.assertIn("preselect: ['47']", page)
         self.assertIn("runs mostly north and south", page)
         self.assertNotIn("$", page)
+        self.assertNotIn("#include", page)
+        self.assertIn("not affiliated with, endorsed by, or operated by SEPTA", page)
 
     def test_names_are_escaped(self):
         out, _ = self.build()

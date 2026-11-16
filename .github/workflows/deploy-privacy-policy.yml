@@ -20,6 +20,8 @@ on:
       - 'routepage.css'
       - 'route_page.html'
       - 'build_route_pages.py'
+      - 'build_site.py'
+      - 'partials/**'
       - '.github/workflows/deploy-privacy-policy.yml'
   # The route pages read septameta.json from the site, so redeploy whenever a
   # release finishes. The daily run covers a release paused for approval.
@@ -68,8 +70,10 @@ jobs:
             --metadata canonical="https://bus.dydx.org/support.html" \
             --variable description="Get help with BusNeighbor, the free live SEPTA bus and trolley tracker for Philadelphia. Email bus@dydx.org with questions or problems." \
             --output=_site/support.html
-          cp style.css index.html robots.txt sitemap.xml _site/
-          cp share.html go.html routelink.js routelink.css routepage.css _site/
+          cp style.css robots.txt sitemap.xml _site/
+          cp routelink.js routelink.css routepage.css _site/
+          # index, share, and go, with the shared pieces in partials/ filled in.
+          python3 build_site.py --output-dir _site
           cp -r images _site/
 
       # Browsers can't fetch the release asset (no CORS header), so the site

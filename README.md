@@ -369,3 +369,22 @@ this repository's stdlib code, `publish_day_file.sh` and
 JSON file per day; `migrate_legacy_positions.sh` converts any such file still
 on the release to CSV on the next run, deletes the JSON once its rows are all
 in the CSV, and does nothing once none are left.
+
+## Website
+
+bus.dydx.org is built by
+[`.github/workflows/deploy-privacy-policy.yml`](.github/workflows/deploy-privacy-policy.yml)
+into plain static files. Shared pieces (footer, store badges, brand link) live in
+`partials/` and are filled in at build time by `build_site.py`, so a page in the
+repository shows `<!-- #include … -->` markers until it is built. The route pages
+come from `route_page.html` via `build_route_pages.py`.
+
+To preview, build into a folder and serve it:
+
+```
+python3 build_site.py --output-dir _site
+cp style.css routelink.js routelink.css routepage.css _site/ && cp -r images _site/
+python3 -m http.server --directory _site
+```
+
+The route picker also needs `septameta.json` from the `current` release in `_site`.
