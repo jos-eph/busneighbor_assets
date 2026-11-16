@@ -128,6 +128,12 @@ export async function initSharePage(root = document, { preselect = [] } = {}) {
         if (routes.includes(id)) selected.add(id);
       }
       render();
+      // Bring the first chosen route into view inside the scrolling list.
+      const first = picker.querySelector('input:checked');
+      if (first) {
+        const top = first.parentElement.offsetTop - picker.offsetTop;
+        picker.scrollTop = top - picker.clientHeight / 3;
+      }
     } catch (error) {
       console.error(error);
       status.textContent = "Couldn't load the route list. Check your connection, then try again.";

@@ -1,20 +1,24 @@
-/* share.html and go.html. Colors come from style.css. */
+/* share.html, go.html, and the route pages. Base colors come from style.css. */
+
+:root {
+  --chip-line: #767c87;
+  --chip-on-bg: #dbe8f6;
+  --chip-on-line: #0044cc;
+  --picker-bg: #f6f7f9;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --chip-line: #7d8592;
+    --chip-on-bg: #1d3550;
+    --chip-on-line: #66b2ff;
+    --picker-bg: #181c22;
+  }
+}
 
 /* The display rules below would otherwise override the hidden attribute. */
 [hidden] {
   display: none !important;
-}
-
-fieldset {
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  margin: 1.25rem 0;
-  padding: 1rem;
-}
-
-legend {
-  font-weight: 600;
-  padding: 0 0.5rem;
 }
 
 label[for] {
@@ -32,46 +36,119 @@ input[type="url"] {
   font: inherit;
   color: var(--text);
   background: var(--bg);
-  border: 1px solid var(--text);
+  border: 1px solid var(--chip-line);
   border-radius: 0.5rem;
+}
+
+input::placeholder {
+  color: var(--chip-line);
+  opacity: 1;
+}
+
+/* The route picker: a panel of chips, as in the app. */
+.picker-panel {
+  margin: 1.25rem 0 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--picker-bg);
+}
+
+@media (min-width: 40rem) {
+  .picker-panel { padding: 1rem 1.25rem; }
+}
+
+/* Floated, so it sits in the panel beside Clear all instead of on the border. */
+.picker-panel legend {
+  float: left;
+  padding: 0;
+  font-weight: 700;
+  font-size: 1.0625rem;
+  line-height: 2.75rem;
+}
+
+.picker-panel .text-button {
+  float: right;
+}
+
+.picker-panel .filter-label {
+  clear: both;
+  padding-top: 0.25rem;
+  margin-top: 0;
 }
 
 .route-options {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+  clear: both;
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
-  max-height: 22rem;
+  margin-top: 1rem;
+  max-height: 20rem;
   overflow-y: auto;
-  min-height: 2.75rem;
+  /* Room for the focus ring inside the scroll area. */
+  padding: 4px;
+  margin-left: -4px;
+  margin-right: -4px;
 }
 
 .route-option {
-  display: flex;
+  position: relative;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  gap: 0.3rem;
+  box-sizing: border-box;
+  min-width: 2.75rem;
   min-height: 2.75rem;
-  padding: 0 0.75rem;
-  border: 1px solid var(--border);
+  padding: 0 0.9rem;
+  border: 1px solid var(--chip-line);
   border-radius: 0.5rem;
+  background: var(--bg);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
   cursor: pointer;
-  overflow-wrap: anywhere;
+  user-select: none;
+}
+
+/* The checkbox stays for screen readers and keyboards; the chip is what shows. */
+.route-option input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+
+.route-option:hover {
+  border-color: var(--text);
 }
 
 .route-option:has(input:checked) {
-  border: 2px solid var(--link);
-  font-weight: 600;
+  background: var(--chip-on-bg);
+  border-color: var(--chip-on-line);
+  font-weight: 700;
+}
+
+.route-option:has(input:checked)::before {
+  content: "✓";
+  font-weight: 700;
+}
+
+.route-option:has(input:focus-visible) {
+  outline: 3px solid var(--link);
+  outline-offset: 2px;
 }
 
 .route-option:has(input:disabled) {
-  opacity: 0.55;
+  opacity: 0.45;
   cursor: default;
 }
 
-.route-option input {
-  width: 1.25rem;
-  height: 1.25rem;
-  flex: none;
-  accent-color: var(--link);
+.route-option:has(input:disabled):hover {
+  border-color: var(--chip-line);
 }
 
 button,
@@ -91,8 +168,24 @@ a.button {
   cursor: pointer;
 }
 
+/* Quiet buttons: Clear all, and the open-in-app link on a route page. */
+button.text-button,
+a.outline-button {
+  color: var(--link);
+  background: transparent;
+  border-color: transparent;
+}
+
+a.outline-button {
+  border-color: var(--link);
+}
+
+button.text-button:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
 button:disabled {
-  opacity: 0.55;
+  opacity: 0.45;
   cursor: default;
 }
 
@@ -121,8 +214,15 @@ input:focus-visible {
   gap: 1rem;
 }
 
+.nowrap {
+  white-space: nowrap;
+}
+
 @media (forced-colors: active) {
   .route-option:has(input:checked) {
-    border-color: Highlight;
+    border: 3px solid Highlight;
+  }
+  .route-option:has(input:focus-visible) {
+    outline-color: Highlight;
   }
 }

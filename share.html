@@ -19,17 +19,16 @@
       opens it is asked before their own routes are replaced.</p>
 
     <form id="route-form">
-      <label for="route-filter">Find a route</label>
-      <input id="route-filter" type="search" inputmode="search" autocomplete="off" spellcheck="false">
-
-      <fieldset>
-        <legend>Routes</legend>
+      <fieldset class="picker-panel">
+        <legend>Choose routes</legend>
+        <button id="route-clear" class="text-button" type="button" disabled>Clear all</button>
+        <label class="filter-label" for="route-filter">Find a route</label>
+        <input id="route-filter" type="search" inputmode="search" autocomplete="off" spellcheck="false" placeholder="Route number, like 47">
         <div id="route-picker" class="route-options"></div>
       </fieldset>
 
       <p id="route-status" role="status" aria-live="polite">Loading the route list…</p>
       <button id="route-retry" type="button" hidden>Try again</button>
-      <button id="route-clear" type="button" disabled>Clear all</button>
     </form>
 
     <section id="link-result" aria-labelledby="link-heading" hidden>

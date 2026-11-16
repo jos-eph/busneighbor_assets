@@ -119,6 +119,12 @@ def shape_svg(route_id: str, directions: list[dict]) -> tuple[str, str]:
     return svg, "North is at the top. Dots mark the ends of the line."
 
 
+def keep_together(text: str) -> str:
+    """Escaped text in which a hyphenated word like 5th-Godfrey never breaks at the hyphen."""
+    words = html.escape(text).split(" ")
+    return " ".join(f'<span class="nowrap">{w}</span>' if "-" in w else w for w in words)
+
+
 def render_page(template: string.Template, route_id: str, name: str, shapes: list[dict]) -> str:
     vehicle = vehicle_noun(route_id)
     directions = [d["name"] for d in shapes if d.get("name")]
@@ -135,7 +141,7 @@ def render_page(template: string.Template, route_id: str, name: str, shapes: lis
         url=f"{SITE}/route/{route_id}",
         go_url=f"{SITE}/go?routes={route_id}",
         route_id=route_id,
-        name=html.escape(name or f"Route {route_id}"),
+        name_html=keep_together(name or f"Route {route_id}"),
         vehicle=vehicle,
         directions=html.escape(" and ".join(directions) if directions else "both ways"),
         shape_svg=svg,

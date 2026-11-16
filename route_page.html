@@ -29,8 +29,8 @@
     <div class="wrap hero-grid">
       <div class="hero-text">
         <p class="brand"><a href="/"><img src="/images/icon-192.png" width="40" height="40" alt="">BusNeighbor</a></p>
-        <h1><span class="route-badge">$route_id</span> SEPTA Route $route_id</h1>
-        <p class="tagline">$name</p>
+        <h1><span class="route-badge">$route_id</span> <span class="nowrap">SEPTA Route $route_id</span></h1>
+        <p class="tagline">$name_html</p>
         <p class="lede">See where every Route $route_id $vehicle is right now, which way it's heading, and
           where detours send it, on a map with data refreshed every 30 seconds. BusNeighbor is a free
           app built for riders who are blind or have low vision, and that makes it clearer for
@@ -40,7 +40,7 @@
           <a class="store-badge store-badge-play" href="https://play.google.com/store/apps/details?id=org.dydx.busneighbor_flutter"><img src="/images/google-play-badge.png" width="155" height="60" alt="Get it on Google Play"></a>
           <p class="store-note">Free. No ads, no accounts, no tracking.</p>
         </div>
-        <p class="open-app">Have the app? <a href="$go_url">Open Route $route_id in BusNeighbor</a></p>
+        <p class="open-app"><span>Have the app?</span> <a class="button outline-button" href="$go_url">Open Route $route_id in BusNeighbor</a></p>
       </div>
       <figure class="route-shape">
         $shape_svg
@@ -60,17 +60,16 @@
             BusNeighbor with all of them on the map.</p>
 
           <form id="route-form">
-            <label for="route-filter">Find a route</label>
-            <input id="route-filter" type="search" inputmode="search" autocomplete="off" spellcheck="false">
-
-            <fieldset>
-              <legend>Routes</legend>
+            <fieldset class="picker-panel">
+              <legend>Choose routes</legend>
+              <button id="route-clear" class="text-button" type="button" disabled>Clear all</button>
+              <label class="filter-label" for="route-filter">Find a route</label>
+              <input id="route-filter" type="search" inputmode="search" autocomplete="off" spellcheck="false" placeholder="Route number, like 47">
               <div id="route-picker" class="route-options"></div>
             </fieldset>
 
             <p id="route-status" role="status" aria-live="polite">Loading the route list…</p>
             <button id="route-retry" type="button" hidden>Try again</button>
-            <button id="route-clear" type="button" disabled>Clear all</button>
           </form>
 
           <div id="link-result" hidden>
