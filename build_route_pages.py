@@ -15,6 +15,8 @@ import string
 import sys
 from pathlib import Path
 
+import build_site
+
 SITE = "https://bus.dydx.org"
 TEMPLATE = Path(__file__).with_name("route_page.html")
 
@@ -156,7 +158,9 @@ def build(meta: dict, shapes: dict, names: dict, output_dir: Path, only: list[st
         if unknown:
             raise ValueError(f"not offered: {', '.join(unknown)}")
         routes = [r for r in routes if r in only]
-    template = string.Template(TEMPLATE.read_text(encoding="utf-8"))
+    # Shared pieces (footer, store badges) first, then the per-route values.
+    source = build_site.expand_includes(TEMPLATE.read_text(encoding="utf-8"))
+    template = string.Template(source)
     output_dir.mkdir(parents=True, exist_ok=True)
     for route_id in routes:
         page = render_page(template, route_id, names.get(route_id, ""),
