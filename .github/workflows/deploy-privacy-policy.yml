@@ -13,7 +13,18 @@ on:
       - 'images/**'
       - 'template.html'
       - 'style.css'
+      - 'share.html'
+      - 'go.html'
+      - 'routelink.js'
+      - 'routelink.css'
       - '.github/workflows/deploy-privacy-policy.yml'
+  # The route pages read septameta.json from the site, so redeploy whenever a
+  # release finishes. The daily run covers a release paused for approval.
+  workflow_run:
+    workflows: ["Release SEPTA meta"]
+    types: [completed]
+  schedule:
+    - cron: '23 7 * * *'
   workflow_dispatch:
 
 permissions:
@@ -55,7 +66,17 @@ jobs:
             --variable description="Get help with BusNeighbor, the free live SEPTA bus and trolley tracker for Philadelphia. Email bus@dydx.org with questions or problems." \
             --output=_site/support.html
           cp style.css index.html robots.txt sitemap.xml _site/
+          cp share.html go.html routelink.js routelink.css _site/
           cp -r images _site/
+
+      # Browsers can't fetch the release asset (no CORS header), so the site
+      # serves its own copy. A failed download fails the build and leaves the
+      # previous deploy live.
+      - name: Copy the route list
+        run: |
+          curl -fsSL --retry 3 -o _site/septameta.json \
+            https://github.com/jos-eph/busneighbor_assets/releases/download/current/septameta.json
+          python3 -c "import json; assert json.load(open('_site/septameta.json'))['buses']['route_list']"
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v5

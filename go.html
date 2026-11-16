@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <!-- Every route link shares this page, so it stays out of search results. -->
+  <meta name="robots" content="noindex">
+  <title>BusNeighbor — Open routes</title>
+  <link rel="icon" href="images/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="routelink.css">
+</head>
+<body>
+  <main id="main-content">
+    <p><a href="./">BusNeighbor</a></p>
+    <h1>Open routes in BusNeighbor</h1>
+    <p id="go-summary">This link shows routes in BusNeighbor.</p>
+
+    <h2>Have the app?</h2>
+    <p><a id="go-open" class="button" href="busneighbor://go">Open in BusNeighbor</a></p>
+    <p class="hint">BusNeighbor asks before it replaces the routes you already have.</p>
+
+    <h2>Need the app?</h2>
+    <p>BusNeighbor is free. Install it, then come back and open this link again.</p>
+    <p class="store-row">
+      <a href="https://apps.apple.com/app/busneighbor/id6812131455"><img src="images/app-store-badge.svg" width="120" height="40" alt="Download on the App Store"></a>
+      <a href="https://play.google.com/store/apps/details?id=org.dydx.busneighbor_flutter"><img src="images/google-play-badge.png" width="155" height="60" alt="Get it on Google Play"></a>
+    </p>
+  </main>
+  <script type="module">
+    import { initGoPage } from './routelink.js';
+    initGoPage();
+  </script>
+</body>
+</html>
