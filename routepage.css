@@ -33,8 +33,16 @@
 }
 
 .route-page .open-app {
-  margin: 1.5rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin: 1.75rem 0 0;
   font-weight: 600;
+}
+
+@media (max-width: 39.99rem) {
+  .route-page .hero h1 { font-size: 1.75rem; }
 }
 
 /* The route's line, drawn from its shape. */

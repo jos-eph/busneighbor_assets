@@ -67,7 +67,7 @@ class BuildTest(unittest.TestCase):
         page = (out / "47.html").read_text(encoding="utf-8")
         self.assertIn("<title>SEPTA Route 47 Live Bus Tracker — BusNeighbor</title>", page)
         self.assertIn('href="https://bus.dydx.org/route/47"', page)
-        self.assertIn("Whitman Plaza to 5th-Godfrey", page)
+        self.assertIn('Whitman Plaza to <span class="nowrap">5th-Godfrey</span>', page)
         self.assertIn("Southbound and Northbound", page)
         self.assertIn("preselect: ['47']", page)
         self.assertIn("runs mostly north and south", page)
