@@ -1,0 +1,56 @@
+{
+  "v": 1,
+  "about": "Neighborhoods, towns, and landmarks shown on route pages. An area is listed when enough of the route's stops are inside its boundary, or the route starts or ends there. A landmark is listed when a stop is named for it or it is within a few hundred meters of a stop.",
+  "sources": {
+    "philadelphia_neighborhoods": "Abaca Labs, via OpenDataPhilly (CC BY 4.0)",
+    "towns": "U.S. Census Bureau TIGERweb (public domain)",
+    "landmarks": "OpenStreetMap contributors (ODbL)"
+  },
+  "checked_against_gtfs": "v202611010",
+  "routes": {
+    "47": {
+      "areas": [
+        {
+          "name": "East Oak Lane",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Olney",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hunting Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hartranft",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Ludlow",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Poplar",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bella Vista",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lower Moyamensing",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Pennsylvania Hospital",
+        "Wills Eye Hospital",
+        "Thomas Jefferson University",
+        "Whitman Plaza",
+        "Fashion District Philadelphia",
+        "African American Museum in Philadelphia"
+      ]
+    }
+  }
+}

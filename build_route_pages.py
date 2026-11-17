@@ -1,8 +1,8 @@
 """Write one web page per offered route, for the Pages build.
 
-Reads septameta.json (which routes), septashapes.json (each route's line), and
-route_names.json (each route's name), and writes <output-dir>/<route>.html from
-route_page.html. Offered means the app's rule: buses.route_list, minus
+Reads septameta.json (which routes), septashapes.json (each route's line),
+route_names.json (each route's name), and optionally route_places.json (the areas
+and landmarks along it), and writes <output-dir>/<route>.html from route_page.html. Offered means the app's rule: buses.route_list, minus
 realtime.overrides.no_vehicle_positions, in catalog order.
 """
 
@@ -19,6 +19,8 @@ import build_site
 
 SITE = "https://bus.dydx.org"
 TEMPLATE = Path(__file__).with_name("route_page.html")
+PLACES = Path(__file__).with_name("route_places.json")
+NEIGHBORHOODS_LICENSE = "https://creativecommons.org/licenses/by/4.0/"
 
 # Same pattern as routelink.js and the app's link parser.
 ROUTE_ID = re.compile(r"^[A-Za-z0-9_-]{1,16}$")
@@ -127,7 +129,52 @@ def keep_together(text: str) -> str:
     return " ".join(f'<span class="nowrap">{w}</span>' if "-" in w else w for w in words)
 
 
-def render_page(template: string.Template, route_id: str, name: str, shapes: list[dict]) -> str:
+def join_list(items: list[str]) -> str:
+    """Items as a phrase with the serial comma: "A, B, and C"."""
+    if len(items) <= 2:
+        return " and ".join(items)
+    return f"{', '.join(items[:-1])}, and {items[-1]}"
+
+
+def area_label(areas: list[dict]) -> str:
+    in_city = [a["in_philadelphia"] for a in areas]
+    if all(in_city):
+        return "Neighborhoods"
+    if not any(in_city):
+        return "Towns"
+    return "Neighborhoods and towns"
+
+
+def places_section(route_id: str, places: dict) -> str:
+    """The "Where Route N goes" section, or nothing when the route has no places."""
+    areas = places.get("areas", [])
+    landmarks = places.get("landmarks", [])
+    if not areas and not landmarks:
+        return ""
+    lines = []
+    if areas:
+        names = join_list([html.escape(a["name"]) for a in areas])
+        lines.append(f"<p><strong>{area_label(areas)} it stops in:</strong> {names}.</p>")
+    if landmarks:
+        names = join_list([html.escape(n) for n in landmarks])
+        lines.append(f"<p><strong>Near its stops:</strong> {names}.</p>")
+    credits = []
+    if any(a["in_philadelphia"] for a in areas):
+        credits.append(f'Philadelphia neighborhood boundaries from Abaca Labs, '
+                       f'<a href="{NEIGHBORHOODS_LICENSE}" rel="license">CC BY 4.0</a>.')
+    if landmarks:
+        credits.append("Landmarks from OpenStreetMap.")
+    if credits:
+        lines.append(f'<p class="source-note">{" ".join(credits)}</p>')
+    body = "\n          ".join(lines)
+    return (f'<section aria-labelledby="goes">\n'
+            f'          <h2 id="goes">Where Route {route_id} goes</h2>\n'
+            f'          {body}\n'
+            f'        </section>')
+
+
+def render_page(template: string.Template, route_id: str, name: str, shapes: list[dict],
+                places: dict | None = None) -> str:
     vehicle = vehicle_noun(route_id)
     directions = [d["name"] for d in shapes if d.get("name")]
     svg, caption = shape_svg(route_id, shapes)
@@ -148,10 +195,12 @@ def render_page(template: string.Template, route_id: str, name: str, shapes: lis
         directions=html.escape(" and ".join(directions) if directions else "both ways"),
         shape_svg=svg,
         caption=html.escape(caption),
+        places_section=places_section(route_id, places or {}),
     )
 
 
-def build(meta: dict, shapes: dict, names: dict, output_dir: Path, only: list[str] | None) -> list[str]:
+def build(meta: dict, shapes: dict, names: dict, output_dir: Path, only: list[str] | None,
+          places: dict | None = None) -> list[str]:
     routes = offered_routes(meta)
     if only:
         unknown = [r for r in only if r not in routes]
@@ -161,10 +210,12 @@ def build(meta: dict, shapes: dict, names: dict, output_dir: Path, only: list[st
     # Shared pieces (footer, store badges) first, then the per-route values.
     source = build_site.expand_includes(TEMPLATE.read_text(encoding="utf-8"))
     template = string.Template(source)
+    route_places = (places or {}).get("routes", {})
     output_dir.mkdir(parents=True, exist_ok=True)
     for route_id in routes:
         page = render_page(template, route_id, names.get(route_id, ""),
-                           shapes.get("routes", {}).get(route_id, []))
+                           shapes.get("routes", {}).get(route_id, []),
+                           route_places.get(route_id))
         (output_dir / f"{route_id}.html").write_text(page, encoding="utf-8")
     return routes
 
@@ -180,11 +231,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--shapes", required=True)
     parser.add_argument("--names", required=True)
     parser.add_argument("--output-dir", required=True)
+    parser.add_argument("--places", default=str(PLACES))
     parser.add_argument("--routes", help="comma-separated subset to build")
     args = parser.parse_args(argv)
     only = [r.strip() for r in args.routes.split(",")] if args.routes else None
     written = build(_load(args.meta), _load(args.shapes), _load(args.names),
-                    Path(args.output_dir), only)
+                    Path(args.output_dir), only, _load(args.places))
     print(f"wrote {len(written)} route pages")
     return 0
 

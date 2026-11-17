@@ -23,6 +23,16 @@ SHAPES = {"routes": {
     ],
 }}
 NAMES = {"47": "Whitman Plaza to 5th-Godfrey", "23": "A & B <Loop>"}
+PLACES = {"routes": {
+    "47": {
+        "areas": [{"name": "Olney", "in_philadelphia": True},
+                  {"name": "Bella Vista", "in_philadelphia": True},
+                  {"name": "Lower Moyamensing", "in_philadelphia": True}],
+        "landmarks": ["Pennsylvania Hospital", "Whitman Plaza"],
+    },
+    "23": {"areas": [{"name": "Cheltenham Township", "in_philadelphia": False}],
+           "landmarks": []},
+}}
 
 
 class OfferedRoutesTest(unittest.TestCase):
@@ -43,10 +53,28 @@ class PolylineTest(unittest.TestCase):
             self.assertAlmostEqual(lon, want_lon, places=5)
 
 
+class JoinListTest(unittest.TestCase):
+    def test_serial_comma(self):
+        join = build_route_pages.join_list
+        self.assertEqual(join(["A"]), "A")
+        self.assertEqual(join(["A", "B"]), "A and B")
+        self.assertEqual(join(["A", "B", "C"]), "A, B, and C")
+
+
+class AreaLabelTest(unittest.TestCase):
+    def test_city_suburbs_and_both(self):
+        city = {"name": "Olney", "in_philadelphia": True}
+        town = {"name": "Media", "in_philadelphia": False}
+        label = build_route_pages.area_label
+        self.assertEqual(label([city]), "Neighborhoods")
+        self.assertEqual(label([town]), "Towns")
+        self.assertEqual(label([city, town]), "Neighborhoods and towns")
+
+
 class BuildTest(unittest.TestCase):
     def build(self, only=None):
         out = Path(tempfile.mkdtemp())
-        written = build_route_pages.build(META, SHAPES, NAMES, out, only)
+        written = build_route_pages.build(META, SHAPES, NAMES, out, only, PLACES)
         return out, written
 
     def test_writes_one_page_per_route(self):
@@ -74,6 +102,48 @@ class BuildTest(unittest.TestCase):
         self.assertNotIn("$", page)
         self.assertNotIn("#include", page)
         self.assertIn("not affiliated with, endorsed by, or operated by SEPTA", page)
+
+    def test_places_section(self):
+        out, _ = self.build()
+        page = (out / "47.html").read_text(encoding="utf-8")
+        self.assertIn('<h2 id="goes">Where Route 47 goes</h2>', page)
+        self.assertIn("<strong>Neighborhoods it stops in:</strong> "
+                      "Olney, Bella Vista, and Lower Moyamensing.", page)
+        self.assertIn("<strong>Near its stops:</strong> "
+                      "Pennsylvania Hospital and Whitman Plaza.", page)
+        self.assertIn("Abaca Labs", page)
+        self.assertIn("Landmarks from OpenStreetMap.", page)
+
+    def test_towns_only_and_no_landmarks(self):
+        out, _ = self.build()
+        page = (out / "23.html").read_text(encoding="utf-8")
+        self.assertIn("<strong>Towns it stops in:</strong> Cheltenham Township.", page)
+        self.assertNotIn("Near its stops", page)
+        self.assertNotIn("Abaca Labs", page)
+        self.assertNotIn("OpenStreetMap.</p>", page)
+
+    def test_no_places_no_section(self):
+        out, _ = self.build()
+        page = (out / "T1.html").read_text(encoding="utf-8")
+        self.assertNotIn('id="goes"', page)
+        self.assertNotIn("$", page)
+
+    def test_place_names_are_escaped(self):
+        places = {"routes": {"47": {"areas": [], "landmarks": ["A & B <Mall>"]}}}
+        out = Path(tempfile.mkdtemp())
+        build_route_pages.build(META, SHAPES, NAMES, out, ["47"], places)
+        page = (out / "47.html").read_text(encoding="utf-8")
+        self.assertIn("A &amp; B &lt;Mall&gt;", page)
+        self.assertNotIn("<Mall>", page)
+
+    def test_committed_places_file(self):
+        places = build_route_pages._load(str(build_route_pages.PLACES))
+        for route_id, entry in places["routes"].items():
+            self.assertRegex(route_id, build_route_pages.ROUTE_ID)
+            self.assertTrue(entry["areas"] or entry["landmarks"])
+            for area in entry["areas"]:
+                self.assertIsInstance(area["name"], str)
+                self.assertIsInstance(area["in_philadelphia"], bool)
 
     def test_names_are_escaped(self):
         out, _ = self.build()

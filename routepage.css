@@ -78,6 +78,11 @@
   margin-top: 0.5rem;
 }
 
+.route-page .source-note {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
 .route-page #link-result h3 {
   margin: 1.5rem 0 0;
 }
