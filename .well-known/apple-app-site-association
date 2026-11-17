@@ -1,0 +1,13 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["CGW9B63267.org.dydx.busneighbor"],
+        "components": [
+          { "/": "/go" },
+          { "/": "/go.html" }
+        ]
+      }
+    ]
+  }
+}

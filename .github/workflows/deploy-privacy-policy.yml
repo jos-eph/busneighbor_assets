@@ -22,6 +22,7 @@ on:
       - 'build_route_pages.py'
       - 'build_site.py'
       - 'partials/**'
+      - '.well-known/**'
       - '.github/workflows/deploy-privacy-policy.yml'
   # The route pages read septameta.json from the site, so redeploy whenever a
   # release finishes. The daily run covers a release paused for approval.
@@ -75,6 +76,9 @@ jobs:
           # index, share, and go, with the shared pieces in partials/ filled in.
           python3 build_site.py --output-dir _site
           cp -r images _site/
+          # Lets the iOS app open bus.dydx.org/go links.
+          cp -r .well-known _site/
+          python3 -c "import json; json.load(open('_site/.well-known/apple-app-site-association'))"
 
       # Browsers can't fetch the release asset (no CORS header), so the site
       # serves its own copy. A failed download fails the build and leaves the
@@ -102,6 +106,7 @@ jobs:
         uses: actions/upload-pages-artifact@v5
         with:
           path: _site
+          include-hidden-files: true
 
   deploy:
     environment:
