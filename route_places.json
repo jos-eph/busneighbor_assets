@@ -1,10 +1,10 @@
 {
   "v": 1,
-  "about": "Neighborhoods, towns, and landmarks shown on route pages. An area is listed when enough of the route's stops are inside its boundary, or the route starts or ends there. A landmark is listed when a stop is named for it or it is within a few hundred meters of a stop.",
+  "about": "Neighborhoods, towns, and landmarks shown on route pages. Areas are the neighborhoods and towns the route's stops are in, in route order. A landmark is listed when a stop is named for it or it is within a few hundred meters of a stop, most prominent first.",
   "sources": {
-    "philadelphia_neighborhoods": "Abaca Labs, via OpenDataPhilly (CC BY 4.0)",
+    "philadelphia_neighborhoods": "Philadelphia neighborhood boundaries, Abaca Labs, via OpenDataPhilly (opendataphilly/open-geo-data), CC BY 4.0",
     "towns": "U.S. Census Bureau TIGERweb (public domain)",
-    "landmarks": "OpenStreetMap contributors (ODbL)"
+    "landmarks": "© OpenStreetMap contributors, ODbL"
   },
   "checked_against_gtfs": "v202611010",
   "routes": {
@@ -19,7 +19,23 @@
           "in_philadelphia": true
         },
         {
+          "name": "Feltonville",
+          "in_philadelphia": true
+        },
+        {
           "name": "Hunting Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Franklinville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fairhill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Kensington",
           "in_philadelphia": true
         },
         {
@@ -35,21 +51,64 @@
           "in_philadelphia": true
         },
         {
+          "name": "Callowhill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Old City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Society Hill",
+          "in_philadelphia": true
+        },
+        {
           "name": "Bella Vista",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Passyunk Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Dickinson Narrows",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Passyunk",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Greenwich",
           "in_philadelphia": true
         },
         {
           "name": "Lower Moyamensing",
           "in_philadelphia": true
+        },
+        {
+          "name": "Whitman",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Stadium District",
+          "in_philadelphia": true
         }
       ],
       "landmarks": [
+        "Independence Hall",
+        "Liberty Bell Center",
+        "National Constitution Center",
+        "Thomas Jefferson University",
         "Pennsylvania Hospital",
         "Wills Eye Hospital",
-        "Thomas Jefferson University",
-        "Whitman Plaza",
         "Fashion District Philadelphia",
-        "African American Museum in Philadelphia"
+        "African American Museum in Philadelphia",
+        "Whitman Plaza"
       ]
     }
   }

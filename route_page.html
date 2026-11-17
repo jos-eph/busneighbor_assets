@@ -17,6 +17,9 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="The BusNeighbor app icon, a bus with the Liberty Bell in its window, beside the words BusNeighbor: Live Philly buses for everyone.">
   <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">
+$structured_data
+  </script>
   <link rel="icon" href="/images/icon-192.png">
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/routelink.css">
@@ -53,7 +56,11 @@
       <div class="route">
         <span class="route-chip" aria-hidden="true">$route_id</span>
 
-        $places_section
+        $goes_section
+
+        $connections_section
+
+        $stops_section
 
         <section aria-labelledby="pick">
           <h2 id="pick">Ride more than one route?</h2>
@@ -99,6 +106,21 @@
             <li>Every control works with VoiceOver and TalkBack, and with large text.</li>
           </ul>
           <p><a href="/">More about BusNeighbor</a></p>
+        </section>
+
+        <section aria-labelledby="questions">
+          <h2 id="questions">Questions about Route $route_id</h2>
+          <h3>Where is the Route $route_id $vehicle right now?</h3>
+          <p>BusNeighbor shows every Route $route_id $vehicle on a map, which way each one is
+            heading, and how old its position is, with data refreshed every 30 seconds. It's free on
+            the App Store and Google Play.</p>
+          <h3>Does BusNeighbor show Route $route_id detours?</h3>
+          <p>Yes. When Route $route_id is detoured, BusNeighbor shows where the $vehicle goes instead,
+            on the map and as a card that lists the streets it takes, turn by turn.</p>
+          <h3>Where can I find the Route $route_id schedule?</h3>
+          <p>BusNeighbor is an independent app and doesn't publish schedules. SEPTA, which runs
+            Route $route_id, posts schedules and fares on its own website:
+            <a href="$schedule_url" rel="noopener external">Route $route_id schedule on septa.org</a>.</p>
         </section>
       </div>
     </div>

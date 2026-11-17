@@ -1,9 +1,11 @@
 """Write one web page per offered route, for the Pages build.
 
-Reads septameta.json (which routes), septashapes.json (each route's line),
-route_names.json (each route's name), and optionally route_places.json (the areas
-and landmarks along it), and writes <output-dir>/<route>.html from route_page.html. Offered means the app's rule: buses.route_list, minus
-realtime.overrides.no_vehicle_positions, in catalog order.
+Reads septameta.json (which routes), septashapes.json (each route's line and
+stops), route_names.json (each route's name), route_stops.json (stop names and
+positions), and route_places.json (areas and landmarks), and writes
+<output-dir>/<route>.html from route_page.html. Offered means the app's rule:
+buses.route_list, minus realtime.overrides.no_vehicle_positions, in catalog
+order. Shuttle ids get no page.
 """
 
 import argparse
@@ -13,14 +15,32 @@ import math
 import re
 import string
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 
 import build_site
+import route_facts as facts_lib
 
 SITE = "https://bus.dydx.org"
 TEMPLATE = Path(__file__).with_name("route_page.html")
 PLACES = Path(__file__).with_name("route_places.json")
 NEIGHBORHOODS_LICENSE = "https://creativecommons.org/licenses/by/4.0/"
+NEIGHBORHOODS_SOURCE = ("https://github.com/opendataphilly/open-geo-data/tree/master/"
+                        "philadelphia-neighborhoods")
+OSM_COPYRIGHT = "https://www.openstreetmap.org/copyright"
+SCHEDULE_URL = "https://www.septa.org/schedules/{route}"
+STORE_URLS = (
+    "https://apps.apple.com/app/busneighbor/id6812131455",
+    "https://play.google.com/store/apps/details?id=org.dydx.busneighbor_flutter",
+)
+
+# Search results show about this many characters of a description.
+MAX_DESCRIPTION = 155
+
+# Replacement buses for rail lines. They stay in the app's picker but get no
+# page and never appear as a connection.
+SHUTTLES = frozenset({"MANN", "T_BUS", "D1_BUS", "D2_BUS", "M1_BUS", "FOX_BUS", "NOR_BUS",
+                      "WTR_BUS"})
 
 # Same pattern as routelink.js and the app's link parser.
 ROUTE_ID = re.compile(r"^[A-Za-z0-9_-]{1,16}$")
@@ -136,6 +156,10 @@ def join_list(items: list[str]) -> str:
     return f"{', '.join(items[:-1])}, and {items[-1]}"
 
 
+def plural(vehicle: str) -> str:
+    return "buses" if vehicle == "bus" else f"{vehicle}s"
+
+
 def area_label(areas: list[dict]) -> str:
     in_city = [a["in_philadelphia"] for a in areas]
     if all(in_city):
@@ -145,77 +169,219 @@ def area_label(areas: list[dict]) -> str:
     return "Neighborhoods and towns"
 
 
-def places_section(route_id: str, places: dict) -> str:
-    """The "Where Route N goes" section, or nothing when the route has no places."""
+@dataclass(frozen=True)
+class Sources:
+    """Everything a page is built from, shared by every route."""
+    shapes: dict                   # septashapes.json "routes"
+    stops: dict                    # route_stops.json "stops"
+    rail_stations: list            # route_stops.json "rail_stations"
+    places: dict                   # route_places.json "routes"
+    offered: list[str]             # offered routes, in catalog order
+    built: frozenset[str] = frozenset()  # routes that get a page in this build
+
+
+@dataclass(frozen=True)
+class Facts:
+    ends: tuple[str, str] | None
+    streets: list[str]
+    centers: list[str]
+    rail: list[str]
+    connections: list[str]
+    stop_lists: list[dict]
+
+
+def derive_facts(route_id: str, src: Sources) -> Facts:
+    directions = src.shapes.get(route_id, [])
+    stations = facts_lib.stations(directions, src.stops, src.rail_stations)
+    linkable = [r for r in src.offered if r not in SHUTTLES]
+    return Facts(
+        ends=facts_lib.end_points(directions, src.stops),
+        streets=facts_lib.main_streets(directions, src.stops),
+        centers=stations["centers"],
+        rail=stations["rail"],
+        connections=facts_lib.connections(route_id, linkable, src.shapes, src.stops),
+        stop_lists=facts_lib.stop_lists(directions, src.stops),
+    )
+
+
+def _section(section_id: str, heading: str, lines: list[str]) -> str:
+    body = "\n          ".join(lines)
+    return (f'<section aria-labelledby="{section_id}">\n'
+            f'          <h2 id="{section_id}">{heading}</h2>\n'
+            f'          {body}\n'
+            f'        </section>')
+
+
+def summary_sentence(route_id: str, vehicle: str, facts: Facts) -> str:
+    if not facts.ends:
+        return ""
+    first, last = (html.escape(end) for end in facts.ends)
+    subject = f"The Route {route_id} trolley line" if vehicle == "trolley" else f"Route {route_id}"
+    if first == last:
+        sentence = f"{subject} loops from <strong>{first}</strong>"
+    else:
+        sentence = f"{subject} runs between <strong>{first}</strong> and <strong>{last}</strong>"
+    if facts.streets:
+        sentence += f", mostly along {join_list([html.escape(s) for s in facts.streets])}"
+    return f"<p>{sentence}.</p>"
+
+
+def credits_line(areas: list[dict], landmarks: list[str]) -> str:
+    credits = []
+    if any(a["in_philadelphia"] for a in areas):
+        credits.append(f'Neighborhoods: <a href="{NEIGHBORHOODS_SOURCE}">Philadelphia '
+                       f'Neighborhoods</a> by Abaca Labs, via OpenDataPhilly, '
+                       f'<a href="{NEIGHBORHOODS_LICENSE}" rel="license">CC BY 4.0</a>.')
+    if any(not a["in_philadelphia"] for a in areas):
+        credits.append("Towns: U.S. Census Bureau.")
+    if landmarks:
+        credits.append(f'Landmarks: © <a href="{OSM_COPYRIGHT}">OpenStreetMap contributors</a>.')
+    return f'<p class="source-note">{" ".join(credits)}</p>' if credits else ""
+
+
+def goes_section(route_id: str, vehicle: str, facts: Facts, places: dict) -> str:
+    """Where the route runs: ends and streets, areas, landmarks, and stations."""
     areas = places.get("areas", [])
     landmarks = places.get("landmarks", [])
-    if not areas and not landmarks:
-        return ""
-    lines = []
+    lines = [summary_sentence(route_id, vehicle, facts)]
     if areas:
         names = join_list([html.escape(a["name"]) for a in areas])
         lines.append(f"<p><strong>{area_label(areas)} it stops in:</strong> {names}.</p>")
     if landmarks:
         names = join_list([html.escape(n) for n in landmarks])
         lines.append(f"<p><strong>Near its stops:</strong> {names}.</p>")
-    credits = []
-    if any(a["in_philadelphia"] for a in areas):
-        credits.append(f'Philadelphia neighborhood boundaries from Abaca Labs, '
-                       f'<a href="{NEIGHBORHOODS_LICENSE}" rel="license">CC BY 4.0</a>.')
-    if landmarks:
-        credits.append("Landmarks from OpenStreetMap.")
-    if credits:
-        lines.append(f'<p class="source-note">{" ".join(credits)}</p>')
-    body = "\n          ".join(lines)
-    return (f'<section aria-labelledby="goes">\n'
-            f'          <h2 id="goes">Where Route {route_id} goes</h2>\n'
-            f'          {body}\n'
-            f'        </section>')
+    if facts.centers:
+        names = join_list([html.escape(n) for n in facts.centers])
+        lines.append(f"<p><strong>Transit centers it stops at:</strong> {names}.</p>")
+    if facts.rail:
+        names = join_list([html.escape(n) for n in facts.rail])
+        lines.append(f"<p><strong>Regional Rail stations near its stops:</strong> {names}.</p>")
+    lines.append(credits_line(areas, landmarks))
+    lines = [line for line in lines if line]
+    return _section("goes", f"Where Route {route_id} goes", lines) if lines else ""
 
 
-def render_page(template: string.Template, route_id: str, name: str, shapes: list[dict],
-                places: dict | None = None) -> str:
+def connections_section(route_id: str, facts: Facts, built: frozenset[str]) -> str:
+    if not facts.connections:
+        return ""
+    items = []
+    for other in facts.connections:
+        label = html.escape(other)
+        if other in built:
+            items.append(f'<li><a class="route-tag" href="/route/{other}">{label}</a></li>')
+        else:
+            items.append(f'<li><span class="route-tag">{label}</span></li>')
+    count = len(facts.connections)
+    return _section("connections", "Connecting routes", [
+        f"<p>{count} other {'route stops' if count == 1 else 'routes stop'} within "
+        f"{facts_lib.CONNECTION_RADIUS_M} meters of a Route {route_id} stop.</p>",
+        f'<ul class="route-tags">{"".join(items)}</ul>',
+    ])
+
+
+def stops_section(facts: Facts) -> str:
+    if not facts.stop_lists:
+        return ""
+    lines = []
+    for direction in facts.stop_lists:
+        stops = direction["stops"]
+        heading = f"{direction['name']} to {stops[-1]}" if direction["name"] else f"To {stops[-1]}"
+        items = "".join(f"<li>{html.escape(name)}</li>" for name in stops)
+        lines.append(f"<details><summary>{html.escape(heading)} ({len(stops)} stops)</summary>"
+                     f'<ol class="stop-list">{items}</ol></details>')
+    return _section("stops", "All stops", lines)
+
+
+def description_text(route_id: str, vehicle: str, facts: Facts) -> str:
+    between = f" between {facts.ends[0]} and {facts.ends[1]}" if facts.ends and \
+        facts.ends[0] != facts.ends[1] else ""
+    text = (f"Track SEPTA Route {route_id} {plural(vehicle)}{between} on a live map, with "
+            "detours. Every stop and connection. Free, independent app.")
+    if len(text) <= MAX_DESCRIPTION:
+        return text
+    cut = text[:MAX_DESCRIPTION - 1].rsplit(" ", 1)[0].rstrip(",.")
+    return f"{cut}…"
+
+
+def structured_data(route_id: str, url: str) -> str:
+    """JSON-LD: where the page sits on the site, and the app it's about."""
+    document = {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                    {"@type": "ListItem", "position": 1, "name": "BusNeighbor", "item": f"{SITE}/"},
+                    {"@type": "ListItem", "position": 2, "name": f"Route {route_id}", "item": url},
+                ],
+            },
+            {
+                "@type": "MobileApplication",
+                "name": "BusNeighbor",
+                "url": f"{SITE}/",
+                "applicationCategory": "TravelApplication",
+                "operatingSystem": "iOS, Android",
+                "isAccessibleForFree": True,
+                "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+                "sameAs": list(STORE_URLS),
+            },
+        ],
+    }
+    # "</" can't end the script element early once it's escaped.
+    return json.dumps(document, indent=2).replace("</", "<\\/")
+
+
+def render_page(template: string.Template, route_id: str, name: str, src: Sources) -> str:
     vehicle = vehicle_noun(route_id)
+    shapes = src.shapes.get(route_id, [])
     directions = [d["name"] for d in shapes if d.get("name")]
     svg, caption = shape_svg(route_id, shapes)
-    title = f"SEPTA Route {route_id} Live {vehicle.title()} Tracker — BusNeighbor"
-    named = f" ({name})" if name else ""
-    description = (
-        f"See where every SEPTA Route {route_id} {vehicle}{named} is right now, with detours. "
-        "A free live map built for blind and low-vision riders. No ads."
-    )
+    facts = derive_facts(route_id, src)
+    named = f": {name}" if name else ""
+    title = f"SEPTA Route {route_id} {vehicle.title()} Tracker{named} | BusNeighbor"
+    url = f"{SITE}/route/{route_id}"
     return template.substitute(
         title=html.escape(title),
-        description=html.escape(description),
-        url=f"{SITE}/route/{route_id}",
+        description=html.escape(description_text(route_id, vehicle, facts)),
+        url=url,
         go_url=f"{SITE}/go?routes={route_id}",
+        schedule_url=SCHEDULE_URL.format(route=route_id),
         route_id=route_id,
         name_html=keep_together(name or f"Route {route_id}"),
         vehicle=vehicle,
         directions=html.escape(" and ".join(directions) if directions else "both ways"),
         shape_svg=svg,
         caption=html.escape(caption),
-        places_section=places_section(route_id, places or {}),
+        goes_section=goes_section(route_id, vehicle, facts, src.places.get(route_id, {})),
+        connections_section=connections_section(route_id, facts, src.built),
+        stops_section=stops_section(facts),
+        structured_data=structured_data(route_id, url),
     )
 
 
 def build(meta: dict, shapes: dict, names: dict, output_dir: Path, only: list[str] | None,
-          places: dict | None = None) -> list[str]:
-    routes = offered_routes(meta)
+          places: dict, stops: dict) -> list[str]:
+    offered = offered_routes(meta)
+    routes = [r for r in offered if r not in SHUTTLES]
     if only:
         unknown = [r for r in only if r not in routes]
         if unknown:
             raise ValueError(f"not offered: {', '.join(unknown)}")
         routes = [r for r in routes if r in only]
+    src = Sources(
+        shapes=shapes.get("routes", {}),
+        stops=stops.get("stops", {}),
+        rail_stations=stops.get("rail_stations", []),
+        places=places.get("routes", {}),
+        offered=offered,
+        built=frozenset(routes),
+    )
     # Shared pieces (footer, store badges) first, then the per-route values.
     source = build_site.expand_includes(TEMPLATE.read_text(encoding="utf-8"))
     template = string.Template(source)
-    route_places = (places or {}).get("routes", {})
     output_dir.mkdir(parents=True, exist_ok=True)
     for route_id in routes:
-        page = render_page(template, route_id, names.get(route_id, ""),
-                           shapes.get("routes", {}).get(route_id, []),
-                           route_places.get(route_id))
+        page = render_page(template, route_id, names.get(route_id, ""), src)
         (output_dir / f"{route_id}.html").write_text(page, encoding="utf-8")
     return routes
 
@@ -231,12 +397,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--shapes", required=True)
     parser.add_argument("--names", required=True)
     parser.add_argument("--output-dir", required=True)
+    parser.add_argument("--stops", required=True, help="route_stops.json")
     parser.add_argument("--places", default=str(PLACES))
     parser.add_argument("--routes", help="comma-separated subset to build")
     args = parser.parse_args(argv)
     only = [r.strip() for r in args.routes.split(",")] if args.routes else None
     written = build(_load(args.meta), _load(args.shapes), _load(args.names),
-                    Path(args.output_dir), only, _load(args.places))
+                    Path(args.output_dir), only, _load(args.places), _load(args.stops))
     print(f"wrote {len(written)} route pages")
     return 0
 

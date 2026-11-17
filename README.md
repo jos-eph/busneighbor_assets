@@ -377,7 +377,10 @@ bus.dydx.org is built by
 into plain static files. Shared pieces (footer, store badges, brand link) live in
 `partials/` and are filled in at build time by `build_site.py`, so a page in the
 repository shows `<!-- #include … -->` markers until it is built. The route pages
-come from `route_page.html` via `build_route_pages.py`.
+come from `route_page.html` via `build_route_pages.py`, which derives each route's
+ends, streets, stops, stations, and connections from `septashapes.json` and
+`route_stops.json` (`route_facts.py`). Neighborhoods and landmarks come from
+`route_places.json`, with their sources and licenses recorded in the file.
 
 To preview, build into a folder and serve it:
 
