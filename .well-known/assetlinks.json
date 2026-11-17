@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "org.dydx.busneighbor_flutter",
+      "sha256_cert_fingerprints": [
+        "7E:4B:5B:03:7D:1F:80:D5:57:59:99:38:D7:A3:16:8C:5F:B9:69:5A:BC:43:28:9F:AD:E2:15:E1:2C:6D:6B:C5",
+        "50:B8:33:A1:75:20:7A:CF:AA:E5:49:0E:5A:B2:33:1D:3A:09:6B:07:9A:77:54:71:F5:45:E0:74:D2:06:36:40"
+      ]
+    }
+  }
+]
