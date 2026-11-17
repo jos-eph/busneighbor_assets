@@ -76,9 +76,11 @@ jobs:
           # index, share, and go, with the shared pieces in partials/ filled in.
           python3 build_site.py --output-dir _site
           cp -r images _site/
-          # Lets the iOS app open bus.dydx.org/go links.
+          # Lets the iOS and Android apps open bus.dydx.org/go links.
           cp -r .well-known _site/
-          python3 -c "import json; json.load(open('_site/.well-known/apple-app-site-association'))"
+          for f in apple-app-site-association assetlinks.json; do
+            python3 -c "import json, sys; json.load(open(sys.argv[1]))" "_site/.well-known/$f"
+          done
 
       # Browsers can't fetch the release asset (no CORS header), so the site
       # serves its own copy. A failed download fails the build and leaves the
