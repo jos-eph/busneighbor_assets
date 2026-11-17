@@ -53,6 +53,47 @@ class CleanStopNameTest(unittest.TestCase):
                          "Frankford Transit Center - Main Dropoff")
 
 
+    def test_park_inside_a_street_name(self):
+        clean = route_facts.clean_stop_name
+        self.assertEqual(clean("Hunting Pk Av & 5th St"), "Hunting Park Avenue & 5th Street")
+        self.assertEqual(clean("Pottstown Pk & Boot Rd"), "Pottstown Pike & Boot Road")
+
+    def test_more_abbreviations(self):
+        self.assertEqual(route_facts.clean_stop_name("69th St TC South Berth 3"),
+                         "69th Street Transit Center South Berth 3")
+        self.assertEqual(route_facts.clean_stop_name("Huntingdon Pk & Holy Redeemer Hosp"),
+                         "Huntingdon Pike & Holy Redeemer Hospital")
+
+
+class PlaceNameTest(unittest.TestCase):
+    def test_transit_center_bays_dropped(self):
+        name = route_facts.place_name
+        self.assertEqual(name("Frankford Transit Center - Rt 19"), "Frankford Transit Center")
+        self.assertEqual(name("Frankford Transit Center-14-BLVDDIR-MFO"), "Frankford Transit Center")
+        self.assertEqual(name("Wissahickon Transit Center Boarding Area 1"), "Wissahickon Transit Center")
+        self.assertEqual(name("Arrott Street & Griscom Street (Arrott Transit Center)"),
+                         "Arrott Transit Center")
+
+    def test_stations_name_the_center_once(self):
+        stops = {"p": ["Wissahickon Transit Center Boarding Area 9", 40.0, -75.0],
+                 "q": ["Wissahickon Transit Center Boarding Area 4", 40.0, -75.0]}
+        found = route_facts.stations([{"name": "", "stops": ["p", "q"]}], stops, [])
+        self.assertEqual(found["centers"], ["Wissahickon Transit Center"])
+
+    def test_station_streets_are_not_stations(self):
+        stops = {"p": ["Bristol Pk & Station Av", 40.0, -75.0],
+                 "q": ["Ridge Av & Wissahickon Transit Center", 40.0, -75.0],
+                 "r": ["SEPTA PRW & Belmont Av Sta - FS", 40.0, -75.0]}
+        found = route_facts.stations([{"name": "", "stops": ["p", "q", "r"]}], stops, [])
+        self.assertEqual(found["centers"], ["Wissahickon Transit Center", "Belmont Avenue Station"])
+
+    def test_notes_after_a_dash_dropped(self):
+        self.assertEqual(route_facts.place_name("Broad Street & Olney Avenue - MBNS layover"),
+                         "Broad Street & Olney Avenue")
+        self.assertEqual(route_facts.place_name("Godfrey Loop"), "Godfrey Loop")
+        self.assertEqual(route_facts.place_name("Newtown-Langhorne Road"), "Newtown-Langhorne Road")
+
+
 class RouteFactsTest(unittest.TestCase):
     def test_stop_lists(self):
         lists = route_facts.stop_lists(SHAPES["47"], STOPS)
@@ -62,6 +103,12 @@ class RouteFactsTest(unittest.TestCase):
         # A stop listed twice in a row appears once.
         self.assertEqual(lists[1]["stops"], ["Whitman Plaza", "8th Street & Market Street",
                                              "5th Street & Fisher Avenue", "Godfrey Loop"])
+
+    def test_entries_not_for_riders_skipped(self):
+        stops = {**STOPS, "n": ["96 Signal - not a stop", 40.0, -75.0],
+                 "p": ["Employee Platform - Employees Only", 40.0, -75.0]}
+        lists = route_facts.stop_lists([{"name": "", "stops": ["n", "a", "p", "b"]}], stops)
+        self.assertEqual(lists[0]["stops"], ["Godfrey Loop", "5th Street & Godfrey Avenue"])
 
     def test_end_points(self):
         self.assertEqual(route_facts.end_points(SHAPES["47"], STOPS),

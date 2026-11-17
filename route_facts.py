@@ -47,10 +47,22 @@ _ABBREVIATIONS = {
     "Dr": "Drive",
     "Ln": "Lane",
     "Sq": "Square",
+    "Pl": "Place",
+    "Ctr": "Center",
+    "TC": "Transit Center",
+    "Hosp": "Hospital",
+    "Sta": "Station",
 }
+# "Pk" is Pike at the end of a street's name, Park inside one ("Hunting Pk Av").
+_PARK = re.compile(r"(?<=[\w.] )Pk(?= (?:Av|Ave|Rd|Dr|Blvd|St|Ln)\b)")
 _ABBREVIATION = re.compile(r"(?<=[\w.] )(" + "|".join(_ABBREVIATIONS) + r")\b(?!')")
 
-_STATION_NAME = re.compile(r"\b(?:Station|Transit Center|Transportation Center)\b")
+# "Station Avenue" and "Haverford Station Road" are streets, not stations.
+_STATION_NAME = re.compile(r"\b(?:Station|Transit Center|Transportation Center)\b"
+                           r"(?! (?:Avenue|Road|Drive|Street|Lane|Boulevard|Pike)\b)")
+
+# Entries the feed lists with the stops that riders can't use.
+_NOT_FOR_RIDERS = re.compile(r"\bnot a stop\b|\bemployees only\b", re.IGNORECASE)
 
 
 def clean_stop_name(name: str) -> str:
@@ -60,7 +72,24 @@ def clean_stop_name(name: str) -> str:
     while previous != name:
         previous = name
         name = _POSITION_SUFFIX.sub("", name).strip()
+    name = _PARK.sub("Park", name)
     return _ABBREVIATION.sub(lambda m: _ABBREVIATIONS[m.group(1)], name)
+
+
+_CENTER = r"(?:Transit|Transportation) Center"
+_CENTER_IN_PARENS = re.compile(rf"\(([^()]*{_CENTER})\)")
+_CENTER_FIRST = re.compile(rf"^(.*?{_CENTER})\b")
+_NOTE = re.compile(r"\s+-\s.*$")
+
+
+def place_name(name: str) -> str:
+    """A clean stop name as the name of a place, for a route's ends.
+
+    Drops the bay or berth at a transit center and any note after a dash:
+    "Frankford Transit Center - Rt 19" -> "Frankford Transit Center".
+    """
+    match = _CENTER_IN_PARENS.search(name) or _CENTER_FIRST.search(name)
+    return match.group(1) if match else _NOTE.sub("", name)
 
 
 def distance_m(a: tuple[float, float], b: tuple[float, float]) -> float:
@@ -70,8 +99,9 @@ def distance_m(a: tuple[float, float], b: tuple[float, float]) -> float:
 
 
 def _known(direction: dict, stops: dict) -> list[str]:
-    """The direction's stop ids that the stop table has, in order."""
-    return [stop_id for stop_id in direction.get("stops", []) if stop_id in stops]
+    """The direction's rider stops that the stop table has, in order."""
+    return [stop_id for stop_id in direction.get("stops", [])
+            if stop_id in stops and not _NOT_FOR_RIDERS.search(stops[stop_id][0])]
 
 
 def _positions(directions: list[dict], stops: dict) -> list[tuple[float, float]]:
@@ -93,11 +123,11 @@ def stop_lists(directions: list[dict], stops: dict) -> list[dict]:
 
 
 def end_points(directions: list[dict], stops: dict) -> tuple[str, str] | None:
-    """The first and last stop of the first direction, by clean name."""
+    """The first and last stop of the first direction, as place names."""
     lists = stop_lists(directions, stops)
     if not lists:
         return None
-    return lists[0]["stops"][0], lists[0]["stops"][-1]
+    return place_name(lists[0]["stops"][0]), place_name(lists[0]["stops"][-1])
 
 
 def main_streets(directions: list[dict], stops: dict) -> list[str]:
@@ -163,9 +193,11 @@ def stations(directions: list[dict], stops: dict, rail_stations: list[list]) -> 
     """Transit centers the route stops at, and Regional Rail stations near its stops."""
     centers: list[str] = []
     for direction in stop_lists(directions, stops):
-        for name in direction["stops"]:
-            if _STATION_NAME.search(name) and name not in centers:
-                centers.append(name)
+        for stop in direction["stops"]:
+            # "Ridge Avenue & Wissahickon Transit Center": the part that names the station.
+            parts = [p for p in place_name(stop).split(" & ") if _STATION_NAME.search(p)]
+            if parts and parts[0] not in centers:
+                centers.append(parts[0])
     positions = _positions(directions, stops)
     rail = sorted({clean_stop_name(name) for name, lat, lon in rail_stations
                    if any(distance_m((lat, lon), p) <= STATION_RADIUS_M for p in positions)})

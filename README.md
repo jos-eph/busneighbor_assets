@@ -400,7 +400,10 @@ repository shows `<!-- #include … -->` markers until it is built. The route pa
 come from `route_page.html` via `build_route_pages.py`, which derives each route's
 ends, streets, stops, stations, and connections from `septashapes.json` and
 `route_stops.json` (`route_facts.py`). Neighborhoods and landmarks come from
-`route_places.json`, with their sources and licenses recorded in the file.
+`route_places.json`, with their sources and licenses recorded in the file, and
+`route_name_overrides.json` spells out abbreviated route names. The same step
+writes the index of route pages (`routes_page.html`) and the sitemap: the fixed
+entries in `sitemap.xml`, then the index and every route page.
 
 To preview, build into a folder and serve it:
 

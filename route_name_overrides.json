@@ -1,0 +1,270 @@
+{
+  "v": 1,
+  "about": "Route names for the route pages, with the feed's abbreviations spelled out. An entry applies only while the feed's name still matches feed_name, so a renamed route falls back to its new feed name.",
+  "names": {
+    "G1": {
+      "name": "63rd-Girard to Richmond-Westmoreland",
+      "feed_name": "63rd-Girard to Richmond-Westmorelnd"
+    },
+    "D1": {
+      "name": "69th Street Transit Center to Media (Route 101)",
+      "feed_name": "Route 101"
+    },
+    "D2": {
+      "name": "69th Street Transit Center to Sharon Hill (Route 102)",
+      "feed_name": "Route 102"
+    },
+    "2": {
+      "name": "20th-Johnston to Pulaski-Hunting Park",
+      "feed_name": "20-Johnston to Pulaski-Hunting Park"
+    },
+    "5": {
+      "name": "2nd-Market to Frankford Transit Center",
+      "feed_name": "2nd-Market to Frankford Transit Ctr"
+    },
+    "14": {
+      "name": "Frankford TC to Neshaminy/Oxford Valley",
+      "feed_name": "FTC to Neshaminy/Oxford Valley"
+    },
+    "17": {
+      "name": "Front-Market to 20th-Johnston",
+      "feed_name": "Front-Mkt to 20-Johnston"
+    },
+    "23": {
+      "name": "11th-Market to Chestnut Hill",
+      "feed_name": "11th Market to Chestnut Hill"
+    },
+    "24": {
+      "name": "Southampton/Rockledge to Frankford TC",
+      "feed_name": "Southamptn/Rockldge to Frankford TC"
+    },
+    "37": {
+      "name": "Chester Transit Center to Broad-Snyder",
+      "feed_name": "Chester Transit Ctr to Broad-Snyder"
+    },
+    "40": {
+      "name": "2nd-Lombard to Conshohocken-Monument",
+      "feed_name": "2nd-Lombard to Conshohocken-Monumnt"
+    },
+    "41": {
+      "name": "Chelten-Wissahickon to Richmond-Orthodox",
+      "feed_name": "Chelten-Wissahckn to Richmnd-Orthdx"
+    },
+    "43": {
+      "name": "Richmond-Cumberland to 50th-Parkside",
+      "feed_name": "Richmond-Cumberland to 50th-Parksde"
+    },
+    "45": {
+      "name": "Navy Yard/Broad-Oregon to 12th-Vine",
+      "feed_name": "Navy Yard/Brd-Oregon to 12th-Vine"
+    },
+    "51": {
+      "name": "Plymouth Meeting/Chestnut Hill to Olney TC",
+      "feed_name": "Plymth Mtg/Chestnt Hill to Olney TC"
+    },
+    "52": {
+      "name": "49th-Woodland to Wissahickon TC/Parkside Loop",
+      "feed_name": "49th-Woodlnd to Wiss TC/Parksd Lp"
+    },
+    "53": {
+      "name": "Emlen-Carpenter to Richmond-Westmoreland",
+      "feed_name": "Emlen-Carpenter to Rich-Westmorland"
+    },
+    "57": {
+      "name": "Whitman Plaza to Rising Sun-Olney/Fern Rock",
+      "feed_name": "WhitmnPlz to RisngSun-Olney/FernRck"
+    },
+    "60": {
+      "name": "Wissahickon TC/35th-Allegheny to Richmond-Westmoreland",
+      "feed_name": "Wiss TC/35-Algny to Rich-Westmrlnd"
+    },
+    "67": {
+      "name": "Philadelphia Mills/Bustleton to Frankford TC",
+      "feed_name": "Phila Mills/Bustletn to Frankfrd TC"
+    },
+    "70": {
+      "name": "Frankford-Gregg/Torresdale-Cottman to Fern Rock",
+      "feed_name": "Frank-Grg/Torsdl-Cottmn to FernRock"
+    },
+    "72": {
+      "name": "Cedarbrook Plaza to Frankford TC",
+      "feed_name": "Cedarbrook Plaza to Frankford Trans"
+    },
+    "73": {
+      "name": "Frankford TC to Richmond-Westmoreland",
+      "feed_name": "Frankford TC to Richmnd-Westmorelnd"
+    },
+    "75": {
+      "name": "Wayne Junction to Arrott Transit Center",
+      "feed_name": "Wayne Junct to Arrott Transit Ctr"
+    },
+    "76": {
+      "name": "Rising Sun-Olney to Columbus Commons",
+      "feed_name": "Rising Sun-Olney to Columbus Comm"
+    },
+    "81": {
+      "name": "Broad-Erie to Cheltenham-Ogontz",
+      "feed_name": "Broad-Erie to Cheltenham-Ogntz"
+    },
+    "82": {
+      "name": "Wissahickon TC/Henry-Midvale to Frankford TC",
+      "feed_name": "Wisshkn TC/Henry-Midvl to FrankfdTC"
+    },
+    "84": {
+      "name": "Bustleton-County Line/Philadelphia Mills to Frankford TC",
+      "feed_name": "Bustletn-CountyLn/PhilaMills to FTC"
+    },
+    "88": {
+      "name": "Bethayres/Frankford-Gregg to Frankford TC",
+      "feed_name": "Bethayres/Frankford-Gregg to FTC"
+    },
+    "90": {
+      "name": "Plymouth Meeting to Norristown TC",
+      "feed_name": "Plymouth Mtng. to Norristown TC"
+    },
+    "93": {
+      "name": "Pottstown to Norristown Transit Center",
+      "feed_name": "Pottstown to Norristown Transit Ctr"
+    },
+    "96": {
+      "name": "Lansdale to Norristown Transit Center",
+      "feed_name": "Lansdale to Norristown Transit Ctr"
+    },
+    "98": {
+      "name": "Plymouth Meeting to Norristown TC",
+      "feed_name": "Plymouth Mtng to Norristown TC"
+    },
+    "104": {
+      "name": "West Chester University to 69th St TC",
+      "feed_name": "West Chester U to 69th St TC"
+    },
+    "108": {
+      "name": "UPS/Airport to 69th St Transit Center",
+      "feed_name": "UPS/Airport to 69th St Transit Ctr"
+    },
+    "109": {
+      "name": "Chester Transit Center to 69th St TC",
+      "feed_name": "Chester Transit Ctr to 69th St TC"
+    },
+    "110": {
+      "name": "Penn State University to 69th St Transit Center",
+      "feed_name": "Penn State U to 69th St Transit Ctr"
+    },
+    "111": {
+      "name": "Chadds Ford to 69th St Transit Center",
+      "feed_name": "Chadds Ford to 69th St Transit Ctr"
+    },
+    "112": {
+      "name": "Delaware County Community College to 69th St Transit Center",
+      "feed_name": "DCCC to 69th St Transit Center"
+    },
+    "113": {
+      "name": "Claymont TC to 69th St Transit Center",
+      "feed_name": "Claymont TC to 69th St Transit Ctr"
+    },
+    "114": {
+      "name": "Wawa Station to Darby Transit Center",
+      "feed_name": "Wawa Station to Darby Transit Ctr"
+    },
+    "115": {
+      "name": "Delaware County Community College/Darby Transit Center to Airport",
+      "feed_name": "DCCC/Darby Transit Ctr to Airport"
+    },
+    "117": {
+      "name": "Penn State University to I-95 Industrial Park",
+      "feed_name": "Penn State U to I-95 Industrial Pk"
+    },
+    "119": {
+      "name": "Cheyney University to Chester Transit Center",
+      "feed_name": "Cheyney U to Chester Transit Center"
+    },
+    "120": {
+      "name": "Cheyney University to 69th St Transit Center",
+      "feed_name": "Cheyney U to 69th St Transit Center"
+    },
+    "126": {
+      "name": "Lawrence Park via Manoa to 69th St TC",
+      "feed_name": "Lawrence Park via Manoa to 69th TC"
+    },
+    "127": {
+      "name": "Trenton Transit Center to Oxford Valley",
+      "feed_name": "Trenton Transit Ctr to OxfordValley"
+    },
+    "130": {
+      "name": "Bucks County Community College to Frankford-Knights",
+      "feed_name": "BCCC to Frankford-Knights"
+    },
+    "131": {
+      "name": "Audubon to Norristown Transit Center",
+      "feed_name": "Audubon to Norristown Transit Ctr"
+    },
+    "201": {
+      "name": "Fort Washington Office Center to Fort Washington Station",
+      "feed_name": "Ft Wash Office Ctr to Fort Wash Sta"
+    },
+    "206": {
+      "name": "Commons at Great Valley to Paoli Station",
+      "feed_name": "Commons at Great Vly to Paoli Sta"
+    },
+    "428": {
+      "name": "Richmond-Venango to 10th-Lycoming",
+      "feed_name": "Richmond-Venango to 10th-Lycomng"
+    },
+    "433": {
+      "name": "Castor-Cottman to 10th-Lycoming",
+      "feed_name": "Castor-Cottman to 10th-Lycomng"
+    },
+    "445": {
+      "name": "Roxborough to Frankford Transit Center",
+      "feed_name": "Roxborough to Frankford Transit Ctr"
+    },
+    "446": {
+      "name": "Henry-Cinnaminson to Juniper-Commerce",
+      "feed_name": "Henry-Cinnaminsn to Junipr-Commerce"
+    },
+    "450": {
+      "name": "Frankford-Linden to Bustleton-Verree",
+      "feed_name": "Frankford-Linden to Bustletn-Verree"
+    },
+    "461": {
+      "name": "Bustleton-Verree to Academy-Chalfont",
+      "feed_name": "Bustleton-Verree to Academy-Chalfnt"
+    },
+    "462": {
+      "name": "Welsh-Bridle to Academy-Chalfont",
+      "feed_name": "Welsh-Bridal to Academy-Chalfont"
+    },
+    "475": {
+      "name": "Bustleton-County Line to Verree-Marchman",
+      "feed_name": "Bustltn-County Ln to Verree-Marchmn"
+    },
+    "476": {
+      "name": "Southampton-Boulevard to Verree-Marchman",
+      "feed_name": "Southamptn-Blvd to Verree-Marchman"
+    },
+    "478": {
+      "name": "Welsh-Boulevard to Verree-Marchman",
+      "feed_name": "Welsh-Blvd to Verree-Marchman"
+    },
+    "484": {
+      "name": "Holy Redeemer Hospital to Cottman-Torresdale",
+      "feed_name": "Holy Redmr Hosptl to Cottmn-Torrsdl"
+    },
+    "492": {
+      "name": "Bustleton-Rennard to Verree-Marchman",
+      "feed_name": "Bustletn-Rennard to Verree-Marchman"
+    },
+    "495": {
+      "name": "Southampton-Worthington to 10th-Lycoming",
+      "feed_name": "Southmptn-Worthngtn to 10th-Lycomng"
+    },
+    "BLVDDIR": {
+      "name": "Boulevard Direct: Neshaminy Mall to Frankford TC",
+      "feed_name": "Blvd Direct Neshaminy Mall to FTC"
+    },
+    "K": {
+      "name": "Ridge-Midvale to Arrott Transit Center",
+      "feed_name": "Ridge-Midvale to Arrott Transit Ctr"
+    }
+  }
+}
