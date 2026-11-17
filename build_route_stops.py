@@ -7,7 +7,9 @@ routes connect. This reads them from the same bundle, so both files describe one
 GTFS version.
 
     stops          stop_id -> [name, lat, lon], for every stop that a route's
-                   route_stops.txt lists. Names exactly as the feed writes them.
+                   route_stops.txt lists and stops.txt defines. Names exactly
+                   as the feed writes them. The feed lists a few stops it
+                   doesn't define; those are left out.
     rail_stations  [name, lat, lon] for each Regional Rail station, from the
                    rail feed in the same bundle. Metro stations are already
                    stops in the bus feed.
@@ -36,6 +38,9 @@ RAIL_FEED_MEMBER = "google_rail.zip"
 # Five decimal places is about a meter: finer than any use the pages make.
 COORDINATE_DECIMALS = 5
 
+# A few undefined stops are normal for this feed. Many means a broken bundle.
+MAX_MISSING_FRACTION = 0.01
+
 # GTFS location_type 1 is a station that groups platforms.
 STATION_LOCATION_TYPE = "1"
 
@@ -55,8 +60,12 @@ def route_stops(feed: zipfile.ZipFile) -> dict[str, list]:
         if stop_id in used:
             found[stop_id] = [row["stop_name"].strip(), *_position(row)]
     missing = sorted(used - found.keys())
+    if len(missing) > MAX_MISSING_FRACTION * len(used):
+        raise ValueError(f"{len(missing)} of {len(used)} stops in route_stops.txt are missing "
+                         f"from stops.txt: {missing[:10]}")
     if missing:
-        raise ValueError(f"route_stops.txt names stops missing from stops.txt: {missing[:10]}")
+        print(f"skipped {len(missing)} stops that stops.txt doesn't define: {missing[:10]}",
+              file=sys.stderr)
     return dict(sorted(found.items()))
 
 

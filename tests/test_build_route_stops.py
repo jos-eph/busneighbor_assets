@@ -22,10 +22,8 @@ BUS_STOPS = (
     "s2,8th St & Godfrey Av,40.0411,-75.1271\n"
     "unused,Nowhere,40.0,-75.0\n"
 )
-ROUTE_STOPS = (
-    "route_id,direction_id,stop_id,route_stop_sort_order\n"
-    "47,0,s2,2\n47,0,s1,1\n47,1,s1,1\n"
-)
+ROUTE_STOPS_HEADER = "route_id,direction_id,stop_id,route_stop_sort_order\n"
+ROUTE_STOPS = ROUTE_STOPS_HEADER + "47,0,s2,2\n47,0,s1,1\n47,1,s1,1\n"
 RAIL_STATIONS = (
     "stop_id,stop_name,stop_lat,stop_lon,location_type\n"
     "90001,Olney,40.0336,-75.1423,1\n"
@@ -77,7 +75,15 @@ class RouteStopsTest(unittest.TestCase):
         document = self.build(make_bundle(rail_stops=RAIL_PLAIN))
         self.assertEqual(document["rail_stations"], [["Olney", 40.0336, -75.1423]])
 
-    def test_missing_stop_is_an_error(self):
+    def test_a_few_undefined_stops_are_skipped(self):
+        many = "".join(f"s{i},Stop {i},40.0,-75.0\n" for i in range(1, 201))
+        routes = "".join(f"47,0,s{i},{i}\n" for i in range(1, 202))  # s201 is undefined
+        document = self.build(make_bundle(bus_stops="stop_id,stop_name,stop_lat,stop_lon\n" + many,
+                                          route_stops=ROUTE_STOPS_HEADER + routes))
+        self.assertEqual(len(document["stops"]), 200)
+        self.assertNotIn("s201", document["stops"])
+
+    def test_many_undefined_stops_are_an_error(self):
         with self.assertRaises(ValueError):
             self.build(make_bundle(bus_stops="stop_id,stop_name,stop_lat,stop_lon\n"
                                              "s1,A,40.0,-75.0\n"))

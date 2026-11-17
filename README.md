@@ -166,8 +166,8 @@ pages. Same workflow, same bundle, same `current` release:
 }
 ```
 
-`stops` covers every id in `route_stops.txt`, with names as the feed writes
-them. `rail_stations` comes from the bundle's Regional Rail feed. The file has
+`stops` covers every id in `route_stops.txt` that `stops.txt` defines (the feed
+lists a few it doesn't), with names as the feed writes them. `rail_stations` comes from the bundle's Regional Rail feed. The file has
 no build time, so it is published only when its bytes change. There is no
 dated release. `python build_route_stops.py --gtfs-zip <bundle>` builds it
 locally.
