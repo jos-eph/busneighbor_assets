@@ -8,6 +8,2965 @@
   },
   "checked_against_gtfs": "v202611010",
   "routes": {
+    "T1": {
+      "areas": [
+        {
+          "name": "Overbrook",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Carroll Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Parkside",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mill Creek",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Belmont",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Haverford North",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Powelton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mantua",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Powelton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "University City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Philadelphia City Hall",
+        "University of Pennsylvania",
+        "Drexel University",
+        "Penn Presbyterian Medical Center",
+        "Mütter Museum"
+      ]
+    },
+    "T2": {
+      "areas": [
+        {
+          "name": "Elmwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Paschall",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Clearview",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Cobbs Creek",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Kingsessing",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Cedar Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Spruce Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Woodland Terrace",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Powelton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "University City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Philadelphia City Hall",
+        "University of Pennsylvania",
+        "Drexel University",
+        "Hospital of the University of Pennsylvania",
+        "Mütter Museum",
+        "Clark Park"
+      ]
+    },
+    "T3": {
+      "areas": [
+        {
+          "name": "Darby",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Yeadon",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Paschall",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Kingsessing",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Cedar Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Woodland Terrace",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Spruce Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Powelton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "University City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Philadelphia City Hall",
+        "University of Pennsylvania",
+        "Drexel University",
+        "Hospital of the University of Pennsylvania",
+        "Mütter Museum",
+        "Clark Park"
+      ]
+    },
+    "T4": {
+      "areas": [
+        {
+          "name": "Darby",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Colwyn",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Clearview",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Paschall",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Southwest Schuylkill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Woodland Terrace",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Spruce Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "University City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Powelton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Philadelphia City Hall",
+        "University of Pennsylvania",
+        "Drexel University",
+        "Hospital of the University of Pennsylvania",
+        "Mütter Museum",
+        "Saint Joseph's University (University City campus)",
+        "Clark Park"
+      ]
+    },
+    "T5": {
+      "areas": [
+        {
+          "name": "Eastwick",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Elmwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bartram Village",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Southwest Schuylkill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Woodland Terrace",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Spruce Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "University City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Powelton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Philadelphia City Hall",
+        "University of Pennsylvania",
+        "Drexel University",
+        "Hospital of the University of Pennsylvania",
+        "Mütter Museum",
+        "Saint Joseph's University (University City campus)",
+        "Clark Park"
+      ]
+    },
+    "G1": {
+      "areas": [
+        {
+          "name": "Richmond",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Port Richmond",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fishtown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Northern Liberties",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Old Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Poplar",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Ludlow",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Poplar",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Yorktown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "North Central",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Francisville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Sharswood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fairmount",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Brewerytown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mantua",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Parkside",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Belmont",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Parkside",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mill Creek",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Carroll Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Haddington",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Philadelphia Zoo",
+        "Rivers Casino Philadelphia"
+      ]
+    },
+    "D1": {
+      "areas": [
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Drexel Hill",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Springfield Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Nether Providence Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Media",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Springfield Mall"
+      ]
+    },
+    "D2": {
+      "areas": [
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Drexel Hill",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Clifton Heights",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Aldan",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Collingdale",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Sharon Hill",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": []
+    },
+    "M1": {
+      "areas": [
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Haverford Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Ardmore",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Bryn Mawr",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Rosemont",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Villanova",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Radnor Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lower Merion Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Merion Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "King of Prussia",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Bridgeport",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Norristown",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": []
+    },
+    "1": {
+      "areas": [
+        {
+          "name": "Overbrook",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wynnefield",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wynnefield Heights",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bala Cynwyd",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Wissahickon",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Falls",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Allegheny West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Tioga",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Nicetown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hunting Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Olney",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Feltonville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Crescentville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Northwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Summerdale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Oxford Circle",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mayfair",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lexington Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rhawnhurst",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Pennypack",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bustleton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Somerton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Normandy Village",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Byberry",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Parkwood Manor",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bensalem Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Philadelphia College of Osteopathic Medicine",
+        "Nazareth Hospital",
+        "Parx Casino",
+        "Pennypack Park"
+      ]
+    },
+    "2": {
+      "areas": [
+        {
+          "name": "Germantown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Nicetown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Tioga",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Glenwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Stanton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "North Central",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Francisville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Spring Garden",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Graduate Hospital",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Point Breeze",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Newbold",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Girard Estates",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Rittenhouse Square",
+        "Pennsylvania Academy of the Fine Arts",
+        "Curtis Institute of Music",
+        "Community College of Philadelphia",
+        "Peirce College"
+      ]
+    },
+    "3": {
+      "areas": [
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Juniata Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Harrowgate",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Richmond",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Upper Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hartranft",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Ludlow",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Yorktown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "North Central",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Brewerytown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Strawberry Mansion",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Temple University Hospital (Episcopal Campus)",
+        "Jefferson Frankford Hospital"
+      ]
+    },
+    "4": {
+      "areas": [
+        {
+          "name": "Fern Rock",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Olney",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hunting Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Franklinville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Tioga",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Glenwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Stanton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hartranft",
+          "in_philadelphia": true
+        },
+        {
+          "name": "North Central",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Yorktown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Francisville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Poplar",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Spring Garden",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Callowhill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Graduate Hospital",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hawthorne",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Passyunk Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Point Breeze",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Newbold",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lower Moyamensing",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Girard Estates",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Packer Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Stadium District",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "South Philadelphia Sports Complex",
+        "Philadelphia City Hall",
+        "Temple University",
+        "Temple University Hospital",
+        "Pennsylvania Academy of the Fine Arts",
+        "Peirce College",
+        "Jefferson Einstein Philadelphia Hospital",
+        "Jefferson Methodist Hospital"
+      ]
+    },
+    "5": {
+      "areas": [
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Juniata Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Harrowgate",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Richmond",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fishtown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Old Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Northern Liberties",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Old City",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Betsy Ross House",
+        "Jefferson Frankford Hospital"
+      ]
+    },
+    "6": {
+      "areas": [
+        {
+          "name": "Cheltenham Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "West Oak Lane",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Ogontz",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fern Rock",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "7": {
+      "areas": [
+        {
+          "name": "Strawberry Mansion",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Brewerytown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fairmount",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Spring Garden",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fitler Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Graduate Hospital",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Point Breeze",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Passyunk",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Girard Estates",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lower Moyamensing",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Stadium District",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Whitman",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Pennsport",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Franklin Institute",
+        "Barnes Foundation",
+        "Eastern State Penitentiary",
+        "Rodin Museum",
+        "Mütter Museum",
+        "Moore College of Art and Design",
+        "Whitman Plaza"
+      ]
+    },
+    "8": {
+      "areas": [
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Northwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Summerdale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Crescentville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Olney",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Jefferson Einstein Philadelphia Hospital"
+      ]
+    },
+    "9": {
+      "areas": [
+        {
+          "name": "Upper Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Dearnley Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Roxborough Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Germany Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissahickon Hills",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissahickon",
+          "in_philadelphia": true
+        },
+        {
+          "name": "University City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Old City",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Independence Hall",
+        "Liberty Bell Center",
+        "Philadelphia City Hall",
+        "Museum of the American Revolution",
+        "Rittenhouse Square",
+        "Thomas Jefferson University",
+        "Thomas Jefferson University Hospital",
+        "Wills Eye Hospital",
+        "Fashion District Philadelphia",
+        "Mütter Museum",
+        "Weitzman National Museum of American Jewish History",
+        "Curtis Institute of Music",
+        "Roxborough Memorial Hospital"
+      ]
+    },
+    "12": {
+      "areas": [
+        {
+          "name": "Southwest Schuylkill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Grays Ferry",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Graduate Hospital",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fitler Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Old City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Society Hill",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Rittenhouse Square",
+        "Thomas Jefferson University",
+        "Thomas Jefferson University Hospital",
+        "Pennsylvania Hospital",
+        "Wills Eye Hospital",
+        "Independence Seaport Museum",
+        "Curtis Institute of Music"
+      ]
+    },
+    "14": {
+      "areas": [
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mayfair",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Oxford Circle",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lexington Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rhawnhurst",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Pennypack",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bustleton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Normandy Village",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Somerton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Byberry",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Parkwood Manor",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bensalem Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Penndel",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Langhorne Manor",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Langhorne",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Middletown Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Sesame Place",
+        "Nazareth Hospital",
+        "Oxford Valley Mall",
+        "Neshaminy Mall",
+        "Pennypack Park"
+      ]
+    },
+    "16": {
+      "areas": [
+        {
+          "name": "Cheltenham Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "West Oak Lane",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Oak Lane",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fern Rock",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hunting Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Tioga",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Franklinville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Glenwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Stanton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hartranft",
+          "in_philadelphia": true
+        },
+        {
+          "name": "North Central",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Yorktown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Francisville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Poplar",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Spring Garden",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Callowhill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Philadelphia City Hall",
+        "Temple University",
+        "Temple University Hospital",
+        "Pennsylvania Academy of the Fine Arts"
+      ]
+    },
+    "17": {
+      "areas": [
+        {
+          "name": "Girard Estates",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Passyunk",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Point Breeze",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Graduate Hospital",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Old City",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Independence Hall",
+        "Liberty Bell Center",
+        "Philadelphia City Hall",
+        "Museum of the American Revolution",
+        "Betsy Ross House",
+        "Rittenhouse Square",
+        "Thomas Jefferson University Hospital",
+        "Fashion District Philadelphia",
+        "Pennsylvania Academy of the Fine Arts",
+        "Weitzman National Museum of American Jewish History",
+        "Curtis Institute of Music"
+      ]
+    },
+    "18": {
+      "areas": [
+        {
+          "name": "Cheltenham Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Cedarbrook",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Oak Lane",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Mount Airy",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Germantown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Ogontz",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Germantown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fern Rock",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Olney",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lawndale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Burholme",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rhawnhurst",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fox Chase",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Jefferson Einstein Philadelphia Hospital",
+        "Cedarbrook Plaza"
+      ]
+    },
+    "19": {
+      "areas": [
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mayfair",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Summerdale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Crescentville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Oxford Circle",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lawndale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fox Chase",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rhawnhurst",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bustleton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Pennypack",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Pennypack Woods",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Aston-Woodbridge",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Academy Gardens",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Morrell Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Torresdale",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Holy Family University"
+      ]
+    },
+    "20": {
+      "areas": [
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mayfair",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Oxford Circle",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rhawnhurst",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lexington Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Winchester Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Pennypack",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Pennypack Woods",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Academy Gardens",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Aston-Woodbridge",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Torresdale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Morrell Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Modena",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Parkwood Manor",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Millbrook",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Somerton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bensalem Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Nazareth Hospital",
+        "Parx Casino",
+        "Philadelphia Mills (Franklin Mills)"
+      ]
+    },
+    "21": {
+      "areas": [
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Millbourne",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Overbrook",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Cobbs Creek",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Walnut Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Spruce Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "University City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Old City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Society Hill",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Independence Hall",
+        "Liberty Bell Center",
+        "Philadelphia City Hall",
+        "Museum of the American Revolution",
+        "Rittenhouse Square",
+        "University of Pennsylvania",
+        "Thomas Jefferson University",
+        "Thomas Jefferson University Hospital",
+        "Wills Eye Hospital",
+        "Fashion District Philadelphia",
+        "Mütter Museum",
+        "Independence Seaport Museum",
+        "Weitzman National Museum of American Jewish History",
+        "Curtis Institute of Music"
+      ]
+    },
+    "22": {
+      "areas": [
+        {
+          "name": "Logan",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fern Rock",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Ogontz",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Oak Lane",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Oak Lane",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Cheltenham Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Cedarbrook",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Glenside",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Abington Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Roslyn",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Willow Grove",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Moreland Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Hatboro",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Warminster Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Warminster Heights",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Arcadia University",
+        "Willow Grove Park Mall"
+      ]
+    },
+    "23": {
+      "areas": [
+        {
+          "name": "Chestnut Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Mount Airy",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Mount Airy",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Germantown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wister",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Nicetown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Tioga",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hunting Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Franklinville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hartranft",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Yorktown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Poplar",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Callowhill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Chinatown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Temple University",
+        "Thomas Jefferson University",
+        "Thomas Jefferson University Hospital",
+        "Temple University Hospital",
+        "Fashion District Philadelphia"
+      ]
+    },
+    "24": {
+      "areas": [
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Northwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Summerdale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Oxford Circle",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Crescentville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lawndale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Burholme",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Cheltenham Village",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Fox Chase",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rockledge",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Abington Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lower Moreland Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Bryn Athyn",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Southampton Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Holy Redeemer Hospital"
+      ]
+    },
+    "25": {
+      "areas": [
+        {
+          "name": "Northern Liberties",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fishtown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Harrowgate",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Richmond",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bridesburg",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissinoming",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mayfair",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Rivers Casino Philadelphia"
+      ]
+    },
+    "26": {
+      "areas": [
+        {
+          "name": "Germantown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wister",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Germantown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Ogontz",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fern Rock",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Olney",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lawndale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Crescentville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Oxford Circle",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mayfair",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissinoming",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Jefferson Einstein Philadelphia Hospital"
+      ]
+    },
+    "27": {
+      "areas": [
+        {
+          "name": "Plymouth Meeting",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Plymouth Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Whitemarsh Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Springfield Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Andorra",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Upper Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissahickon Hills",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Manayunk",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissahickon",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Graduate Hospital",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hawthorne",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Philadelphia City Hall",
+        "Pennsylvania Academy of the Fine Arts",
+        "Peirce College",
+        "Plymouth Meeting Mall",
+        "Metroplex Shopping Center"
+      ]
+    },
+    "28": {
+      "areas": [
+        {
+          "name": "Tacony",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Holmesburg",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lexington Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rhawnhurst",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fox Chase",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rockledge",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Abington Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "McKinley",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Elkins Park",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Melrose Park",
+          "in_philadelphia": false
+        },
+        {
+          "name": "East Oak Lane",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fern Rock",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "29": {
+      "areas": [
+        {
+          "name": "Grays Ferry",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Point Breeze",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Newbold",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Passyunk Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Passyunk",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Dickinson Narrows",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Pennsport",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "30": {
+      "areas": [
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Overbrook",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Carroll Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Haddington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mill Creek",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Dunlap",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Haverford North",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Powelton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Spruce Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Woodland Terrace",
+          "in_philadelphia": true
+        },
+        {
+          "name": "University City",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "University of Pennsylvania",
+        "Drexel University",
+        "Hospital of the University of Pennsylvania",
+        "Children's Hospital of Philadelphia",
+        "Penn Presbyterian Medical Center",
+        "Philadelphia VA Medical Center",
+        "Franklin Field",
+        "Penn Museum"
+      ]
+    },
+    "31": {
+      "areas": [
+        {
+          "name": "Overbrook",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Carroll Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Haddington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Cobbs Creek",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Dunlap",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Walnut Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Powelton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mill Creek",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Haverford North",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Belmont",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mantua",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Powelton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "University City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Philadelphia City Hall",
+        "Drexel University",
+        "Pennsylvania Academy of the Fine Arts",
+        "Mütter Museum"
+      ]
+    },
+    "32": {
+      "areas": [
+        {
+          "name": "Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Falls",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Allegheny West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Strawberry Mansion",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fairmount",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Spring Garden",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Graduate Hospital",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hawthorne",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Philadelphia Museum of Art",
+        "Philadelphia City Hall",
+        "Franklin Institute",
+        "Barnes Foundation",
+        "Academy of Natural Sciences of Drexel University",
+        "Pennsylvania Academy of the Fine Arts",
+        "Rodin Museum",
+        "Thomas Jefferson University (East Falls campus)",
+        "Moore College of Art and Design",
+        "Peirce College",
+        "Roxborough Memorial Hospital"
+      ]
+    },
+    "33": {
+      "areas": [
+        {
+          "name": "Tioga",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Glenwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Allegheny West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Strawberry Mansion",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Stanton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "North Central",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Sharswood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Francisville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Spring Garden",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Old City",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Liberty Bell Center",
+        "Philadelphia City Hall",
+        "Franklin Institute",
+        "Barnes Foundation",
+        "Thomas Jefferson University Hospital",
+        "Fashion District Philadelphia",
+        "Academy of Natural Sciences of Drexel University",
+        "Pennsylvania Academy of the Fine Arts",
+        "Rodin Museum",
+        "Weitzman National Museum of American Jewish History",
+        "Moore College of Art and Design"
+      ]
+    },
+    "37": {
+      "areas": [
+        {
+          "name": "Newbold",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Girard Estates",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Passyunk",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Grays Ferry",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Elmwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Eastwick",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Penrose",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Tinicum Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Ridley Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Eddystone",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Chester",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Philadelphia International Airport (PHL)",
+        "Harrah's Philadelphia Casino"
+      ]
+    },
+    "38": {
+      "areas": [
+        {
+          "name": "Wissahickon",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wynnefield Heights",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wynnefield",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Parkside",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Belmont",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mantua",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Old City",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Independence Hall",
+        "Liberty Bell Center",
+        "Philadelphia Museum of Art",
+        "Philadelphia City Hall",
+        "Franklin Institute",
+        "Barnes Foundation",
+        "Thomas Jefferson University",
+        "Thomas Jefferson University Hospital",
+        "Wills Eye Hospital",
+        "Fashion District Philadelphia",
+        "Academy of Natural Sciences of Drexel University",
+        "Pennsylvania Academy of the Fine Arts",
+        "Rodin Museum",
+        "Please Touch Museum",
+        "Weitzman National Museum of American Jewish History",
+        "Moore College of Art and Design"
+      ]
+    },
+    "39": {
+      "areas": [
+        {
+          "name": "Strawberry Mansion",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Stanton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hartranft",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fishtown",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Temple University Hospital (Episcopal Campus)"
+      ]
+    },
+    "40": {
+      "areas": [
+        {
+          "name": "Wynnefield Heights",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wynnefield",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Parkside",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Parkside",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Belmont",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Powelton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Haverford North",
+          "in_philadelphia": true
+        },
+        {
+          "name": "University City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fitler Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Graduate Hospital",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hawthorne",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Society Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bella Vista",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Queen Village",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Hospital of the University of Pennsylvania",
+        "Pennsylvania Hospital",
+        "Penn Presbyterian Medical Center",
+        "Franklin Field",
+        "Penn Museum",
+        "Philadelphia's Magic Gardens",
+        "Peirce College"
+      ]
+    },
+    "41": {
+      "areas": [
+        {
+          "name": "Bridesburg",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Northwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Crescentville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lawndale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Feltonville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Olney",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Germantown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wister",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Germantown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Falls",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "La Salle University"
+      ]
+    },
+    "42": {
+      "areas": [
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Cobbs Creek",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Walnut Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Garden Court",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Spruce Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "University City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Old City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Society Hill",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Independence Hall",
+        "Liberty Bell Center",
+        "Philadelphia City Hall",
+        "Museum of the American Revolution",
+        "Rittenhouse Square",
+        "University of Pennsylvania",
+        "Thomas Jefferson University",
+        "Hospital of the University of Pennsylvania",
+        "Children's Hospital of Philadelphia",
+        "Thomas Jefferson University Hospital",
+        "Wills Eye Hospital",
+        "Philadelphia VA Medical Center",
+        "Fashion District Philadelphia",
+        "Franklin Field",
+        "Penn Museum",
+        "Mütter Museum",
+        "Weitzman National Museum of American Jewish History",
+        "Curtis Institute of Music"
+      ]
+    },
+    "43": {
+      "areas": [
+        {
+          "name": "West Parkside",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Parkside",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mill Creek",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Belmont",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Haverford North",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mantua",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Spring Garden",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Poplar",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Callowhill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Poplar",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Northern Liberties",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fishtown",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Philadelphia Museum of Art",
+        "Rodin Museum",
+        "Community College of Philadelphia",
+        "Rivers Casino Philadelphia",
+        "Penn Treaty Park"
+      ]
+    },
+    "44": {
+      "areas": [
+        {
+          "name": "Ardmore",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lower Merion Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Narberth",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Merion Station",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Overbrook",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wynnefield",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bala Cynwyd",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Wynnefield Heights",
+          "in_philadelphia": true
+        },
+        {
+          "name": "University City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Old City",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Independence Hall",
+        "Liberty Bell Center",
+        "Philadelphia City Hall",
+        "National Constitution Center",
+        "Museum of the American Revolution",
+        "Betsy Ross House",
+        "Thomas Jefferson University Hospital",
+        "Fashion District Philadelphia",
+        "Pennsylvania Academy of the Fine Arts",
+        "Mütter Museum",
+        "Weitzman National Museum of American Jewish History",
+        "Philadelphia College of Osteopathic Medicine"
+      ]
+    },
+    "45": {
+      "areas": [
+        {
+          "name": "Callowhill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Chinatown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hawthorne",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Passyunk Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Passyunk",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lower Moyamensing",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Stadium District",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Packer Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Navy Yard",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "South Philadelphia Sports Complex",
+        "Thomas Jefferson University",
+        "Thomas Jefferson University Hospital",
+        "Fashion District Philadelphia",
+        "Philadelphia's Magic Gardens",
+        "Jefferson Methodist Hospital",
+        "Live! Casino & Hotel Philadelphia"
+      ]
+    },
+    "46": {
+      "areas": [
+        {
+          "name": "Overbrook",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Carroll Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Haddington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Cobbs Creek",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Kingsessing",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
     "47": {
       "areas": [
         {
@@ -109,6 +3068,4870 @@
         "Fashion District Philadelphia",
         "African American Museum in Philadelphia",
         "Whitman Plaza"
+      ]
+    },
+    "48": {
+      "areas": [
+        {
+          "name": "Allegheny West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Strawberry Mansion",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Brewerytown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fairmount",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Spring Garden",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Chinatown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Old City",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Independence Hall",
+        "Liberty Bell Center",
+        "Philadelphia City Hall",
+        "National Constitution Center",
+        "Franklin Institute",
+        "Museum of the American Revolution",
+        "Barnes Foundation",
+        "Eastern State Penitentiary",
+        "Betsy Ross House",
+        "Thomas Jefferson University Hospital",
+        "Fashion District Philadelphia",
+        "Academy of Natural Sciences of Drexel University",
+        "Pennsylvania Academy of the Fine Arts",
+        "Rodin Museum",
+        "Mütter Museum",
+        "Weitzman National Museum of American Jewish History",
+        "African American Museum in Philadelphia",
+        "Moore College of Art and Design"
+      ]
+    },
+    "49": {
+      "areas": [
+        {
+          "name": "Strawberry Mansion",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fairmount",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Spring Garden",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "University City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Woodland Terrace",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Franklin Institute",
+        "Barnes Foundation",
+        "Eastern State Penitentiary",
+        "University of Pennsylvania",
+        "Drexel University",
+        "Hospital of the University of Pennsylvania",
+        "Children's Hospital of Philadelphia",
+        "Philadelphia VA Medical Center",
+        "Franklin Field",
+        "Penn Museum",
+        "Rodin Museum",
+        "Mütter Museum",
+        "Moore College of Art and Design"
+      ]
+    },
+    "50": {
+      "areas": [
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mayfair",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rhawnhurst",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lexington Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Winchester Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Pennypack",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Pennypack Woods",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Aston-Woodbridge",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Torresdale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Morrell Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Modena",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Parkwood Manor",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bensalem Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Nazareth Hospital",
+        "Parx Casino",
+        "Philadelphia Mills (Franklin Mills)"
+      ]
+    },
+    "51": {
+      "areas": [
+        {
+          "name": "Logan",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fern Rock",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Ogontz",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Germantown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Oak Lane",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Mount Airy",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Cedarbrook",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wyndmoor",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Chestnut Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Flourtown",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Springfield Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Whitemarsh Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Plymouth Meeting",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Chestnut Hill College",
+        "Chestnut Hill Hospital",
+        "Plymouth Meeting Mall"
+      ]
+    },
+    "52": {
+      "areas": [
+        {
+          "name": "Wissahickon",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wynnefield Heights",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bala Cynwyd",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Overbrook",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wynnefield",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Parkside",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Carroll Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mill Creek",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Haddington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Dunlap",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Walnut Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Cobbs Creek",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Garden Court",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Cedar Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Kingsessing",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Southwest Schuylkill",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Philadelphia College of Osteopathic Medicine"
+      ]
+    },
+    "53": {
+      "areas": [
+        {
+          "name": "Richmond",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Harrowgate",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Juniata Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Feltonville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hunting Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Franklinville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Tioga",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Nicetown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Germantown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Mount Airy",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "54": {
+      "areas": [
+        {
+          "name": "Strawberry Mansion",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Allegheny West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Glenwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Stanton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hartranft",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fairhill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "McGuire",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Upper Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Richmond",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Port Richmond",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Temple University Hospital (Episcopal Campus)"
+      ]
+    },
+    "55": {
+      "areas": [
+        {
+          "name": "Logan",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fern Rock",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Ogontz",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Oak Lane",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Oak Lane",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Melrose Park",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Cheltenham Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Elkins Park",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Jenkintown",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Abington Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Willow Grove",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Moreland Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Horsham",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Horsham Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Warrington Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Doylestown Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Doylestown",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Buckingham Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Plumstead Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Mercer Museum",
+        "Abington Hospital",
+        "Willow Grove Park Mall"
+      ]
+    },
+    "56": {
+      "areas": [
+        {
+          "name": "Tacony",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissinoming",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Juniata Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hunting Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Franklinville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Tioga",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Allegheny West",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "St. Christopher's Hospital for Children"
+      ]
+    },
+    "57": {
+      "areas": [
+        {
+          "name": "Fern Rock",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Oak Lane",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Melrose Park Gardens",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Oak Lane",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Olney",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Feltonville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hunting Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Franklinville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Upper Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "McGuire",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Old Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Northern Liberties",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Old City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Society Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Queen Village",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Pennsport",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Whitman",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Stadium District",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Independence Hall",
+        "Liberty Bell Center",
+        "National Constitution Center",
+        "Museum of the American Revolution",
+        "Betsy Ross House",
+        "Weitzman National Museum of American Jewish History",
+        "Temple University Hospital (Episcopal Campus)",
+        "Whitman Plaza"
+      ]
+    },
+    "58": {
+      "areas": [
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mayfair",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Oxford Circle",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rhawnhurst",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bustleton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Somerton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lower Southampton Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Feasterville",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Trevose",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Bensalem Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Neshaminy Mall"
+      ]
+    },
+    "59": {
+      "areas": [
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Northwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mayfair",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Oxford Circle",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rhawnhurst",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "60": {
+      "areas": [
+        {
+          "name": "Richmond",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Harrowgate",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Upper Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fairhill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hartranft",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Franklinville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hunting Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Glenwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Tioga",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Allegheny West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Falls",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissahickon",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "61": {
+      "areas": [
+        {
+          "name": "Upper Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Dearnley Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Roxborough Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Germany Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Manayunk",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissahickon",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Falls",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Allegheny West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Strawberry Mansion",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Brewerytown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Sharswood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "North Central",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Spring Garden",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Francisville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Poplar",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Callowhill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Old City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Chinatown",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Thomas Jefferson University",
+        "Thomas Jefferson University Hospital",
+        "Wills Eye Hospital",
+        "Fashion District Philadelphia",
+        "African American Museum in Philadelphia"
+      ]
+    },
+    "63": {
+      "areas": [
+        {
+          "name": "Stadium District",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Whitman",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lower Moyamensing",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Girard Estates",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Grays Ferry",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Elmwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Paschall",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Southwest Schuylkill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Kingsessing",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Cobbs Creek",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Haddington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Carroll Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Overbrook",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wynnefield",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lower Merion Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Penn Wynne",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Saint Joseph's University",
+        "Lankenau Medical Center"
+      ]
+    },
+    "64": {
+      "areas": [
+        {
+          "name": "Pennsport",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Queen Village",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Dickinson Narrows",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bella Vista",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Passyunk Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hawthorne",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Point Breeze",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Graduate Hospital",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Grays Ferry",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Southwest Schuylkill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Kingsessing",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Cedar Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Garden Court",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Walnut Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Powelton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mill Creek",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Belmont",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Parkside",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Parkside",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "65": {
+      "areas": [
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Overbrook",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Merion Station",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lower Merion Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Wynnefield",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bala Cynwyd",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Wynnefield Heights",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissahickon",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Blue Bell Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Germantown",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Saint Joseph's University",
+        "Philadelphia College of Osteopathic Medicine",
+        "Roxborough Memorial Hospital"
+      ]
+    },
+    "66": {
+      "areas": [
+        {
+          "name": "Morrell Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Academy Gardens",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Torresdale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Pennypack Woods",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Holmesburg",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Tacony",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mayfair",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissinoming",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "67": {
+      "areas": [
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mayfair",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Summerdale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Crescentville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lawndale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Oxford Circle",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Burholme",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fox Chase",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bustleton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Somerton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Normandy Village",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Morrell Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Crestmont Farms",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Parkwood Manor",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Modena",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Millbrook",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Jefferson Torresdale Hospital",
+        "Philadelphia Mills (Franklin Mills)"
+      ]
+    },
+    "68": {
+      "areas": [
+        {
+          "name": "Girard Estates",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Stadium District",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lower Moyamensing",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Packer Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Navy Yard",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Tinicum Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Eastwick",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Penrose",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Clearview",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Paschall",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Yeadon",
+          "in_philadelphia": false
+        },
+        {
+          "name": "East Lansdowne",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "South Philadelphia Sports Complex",
+        "Live! Casino & Hotel Philadelphia"
+      ]
+    },
+    "70": {
+      "areas": [
+        {
+          "name": "Fern Rock",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Olney",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Oak Lane",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Oak Lane",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Cheltenham Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Cheltenham Village",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Burholme",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fox Chase",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Oxford Circle",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rhawnhurst",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mayfair",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Tacony",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Holmesburg",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Torresdale",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "71": {
+      "areas": [
+        {
+          "name": "Cheltenham Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "West Oak Lane",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Cedarbrook",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Mount Airy",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Mount Airy",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Germantown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Falls",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Tioga",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Nicetown",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "72": {
+      "areas": [
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Northwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Summerdale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Crescentville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lawndale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Olney",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Melrose Park Gardens",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Oak Lane",
+          "in_philadelphia": false
+        },
+        {
+          "name": "East Oak Lane",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Melrose Park",
+          "in_philadelphia": false
+        },
+        {
+          "name": "West Oak Lane",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Cheltenham Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Cedarbrook",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Cedarbrook Plaza"
+      ]
+    },
+    "73": {
+      "areas": [
+        {
+          "name": "Richmond",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bridesburg",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissinoming",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mayfair",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "75": {
+      "areas": [
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Northwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Juniata Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Feltonville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hunting Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Olney",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Germantown",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "76": {
+      "areas": [
+        {
+          "name": "Northern Liberties",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fishtown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Richmond",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Upper Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Harrowgate",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Juniata Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Feltonville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Northwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lawndale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Olney",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Independence Seaport Museum",
+        "Rivers Casino Philadelphia"
+      ]
+    },
+    "77": {
+      "areas": [
+        {
+          "name": "Chestnut Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wyndmoor",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Cedarbrook",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Cheltenham Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Glenside",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Wyncote",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Jenkintown",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Abington Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Elkins Park",
+          "in_philadelphia": false
+        },
+        {
+          "name": "McKinley",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Cheltenham Village",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Burholme",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fox Chase",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Oxford Circle",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rhawnhurst",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mayfair",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Arcadia University",
+        "Cedarbrook Plaza"
+      ]
+    },
+    "79": {
+      "areas": [
+        {
+          "name": "West Powelton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "University City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Grays Ferry",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Passyunk",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Newbold",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Passyunk",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lower Moyamensing",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Greenwich",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Whitman",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Pennsport",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Penn Presbyterian Medical Center",
+        "Philadelphia VA Medical Center"
+      ]
+    },
+    "81": {
+      "areas": [
+        {
+          "name": "Cheltenham Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "West Oak Lane",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Germantown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Mount Airy",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Germantown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Falls",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Tioga",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Nicetown",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "82": {
+      "areas": [
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Northwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Summerdale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Crescentville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lawndale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Feltonville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Olney",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hunting Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Nicetown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Tioga",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Allegheny West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Falls",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissahickon",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "84": {
+      "areas": [
+        {
+          "name": "Mayfair",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissinoming",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Tacony",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Holmesburg",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Torresdale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Morrell Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Crestmont Farms",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Modena",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Millbrook",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Parkwood Manor",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Byberry",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Somerton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lower Southampton Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Holy Family University",
+        "Jefferson Torresdale Hospital",
+        "Philadelphia Mills (Franklin Mills)"
+      ]
+    },
+    "88": {
+      "areas": [
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mayfair",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Holmesburg",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Winchester Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Aston-Woodbridge",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Pennypack Woods",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Torresdale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Academy Gardens",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Pennypack",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bustleton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lower Moreland Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Abington Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Holy Redeemer Hospital"
+      ]
+    },
+    "90": {
+      "areas": [
+        {
+          "name": "Norristown",
+          "in_philadelphia": false
+        },
+        {
+          "name": "West Norriton Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "East Norriton Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Plymouth Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Plymouth Meeting",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Jefferson Einstein Montgomery Hospital",
+        "Plymouth Meeting Mall"
+      ]
+    },
+    "92": {
+      "areas": [
+        {
+          "name": "West Chester",
+          "in_philadelphia": false
+        },
+        {
+          "name": "West Goshen Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "East Goshen Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "West Whiteland Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "East Whiteland Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Frazer",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Willistown Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Malvern",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Paoli",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Tredyffrin Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "King of Prussia",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "King of Prussia Mall",
+        "Immaculata University",
+        "Chester County Hospital"
+      ]
+    },
+    "93": {
+      "areas": [
+        {
+          "name": "Norristown",
+          "in_philadelphia": false
+        },
+        {
+          "name": "West Norriton Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Trooper",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Eagleville",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Evansburg",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lower Providence Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Collegeville",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Trappe",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Providence Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Limerick Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Sanatoga",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Pottstown",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Ursinus College",
+        "Montgomery County Community College (Pottstown campus)",
+        "Pottstown Hospital",
+        "Philadelphia Premium Outlets"
+      ]
+    },
+    "94": {
+      "areas": [
+        {
+          "name": "Chestnut Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Flourtown",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Springfield Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Whitemarsh Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Fort Washington",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Ambler",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lower Gwynedd Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Whitpain Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Worcester Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Gwynedd Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lansdale",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Montgomery Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Montgomeryville",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Montgomery County Community College",
+        "Montgomery Mall"
+      ]
+    },
+    "95": {
+      "areas": [
+        {
+          "name": "Willow Grove",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Roslyn",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Dublin Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Abington Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Oreland",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Springfield Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Fort Washington",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Ambler",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Whitpain Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Blue Bell",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Whitemarsh Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Plymouth Meeting",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Plymouth Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Conshohocken",
+          "in_philadelphia": false
+        },
+        {
+          "name": "West Conshohocken",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Swedeland",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Merion Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Willow Grove Park Mall",
+        "Plymouth Meeting Mall",
+        "Metroplex Shopping Center"
+      ]
+    },
+    "96": {
+      "areas": [
+        {
+          "name": "Norristown",
+          "in_philadelphia": false
+        },
+        {
+          "name": "East Norriton Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Whitpain Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lower Gwynedd Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "North Wales",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Gwynedd Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Montgomeryville",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Montgomery Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lansdale",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Montgomery County Community College",
+        "Montgomery Mall"
+      ]
+    },
+    "97": {
+      "areas": [
+        {
+          "name": "Norristown",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Plymouth Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Plymouth Meeting",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Conshohocken",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Whitemarsh Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Springfield Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Chestnut Hill",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Chestnut Hill College",
+        "Chestnut Hill Hospital",
+        "Metroplex Shopping Center"
+      ]
+    },
+    "98": {
+      "areas": [
+        {
+          "name": "Norristown",
+          "in_philadelphia": false
+        },
+        {
+          "name": "East Norriton Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Plymouth Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Plymouth Meeting",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Blue Bell",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Plymouth Meeting Mall"
+      ]
+    },
+    "99": {
+      "areas": [
+        {
+          "name": "Norristown",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Bridgeport",
+          "in_philadelphia": false
+        },
+        {
+          "name": "King of Prussia",
+          "in_philadelphia": false
+        },
+        {
+          "name": "West Norriton Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Audubon",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Oaks",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Providence Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Mont Clare",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Phoenixville",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "King of Prussia Mall",
+        "Valley Forge Casino Resort"
+      ]
+    },
+    "103": {
+      "areas": [
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Overbrook",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Penn Wynne",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Haverford Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Ardmore",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lower Merion Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": []
+    },
+    "104": {
+      "areas": [
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Haverford Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Broomall",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Marple Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Newtown Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Edgmont Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Willistown Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Westtown Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "East Goshen Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "West Goshen Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "West Chester",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "West Chester University"
+      ]
+    },
+    "105": {
+      "areas": [
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Overbrook",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Penn Wynne",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Wynnewood",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Ardmore",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lower Merion Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Bryn Mawr",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Rosemont",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Villanova",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Radnor Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "St. Davids",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Wayne",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Devon",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Tredyffrin Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Berwyn",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Paoli",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Villanova University",
+        "Lankenau Medical Center",
+        "Paoli Hospital"
+      ]
+    },
+    "107": {
+      "areas": [
+        {
+          "name": "Lansdowne",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Drexel Hill",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Clifton Heights",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Aldan",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Glenolden",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Ridley Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Morton",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Springfield Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Swarthmore",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Marple Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Broomall",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Springfield Mall",
+        "Lawrence Park Shopping Center"
+      ]
+    },
+    "108": {
+      "areas": [
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "East Lansdowne",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Yeadon",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Paschall",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Elmwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Penrose",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Clearview",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Eastwick",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Tinicum Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Philadelphia International Airport (PHL)"
+      ]
+    },
+    "109": {
+      "areas": [
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lansdowne",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Clifton Heights",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Morton",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Springfield Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Swarthmore",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Nether Providence Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Chester",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Swarthmore College",
+        "Springfield Mall"
+      ]
+    },
+    "110": {
+      "areas": [
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Haverford Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Drexel Hill",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Marple Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Springfield Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Nether Providence Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Media",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Middletown Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lima",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Penn State Brandywine",
+        "Riddle Hospital",
+        "Springfield Mall"
+      ]
+    },
+    "111": {
+      "areas": [
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Drexel Hill",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Springfield Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lima",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Middletown Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Chester Heights",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Concord Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Chadds Ford Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Penn State Brandywine",
+        "Riddle Hospital"
+      ]
+    },
+    "112": {
+      "areas": [
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Haverford Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Broomall",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Marple Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Newtown Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Delaware County Community College"
+      ]
+    },
+    "113": {
+      "areas": [
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "East Lansdowne",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lansdowne",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Yeadon",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Darby",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Collingdale",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Glenolden",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Ridley Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Folsom",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Woodlyn",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Chester",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Trainer",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Linwood",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lower Chichester Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Claymont, Delaware",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Subaru Park",
+        "Widener University",
+        "Mercy Fitzgerald Hospital",
+        "Harrah's Philadelphia Casino"
+      ]
+    },
+    "114": {
+      "areas": [
+        {
+          "name": "Darby",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Collingdale",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Sharon Hill",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Folcroft",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Glenolden",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Norwood",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Prospect Park",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Ridley Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Ridley Park",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Woodlyn",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Eddystone",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Chester",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Chester Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Village Green",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Aston Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Middletown Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lima",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Neumann University",
+        "Penn State Brandywine",
+        "Riddle Hospital"
+      ]
+    },
+    "115": {
+      "areas": [
+        {
+          "name": "Tinicum Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Eastwick",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Sharon Hill",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Folcroft",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Glenolden",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Collingdale",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Darby",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Yeadon",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lansdowne",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Drexel Hill",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Haverford Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Broomall",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Marple Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Newtown Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Philadelphia International Airport (PHL)",
+        "Delaware County Community College",
+        "Mercy Fitzgerald Hospital"
+      ]
+    },
+    "117": {
+      "areas": [
+        {
+          "name": "Chester Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Chester",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Parkside",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upland",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Brookhaven",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Middletown Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lima",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Penn State Brandywine",
+        "Riddle Hospital"
+      ]
+    },
+    "118": {
+      "areas": [
+        {
+          "name": "Chester",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Rose Valley",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Nether Providence Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Media",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Providence Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Marple Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Newtown Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Delaware County Community College"
+      ]
+    },
+    "119": {
+      "areas": [
+        {
+          "name": "Chester",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Trainer",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Marcus Hook",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Linwood",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Boothwyn",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Chichester Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Concord Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Thornbury Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Cheyney University"
+      ]
+    },
+    "120": {
+      "areas": [
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Haverford Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Broomall",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Marple Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Newtown Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Edgmont Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Willistown Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Thornbury Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Westtown Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Cheyney University"
+      ]
+    },
+    "123": {
+      "areas": [
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Haverford Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "King of Prussia",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "King of Prussia Mall"
+      ]
+    },
+    "124": {
+      "areas": [
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "University City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissahickon",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Upper Merion Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "King of Prussia",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Tredyffrin Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Chesterbrook",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Philadelphia City Hall",
+        "King of Prussia Mall",
+        "Pennsylvania Academy of the Fine Arts",
+        "Mütter Museum"
+      ]
+    },
+    "125": {
+      "areas": [
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "University City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissahickon",
+          "in_philadelphia": true
+        },
+        {
+          "name": "King of Prussia",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Merion Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Philadelphia City Hall",
+        "Valley Forge National Historical Park",
+        "King of Prussia Mall",
+        "Pennsylvania Academy of the Fine Arts",
+        "Mütter Museum",
+        "Valley Forge Casino Resort"
+      ]
+    },
+    "126": {
+      "areas": [
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Haverford Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Marple Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Broomall",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Lawrence Park Shopping Center"
+      ]
+    },
+    "127": {
+      "areas": [
+        {
+          "name": "Middletown Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Fairless Hills",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Bristol Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Levittown",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Tullytown",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Falls Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lower Makefield Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Morrisville",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Trenton, New Jersey",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Sesame Place",
+        "Oxford Valley Mall"
+      ]
+    },
+    "128": {
+      "areas": [
+        {
+          "name": "Middletown Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Levittown",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Tullytown",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Bristol",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Bristol Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Croydon",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Eddington",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Bensalem Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Lower Bucks Hospital",
+        "Parx Casino",
+        "Oxford Valley Mall",
+        "Neshaminy Mall"
+      ]
+    },
+    "129": {
+      "areas": [
+        {
+          "name": "Penndel",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Middletown Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Levittown",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Bristol",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Bristol Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Bensalem Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Parkwood Manor",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Andalusia",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Torresdale",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Philadelphia Mills (Franklin Mills)",
+        "Oxford Valley Mall"
+      ]
+    },
+    "130": {
+      "areas": [
+        {
+          "name": "Torresdale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Andalusia",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Parkwood Manor",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bensalem Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Hulmeville",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Penndel",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Langhorne Manor",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Langhorne",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Middletown Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Newtown",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Newtown Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Bucks County Community College",
+        "St. Mary Medical Center",
+        "Parx Casino",
+        "Philadelphia Mills (Franklin Mills)",
+        "Neshaminy Mall"
+      ]
+    },
+    "131": {
+      "areas": [
+        {
+          "name": "Norristown",
+          "in_philadelphia": false
+        },
+        {
+          "name": "West Norriton Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Audubon",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": []
+    },
+    "132": {
+      "areas": [
+        {
+          "name": "Montgomeryville",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Montgomery Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lansdale",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Hatfield Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Towamencin Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Hatfield",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Franconia Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Hilltown Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Souderton",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Telford",
+          "in_philadelphia": false
+        },
+        {
+          "name": "West Rockhill Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Jefferson Lansdale Hospital",
+        "Montgomery Mall"
+      ]
+    },
+    "133": {
+      "areas": [
+        {
+          "name": "Torresdale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Andalusia",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Cornwells Heights",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Bensalem Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": []
+    },
+    "135": {
+      "areas": [
+        {
+          "name": "West Chester",
+          "in_philadelphia": false
+        },
+        {
+          "name": "West Goshen Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "West Whiteland Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Exton",
+          "in_philadelphia": false
+        },
+        {
+          "name": "East Caln Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Downingtown",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Caln Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Thorndale",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Caln",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Coatesville",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Exton Square Mall"
+      ]
+    },
+    "139": {
+      "areas": [
+        {
+          "name": "King of Prussia",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Merion Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Schuylkill Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Phoenixville",
+          "in_philadelphia": false
+        },
+        {
+          "name": "East Pikeland Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "East Vincent Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Spring City",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Royersford",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Providence Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Limerick Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Valley Forge National Historical Park",
+        "King of Prussia Mall",
+        "Phoenixville Hospital",
+        "Valley Forge Casino Resort"
+      ]
+    },
+    "150": {
+      "areas": [
+        {
+          "name": "Plymouth Meeting",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Bensalem Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Parx Casino",
+        "Plymouth Meeting Mall"
+      ]
+    },
+    "201": {
+      "areas": [
+        {
+          "name": "Whitemarsh Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Fort Washington",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Dublin Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": []
+    },
+    "204": {
+      "areas": [
+        {
+          "name": "Paoli",
+          "in_philadelphia": false
+        },
+        {
+          "name": "East Whiteland Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Frazer",
+          "in_philadelphia": false
+        },
+        {
+          "name": "West Whiteland Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Exton",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lionville",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Uwchlan Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Eagleview",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Exton Square Mall"
+      ]
+    },
+    "206": {
+      "areas": [
+        {
+          "name": "Paoli",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Tredyffrin Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "East Whiteland Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Charlestown Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Paoli Hospital"
+      ]
+    },
+    "310": {
+      "areas": [
+        {
+          "name": "Willow Grove",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Moreland Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Horsham",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Upper Dublin Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Willow Grove Park Mall"
+      ]
+    },
+    "409": {
+      "areas": [
+        {
+          "name": "Kingsessing",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Paschall",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Elmwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Penrose",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Clearview",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Eastwick",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "411": {
+      "areas": [
+        {
+          "name": "Spruce Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Walnut Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Garden Court",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Cedar Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Southwest Schuylkill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Paschall",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Elmwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Penrose",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Clearview",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "415": {
+      "areas": [
+        {
+          "name": "Spruce Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Kingsessing",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Paschall",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Elmwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Penrose",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "426": {
+      "areas": [
+        {
+          "name": "Wissinoming",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Northwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Summerdale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Crescentville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lawndale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Feltonville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Olney",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hunting Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "428": {
+      "areas": [
+        {
+          "name": "Richmond",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Harrowgate",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Upper Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Franklinville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hunting Park",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "433": {
+      "areas": [
+        {
+          "name": "Rhawnhurst",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mayfair",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Oxford Circle",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Crescentville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lawndale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Olney",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Feltonville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hunting Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "438": {
+      "areas": [
+        {
+          "name": "Upper Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissahickon Hills",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Blue Bell Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Germantown",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "439": {
+      "areas": [
+        {
+          "name": "Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Blue Bell Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Germantown",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Roxborough Memorial Hospital"
+      ]
+    },
+    "441": {
+      "areas": [
+        {
+          "name": "Andorra",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Upper Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Dearnley Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissahickon Hills",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Roxborough Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Germany Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissahickon",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Roxborough Memorial Hospital"
+      ]
+    },
+    "442": {
+      "areas": [
+        {
+          "name": "Whitemarsh Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Springfield Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Andorra",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Upper Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissahickon Hills",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Falls",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Allegheny West",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Thomas Jefferson University (East Falls campus)",
+        "Roxborough Memorial Hospital"
+      ]
+    },
+    "445": {
+      "areas": [
+        {
+          "name": "Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissahickon",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Falls",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Allegheny West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Tioga",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Nicetown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hunting Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Feltonville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Northwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Roxborough Memorial Hospital"
+      ]
+    },
+    "446": {
+      "areas": [
+        {
+          "name": "Upper Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissahickon Hills",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Falls",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Strawberry Mansion",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Allegheny West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fairmount",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Spring Garden",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Philadelphia Museum of Art",
+        "Philadelphia City Hall",
+        "Franklin Institute",
+        "Barnes Foundation",
+        "Academy of Natural Sciences of Drexel University",
+        "Pennsylvania Academy of the Fine Arts",
+        "Rodin Museum",
+        "Thomas Jefferson University (East Falls campus)",
+        "Roxborough Memorial Hospital"
+      ]
+    },
+    "447": {
+      "areas": [
+        {
+          "name": "Upper Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissahickon Hills",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Falls",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Allegheny West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Tioga",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Nicetown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hunting Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Olney",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Feltonville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lawndale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Crescentville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Summerdale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Northwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Thomas Jefferson University (East Falls campus)"
+      ]
+    },
+    "448": {
+      "areas": [
+        {
+          "name": "Upper Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wissahickon Hills",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Roxborough",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Falls",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Allegheny West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Strawberry Mansion",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fairmount",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Spring Garden",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Philadelphia Museum of Art",
+        "Franklin Institute",
+        "Barnes Foundation",
+        "Rodin Museum",
+        "Thomas Jefferson University (East Falls campus)",
+        "Roxborough Memorial Hospital"
+      ]
+    },
+    "450": {
+      "areas": [
+        {
+          "name": "Torresdale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Academy Gardens",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Morrell Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Crestmont Farms",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Modena",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Millbrook",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Parkwood Manor",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Normandy Village",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Somerton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bustleton",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Jefferson Torresdale Hospital"
+      ]
+    },
+    "452": {
+      "areas": [
+        {
+          "name": "Parkwood Manor",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Byberry",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Somerton",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "461": {
+      "areas": [
+        {
+          "name": "Somerton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lower Southampton Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Byberry",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Parkwood Manor",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Modena",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "462": {
+      "areas": [
+        {
+          "name": "Bustleton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Pennypack",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Aston-Woodbridge",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Pennypack Woods",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Academy Gardens",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Torresdale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Morrell Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Crestmont Farms",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Modena",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Millbrook",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Jefferson Torresdale Hospital"
+      ]
+    },
+    "475": {
+      "areas": [
+        {
+          "name": "Lower Southampton Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Somerton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bustleton",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "476": {
+      "areas": [
+        {
+          "name": "Byberry",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Somerton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bustleton",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "477": {
+      "areas": [
+        {
+          "name": "Modena",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Normandy Village",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Parkwood Manor",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Somerton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bustleton",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "478": {
+      "areas": [
+        {
+          "name": "Pennypack",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bustleton",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "484": {
+      "areas": [
+        {
+          "name": "Abington Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Lower Moreland Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Bustleton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Pennypack",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Winchester Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Holmesburg",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Holy Redeemer Hospital"
+      ]
+    },
+    "490": {
+      "areas": [
+        {
+          "name": "Fox Chase",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bustleton",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "492": {
+      "areas": [
+        {
+          "name": "Somerton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bustleton",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "495": {
+      "areas": [
+        {
+          "name": "Somerton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bustleton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fox Chase",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Burholme",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lawndale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Oxford Circle",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Crescentville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Summerdale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mayfair",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Northwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Juniata Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Feltonville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hunting Park",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "L1_OWL": {
+      "areas": [
+        {
+          "name": "Upper Darby Township",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Millbourne",
+          "in_philadelphia": false
+        },
+        {
+          "name": "Cobbs Creek",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Haddington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Dunlap",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Walnut Hill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Powelton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "University City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Old City",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Northern Liberties",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Fishtown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Richmond",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Upper Kensington",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Harrowgate",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Juniata Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "Independence Hall",
+        "Liberty Bell Center",
+        "Philadelphia City Hall",
+        "Museum of the American Revolution",
+        "Betsy Ross House",
+        "Fashion District Philadelphia",
+        "Weitzman National Museum of American Jewish History",
+        "Temple University Hospital (Episcopal Campus)"
+      ]
+    },
+    "B1_OWL": {
+      "areas": [
+        {
+          "name": "Fern Rock",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hunting Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Tioga",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Franklinville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Glenwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hartranft",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Stanton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Yorktown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "North Central",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Poplar",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Spring Garden",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Callowhill",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Logan Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Center City East",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rittenhouse",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Washington Square West",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Hawthorne",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Passyunk Square",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Point Breeze",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Newbold",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Girard Estates",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Stadium District",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "South Philadelphia Sports Complex",
+        "Philadelphia City Hall",
+        "Pennsylvania Academy of the Fine Arts",
+        "Peirce College"
+      ]
+    },
+    "BLVDDIR": {
+      "areas": [
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Mayfair",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Rhawnhurst",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lexington Park",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Pennypack",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bustleton",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Byberry",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Bensalem Township",
+          "in_philadelphia": false
+        }
+      ],
+      "landmarks": [
+        "Neshaminy Mall"
+      ]
+    },
+    "K": {
+      "areas": [
+        {
+          "name": "Frankford",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Northwood",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Crescentville",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Lawndale",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Melrose Park Gardens",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Olney",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Oak Lane",
+          "in_philadelphia": true
+        },
+        {
+          "name": "West Oak Lane",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Ogontz",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Germantown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Wister",
+          "in_philadelphia": true
+        },
+        {
+          "name": "Germantown",
+          "in_philadelphia": true
+        },
+        {
+          "name": "East Falls",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": []
+    },
+    "LUCYGO": {
+      "areas": [
+        {
+          "name": "University City",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "University of Pennsylvania",
+        "Hospital of the University of Pennsylvania",
+        "Children's Hospital of Philadelphia",
+        "Penn Presbyterian Medical Center",
+        "Philadelphia VA Medical Center",
+        "Franklin Field",
+        "Penn Museum"
+      ]
+    },
+    "LUCYGR": {
+      "areas": [
+        {
+          "name": "University City",
+          "in_philadelphia": true
+        }
+      ],
+      "landmarks": [
+        "University of Pennsylvania",
+        "Drexel University",
+        "Hospital of the University of Pennsylvania",
+        "Children's Hospital of Philadelphia",
+        "Penn Presbyterian Medical Center",
+        "Philadelphia VA Medical Center",
+        "Franklin Field",
+        "Penn Museum"
       ]
     }
   }

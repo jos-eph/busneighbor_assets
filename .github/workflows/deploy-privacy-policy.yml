@@ -19,6 +19,7 @@ on:
       - 'routelink.css'
       - 'routepage.css'
       - 'route_page.html'
+      - 'routes_page.html'
       - 'build_route_pages.py'
       - 'route_facts.py'
       - 'route_places.json'
@@ -93,8 +94,8 @@ jobs:
             https://github.com/jos-eph/busneighbor_assets/releases/download/current/septameta.json
           python3 -c "import json; assert json.load(open('_site/septameta.json'))['buses']['route_list']"
 
-      # One page per route, at /route/<id>. Route 47 only while the design is
-      # reviewed.
+      # One page per route at /route/<id>, the index at /routes.html, and the
+      # sitemap (replacing the copy of the fixed entries above).
       - name: Build the route pages
         run: |
           mkdir -p /tmp/route-data
@@ -105,7 +106,7 @@ jobs:
           python3 build_route_pages.py --meta _site/septameta.json \
             --shapes /tmp/route-data/septashapes.json --names /tmp/route-data/route_names.json \
             --stops /tmp/route-data/route_stops.json \
-            --output-dir _site/route --routes 47
+            --output-dir _site/route --index _site/routes.html --sitemap _site/sitemap.xml
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v5

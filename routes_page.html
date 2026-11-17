@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>SEPTA Bus and Trolley Routes | BusNeighbor</title>
+  <meta name="description" content="Every SEPTA bus and trolley route BusNeighbor tracks on a live map, with its main streets, stops, and connections. Free, independent app.">
+  <link rel="canonical" href="$url">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="BusNeighbor">
+  <meta property="og:url" content="$url">
+  <meta property="og:title" content="SEPTA Bus and Trolley Routes | BusNeighbor">
+  <meta property="og:description" content="Every SEPTA bus and trolley route BusNeighbor tracks on a live map, with its main streets, stops, and connections.">
+  <meta property="og:image" content="https://bus.dydx.org/images/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="The BusNeighbor app icon, a bus with the Liberty Bell in its window, beside the words BusNeighbor: Live Philly buses for everyone.">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">
+$structured_data
+  </script>
+  <link rel="icon" href="/images/icon-192.png">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/routepage.css">
+</head>
+<body class="landing route-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="hero">
+    <div class="wrap">
+      <div class="hero-text">
+        <!-- #include brand.html -->
+        <h1>SEPTA bus and trolley routes</h1>
+        <p class="lede">BusNeighbor shows these $count routes live on a map, with detours. Each page
+          lists the route's stops, the routes it connects with, and the neighborhoods and towns it
+          serves.</p>
+        <div class="store-slot">
+          <!-- #include store-badges.html -->
+          <p class="store-note">Free. No ads, no accounts, no tracking.</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <div class="wrap">
+      <div class="route">
+        <section aria-labelledby="all-routes">
+          <h2 id="all-routes">All routes</h2>
+          <ul class="route-index">
+            $entries
+          </ul>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- #include footer.html -->
+</body>
+</html>

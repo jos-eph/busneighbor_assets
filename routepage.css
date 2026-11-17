@@ -156,3 +156,36 @@
     stroke: CanvasText;
   }
 }
+
+/* The index of route pages: number, name, and main streets. */
+.route-page .route-index {
+  max-width: 44rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.route-page .route-index li {
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.route-page .route-index a {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.25rem 0;
+  font-weight: 600;
+}
+
+.route-page .route-index .route-tag {
+  flex: none;
+  text-decoration: none;
+}
+
+.route-page .index-streets {
+  display: block;
+  margin-left: 3.5rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}

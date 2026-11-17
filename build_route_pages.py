@@ -1,11 +1,15 @@
 """Write one web page per offered route, for the Pages build.
 
 Reads septameta.json (which routes), septashapes.json (each route's line and
-stops), route_names.json (each route's name), route_stops.json (stop names and
-positions), and route_places.json (areas and landmarks), and writes
-<output-dir>/<route>.html from route_page.html. Offered means the app's rule:
+stops), route_names.json (each route's name; route_name_overrides.json spells
+out the abbreviations), route_stops.json (stop names and positions), and
+route_places.json (areas and landmarks), and writes <output-dir>/<route>.html from route_page.html. Offered means the app's rule:
 buses.route_list, minus realtime.overrides.no_vehicle_positions, in catalog
 order. Shuttle ids get no page.
+
+Optionally also writes the index of route pages (--index, from
+routes_page.html) and the sitemap (--sitemap: the fixed entries in
+sitemap.xml, the index, and every route page).
 """
 
 import argparse
@@ -15,6 +19,7 @@ import math
 import re
 import string
 import sys
+from xml.sax.saxutils import escape as xml_escape
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -23,7 +28,11 @@ import route_facts as facts_lib
 
 SITE = "https://bus.dydx.org"
 TEMPLATE = Path(__file__).with_name("route_page.html")
+INDEX_TEMPLATE = Path(__file__).with_name("routes_page.html")
+STATIC_SITEMAP = Path(__file__).with_name("sitemap.xml")
+INDEX_URL = f"{SITE}/routes.html"
 PLACES = Path(__file__).with_name("route_places.json")
+NAME_OVERRIDES = Path(__file__).with_name("route_name_overrides.json")
 NEIGHBORHOODS_LICENSE = "https://creativecommons.org/licenses/by/4.0/"
 NEIGHBORHOODS_SOURCE = ("https://github.com/opendataphilly/open-geo-data/tree/master/"
                         "philadelphia-neighborhoods")
@@ -36,6 +45,7 @@ STORE_URLS = (
 
 # Search results show about this many characters of a description.
 MAX_DESCRIPTION = 155
+DESCRIPTION_EXTRAS = (" Every stop and connection.", " Free, independent app.")
 
 # Replacement buses for rail lines. They stay in the app's picker but get no
 # page and never appear as a connection.
@@ -285,7 +295,8 @@ def stops_section(facts: Facts) -> str:
     lines = []
     for direction in facts.stop_lists:
         stops = direction["stops"]
-        heading = f"{direction['name']} to {stops[-1]}" if direction["name"] else f"To {stops[-1]}"
+        end = facts_lib.place_name(stops[-1])
+        heading = f"{direction['name']} to {end}" if direction["name"] else f"To {end}"
         items = "".join(f"<li>{html.escape(name)}</li>" for name in stops)
         lines.append(f"<details><summary>{html.escape(heading)} ({len(stops)} stops)</summary>"
                      f'<ol class="stop-list">{items}</ol></details>')
@@ -293,14 +304,18 @@ def stops_section(facts: Facts) -> str:
 
 
 def description_text(route_id: str, vehicle: str, facts: Facts) -> str:
+    """The meta description: whole sentences only, dropping the least useful to fit."""
     between = f" between {facts.ends[0]} and {facts.ends[1]}" if facts.ends and \
         facts.ends[0] != facts.ends[1] else ""
-    text = (f"Track SEPTA Route {route_id} {plural(vehicle)}{between} on a live map, with "
-            "detours. Every stop and connection. Free, independent app.")
-    if len(text) <= MAX_DESCRIPTION:
-        return text
-    cut = text[:MAX_DESCRIPTION - 1].rsplit(" ", 1)[0].rstrip(",.")
-    return f"{cut}…"
+    for ends in dict.fromkeys([between, ""]):
+        core = f"Track SEPTA Route {route_id} {plural(vehicle)}{ends} on a live map, with detours."
+        for extras in (DESCRIPTION_EXTRAS, DESCRIPTION_EXTRAS[1:], DESCRIPTION_EXTRAS[:1]):
+            text = core + "".join(extras)
+            if len(text) <= MAX_DESCRIPTION:
+                return text
+        if len(core) <= MAX_DESCRIPTION:
+            return core
+    return core
 
 
 def structured_data(route_id: str, url: str) -> str:
@@ -312,7 +327,8 @@ def structured_data(route_id: str, url: str) -> str:
                 "@type": "BreadcrumbList",
                 "itemListElement": [
                     {"@type": "ListItem", "position": 1, "name": "BusNeighbor", "item": f"{SITE}/"},
-                    {"@type": "ListItem", "position": 2, "name": f"Route {route_id}", "item": url},
+                    {"@type": "ListItem", "position": 2, "name": "Routes", "item": INDEX_URL},
+                    {"@type": "ListItem", "position": 3, "name": f"Route {route_id}", "item": url},
                 ],
             },
             {
@@ -360,7 +376,7 @@ def render_page(template: string.Template, route_id: str, name: str, src: Source
 
 
 def build(meta: dict, shapes: dict, names: dict, output_dir: Path, only: list[str] | None,
-          places: dict, stops: dict) -> list[str]:
+          places: dict, stops: dict) -> tuple[list[str], Sources]:
     offered = offered_routes(meta)
     routes = [r for r in offered if r not in SHUTTLES]
     if only:
@@ -383,7 +399,65 @@ def build(meta: dict, shapes: dict, names: dict, output_dir: Path, only: list[st
     for route_id in routes:
         page = render_page(template, route_id, names.get(route_id, ""), src)
         (output_dir / f"{route_id}.html").write_text(page, encoding="utf-8")
-    return routes
+    return routes, src
+
+
+def index_entry(route_id: str, name: str, src: Sources) -> str:
+    """One line of the index: the route's number and name, and its main streets."""
+    streets = facts_lib.main_streets(src.shapes.get(route_id, []), src.stops)
+    along = (f'<span class="index-streets">Along {join_list([html.escape(s) for s in streets])}</span>'
+             if streets else "")
+    return (f'<li><a href="/route/{route_id}"><span class="route-tag">{html.escape(route_id)}</span> '
+            f'<span class="index-name">{html.escape(name or f"Route {route_id}")}</span></a>{along}</li>')
+
+
+def index_structured_data() -> str:
+    document = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "BusNeighbor", "item": f"{SITE}/"},
+            {"@type": "ListItem", "position": 2, "name": "Routes", "item": INDEX_URL},
+        ],
+    }
+    return json.dumps(document, indent=2).replace("</", "<\\/")
+
+
+def build_index(routes: list[str], names: dict, src: Sources, path: Path) -> None:
+    source = build_site.expand_includes(INDEX_TEMPLATE.read_text(encoding="utf-8"))
+    entries = "\n            ".join(index_entry(r, names.get(r, ""), src) for r in routes)
+    page = string.Template(source).substitute(
+        url=INDEX_URL, count=len(routes), entries=entries, structured_data=index_structured_data())
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(page, encoding="utf-8")
+
+
+def sitemap_xml(fixed: list[str], routes: list[str], lastmod: str) -> str:
+    """The fixed pages, then the index and every route page, stamped with the feed's date.
+
+    The feed date, not the build date: the daily deploy would otherwise mark
+    every page changed every day.
+    """
+    stamp = f"<lastmod>{xml_escape(lastmod)}</lastmod>" if lastmod else ""
+    lines = [f"  <url><loc>{xml_escape(loc)}</loc></url>" for loc in fixed]
+    lines += [f"  <url><loc>{xml_escape(loc)}</loc>{stamp}</url>"
+              for loc in [INDEX_URL] + [f"{SITE}/route/{r}" for r in routes]]
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+            + "\n".join(lines) + "\n</urlset>\n")
+
+
+def fixed_sitemap_entries(static: Path = STATIC_SITEMAP) -> list[str]:
+    return re.findall(r"<loc>\s*([^<\s]+)\s*</loc>", static.read_text(encoding="utf-8"))
+
+
+def apply_name_overrides(names: dict, overrides: dict) -> dict:
+    """The feed's names, with each override whose feed name still matches applied."""
+    named = dict(names)
+    for route_id, entry in overrides.get("names", {}).items():
+        if names.get(route_id) == entry["feed_name"]:
+            named[route_id] = entry["name"]
+    return named
 
 
 def _load(path: str) -> dict:
@@ -399,12 +473,24 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--stops", required=True, help="route_stops.json")
     parser.add_argument("--places", default=str(PLACES))
+    parser.add_argument("--name-overrides", default=str(NAME_OVERRIDES))
     parser.add_argument("--routes", help="comma-separated subset to build")
+    parser.add_argument("--index", help="also write the index of route pages here")
+    parser.add_argument("--sitemap", help="also write the sitemap here")
     args = parser.parse_args(argv)
     only = [r.strip() for r in args.routes.split(",")] if args.routes else None
-    written = build(_load(args.meta), _load(args.shapes), _load(args.names),
-                    Path(args.output_dir), only, _load(args.places), _load(args.stops))
+    shapes = _load(args.shapes)
+    names = apply_name_overrides(_load(args.names), _load(args.name_overrides))
+    written, src = build(_load(args.meta), shapes, names, Path(args.output_dir), only,
+                         _load(args.places), _load(args.stops))
     print(f"wrote {len(written)} route pages")
+    if args.index:
+        build_index(written, names, src, Path(args.index))
+        print(f"wrote {args.index}")
+    if args.sitemap:
+        xml = sitemap_xml(fixed_sitemap_entries(), written, shapes.get("generated", "")[:10])
+        Path(args.sitemap).write_text(xml, encoding="utf-8")
+        print(f"wrote {args.sitemap}")
     return 0
 
 

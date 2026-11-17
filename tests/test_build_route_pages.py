@@ -1,5 +1,7 @@
 """Unit tests for build_route_pages. Stdlib only, no network."""
 
+import contextlib
+import io
 import json
 import os
 import re
@@ -98,7 +100,7 @@ class AreaLabelTest(unittest.TestCase):
 class BuildTest(unittest.TestCase):
     def build(self, only=None):
         out = Path(tempfile.mkdtemp())
-        written = build_route_pages.build(META, SHAPES, NAMES, out, only, PLACES, STOPS)
+        written, _ = build_route_pages.build(META, SHAPES, NAMES, out, only, PLACES, STOPS)
         return out, written
 
     def test_writes_one_page_per_route(self):
@@ -197,13 +199,20 @@ class BuildTest(unittest.TestCase):
         self.assertTrue(description.endswith("Free, independent app."))
         self.assertLessEqual(len(description), build_route_pages.MAX_DESCRIPTION)
 
-    def test_long_description_is_cut_at_a_word(self):
-        facts = build_route_pages.Facts(ends=("A" * 60, "B" * 60), streets=[], centers=[],
-                                        rail=[], connections=[], stop_lists=[])
-        text = build_route_pages.description_text("47", "bus", facts)
-        self.assertLessEqual(len(text), build_route_pages.MAX_DESCRIPTION)
-        self.assertTrue(text.endswith("…"))
-        self.assertNotIn(" …", text)
+    def test_long_description_drops_whole_sentences(self):
+        def text(first, last):
+            facts = build_route_pages.Facts(ends=(first, last), streets=[], centers=[],
+                                            rail=[], connections=[], stop_lists=[])
+            return build_route_pages.description_text("47", "bus", facts)
+
+        medium = text("A" * 30, "B" * 30)
+        self.assertIn("between", medium)
+        self.assertTrue(medium.endswith("with detours. Free, independent app."))
+        huge = text("A" * 80, "B" * 80)
+        self.assertNotIn("between", huge)
+        for description in (medium, huge):
+            self.assertLessEqual(len(description), build_route_pages.MAX_DESCRIPTION)
+            self.assertNotIn("…", description)
 
     def test_structured_data(self):
         out, _ = self.build()
@@ -213,7 +222,9 @@ class BuildTest(unittest.TestCase):
         types = [item["@type"] for item in document["@graph"]]
         self.assertEqual(types, ["BreadcrumbList", "MobileApplication"])
         crumbs = document["@graph"][0]["itemListElement"]
-        self.assertEqual(crumbs[-1]["item"], "https://bus.dydx.org/route/47")
+        self.assertEqual([c["item"] for c in crumbs], ["https://bus.dydx.org/",
+                                                       "https://bus.dydx.org/routes.html",
+                                                       "https://bus.dydx.org/route/47"])
 
     def test_places_section(self):
         out, _ = self.build()
@@ -273,6 +284,73 @@ class BuildTest(unittest.TestCase):
         self.assertIn("Route T1", page)
         self.assertNotIn("<svg", page)
 
+
+
+class NameOverridesTest(unittest.TestCase):
+    def test_applies_only_while_feed_name_matches(self):
+        overrides = {"names": {"47": {"name": "Whitman Plaza to 5th-Godfrey Loop",
+                                      "feed_name": "Whitman Plaza to 5th-Godfrey"},
+                               "23": {"name": "Old name, spelled out", "feed_name": "Old name"}}}
+        named = build_route_pages.apply_name_overrides(NAMES, overrides)
+        self.assertEqual(named["47"], "Whitman Plaza to 5th-Godfrey Loop")
+        self.assertEqual(named["23"], NAMES["23"])  # the feed renamed it since
+
+    def test_committed_file(self):
+        overrides = build_route_pages._load(str(build_route_pages.NAME_OVERRIDES))
+        for route_id, entry in overrides["names"].items():
+            self.assertRegex(route_id, build_route_pages.ROUTE_ID)
+            self.assertNotEqual(entry["name"], entry["feed_name"])
+
+
+class IndexAndSitemapTest(unittest.TestCase):
+    def setUp(self):
+        self.out = Path(tempfile.mkdtemp())
+        self.routes, self.src = build_route_pages.build(META, SHAPES, NAMES, self.out / "route",
+                                                        None, PLACES, STOPS)
+
+    def test_index_lists_every_page(self):
+        path = self.out / "routes.html"
+        build_route_pages.build_index(self.routes, NAMES, self.src, path)
+        page = path.read_text(encoding="utf-8")
+        links = re.findall(r'<a href="/route/([^"]+)">', page)
+        self.assertEqual(links, self.routes)
+        self.assertNotIn("#include", page)
+        self.assertNotIn("$", page)
+        self.assertIn("Whitman Plaza to 5th-Godfrey", page)
+        self.assertIn("Along 5th Street", page)
+        self.assertIn("A &amp; B &lt;Loop&gt;", page)
+        self.assertIn(">Route T1<", page)  # no name: falls back to the number
+        self.assertIn(f"these {len(self.routes)} routes", page)
+
+    def test_sitemap(self):
+        fixed = ["https://bus.dydx.org/", "https://bus.dydx.org/support.html"]
+        xml = build_route_pages.sitemap_xml(fixed, self.routes, "2026-11-14")
+        locs = re.findall(r"<loc>([^<]+)</loc>", xml)
+        self.assertEqual(locs, fixed + ["https://bus.dydx.org/routes.html"]
+                         + [f"https://bus.dydx.org/route/{r}" for r in self.routes])
+        self.assertEqual(xml.count("<lastmod>2026-11-14</lastmod>"), len(self.routes) + 1)
+        self.assertNotIn("MANN", xml)
+        self.assertNotIn("lastmod", build_route_pages.sitemap_xml(fixed, self.routes, ""))
+
+    def test_fixed_sitemap_entries(self):
+        entries = build_route_pages.fixed_sitemap_entries()
+        self.assertIn("https://bus.dydx.org/", entries)
+        self.assertIn("https://bus.dydx.org/share.html", entries)
+
+    def test_main_writes_index_and_sitemap(self):
+        files = {}
+        for name, document in (("meta", META), ("shapes", {**SHAPES, "generated": "2026-11-14T12:00:00Z"}),
+                               ("names", NAMES), ("stops", STOPS), ("places", PLACES)):
+            files[name] = self.out / f"{name}.json"
+            files[name].write_text(json.dumps(document), encoding="utf-8")
+        argv = [f"--{k}={v}" for k, v in files.items()]
+        argv += [f"--output-dir={self.out / 'site' / 'route'}", f"--index={self.out / 'site' / 'routes.html'}",
+                 f"--sitemap={self.out / 'site' / 'sitemap.xml'}"]
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(build_route_pages.main(argv), 0)
+        self.assertTrue((self.out / "site" / "routes.html").exists())
+        xml = (self.out / "site" / "sitemap.xml").read_text(encoding="utf-8")
+        self.assertIn("<loc>https://bus.dydx.org/route/47</loc><lastmod>2026-11-14</lastmod>", xml)
 
 if __name__ == "__main__":
     unittest.main()
