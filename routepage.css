@@ -78,6 +78,71 @@
   margin-top: 0.5rem;
 }
 
+.route-page .source-note {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* Other routes, as small tags. */
+.route-page .route-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-width: 40rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Plain labels until the route has a page; then links, sized for a finger. */
+.route-page .route-tag {
+  display: inline-block;
+  min-width: 2.75rem;
+  padding: 0.25rem 0.5rem;
+  box-sizing: border-box;
+  border-radius: 0.375rem;
+  background: var(--panel);
+  font-weight: 600;
+  text-align: center;
+}
+
+.route-page a.route-tag {
+  min-height: 2.75rem;
+  border: 1px solid var(--border);
+  line-height: 2.1rem;
+}
+
+/* Stop lists, one collapsed list per direction. */
+.route-page details {
+  max-width: 40rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+
+.route-page details + details {
+  margin-top: 0.75rem;
+}
+
+.route-page summary {
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.route-page .stop-list {
+  margin: 0;
+  padding: 0 1rem 1rem 2.75rem;
+}
+
+.route-page .stop-list li + li {
+  margin-top: 0.25rem;
+}
+
+.route-page #questions ~ h3 {
+  margin: 1.5rem 0 0.25rem;
+  font-size: 1.1rem;
+}
+
 .route-page #link-result h3 {
   margin: 1.5rem 0 0;
 }

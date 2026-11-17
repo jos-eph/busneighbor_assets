@@ -20,6 +20,8 @@ on:
       - 'routepage.css'
       - 'route_page.html'
       - 'build_route_pages.py'
+      - 'route_facts.py'
+      - 'route_places.json'
       - 'build_site.py'
       - 'partials/**'
       - '.well-known/**'
@@ -96,12 +98,13 @@ jobs:
       - name: Build the route pages
         run: |
           mkdir -p /tmp/route-data
-          for f in septashapes.json route_names.json; do
+          for f in septashapes.json route_names.json route_stops.json; do
             curl -fsSL --retry 3 -o "/tmp/route-data/${f}" \
               "https://github.com/jos-eph/busneighbor_assets/releases/download/current/${f}"
           done
           python3 build_route_pages.py --meta _site/septameta.json \
             --shapes /tmp/route-data/septashapes.json --names /tmp/route-data/route_names.json \
+            --stops /tmp/route-data/route_stops.json \
             --output-dir _site/route --routes 47
 
       - name: Upload Pages Artifact
