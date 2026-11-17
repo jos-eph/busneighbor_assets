@@ -152,6 +152,26 @@ apart from `generated`. There is no dated release.
 `Build check` workflow builds both documents for a pull request that touches
 the builders and keeps them as an artifact, without publishing.
 
+## route_stops.json
+
+The name and position of every stop a route uses, for the website's route
+pages. Same workflow, same bundle, same `current` release:
+
+```json
+{
+  "v": 1,
+  "gtfs_version": "v202611010",
+  "stops": {"1234": ["8th St & Market St", 39.95162, -75.15375]},
+  "rail_stations": [["Jefferson Station", 39.9525, -75.158]]
+}
+```
+
+`stops` covers every id in `route_stops.txt` that `stops.txt` defines (the feed
+lists a few it doesn't), with names as the feed writes them. `rail_stations` comes from the bundle's Regional Rail feed. The file has
+no build time, so it is published only when its bytes change. There is no
+dated release. `python build_route_stops.py --gtfs-zip <bundle>` builds it
+locally.
+
 ## Real-time coverage sampling
 
 `sample_realtime_coverage.py` records which routes SEPTA is currently

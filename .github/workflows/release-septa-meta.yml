@@ -25,6 +25,9 @@ name: Release SEPTA meta
 #   * septashapes.json (route lines, from the same bundle) goes to `current`
 #     only, under the same gates, whenever it differs from the published copy
 #     apart from its `generated` time. It has no dated release.
+#   * route_stops.json (stop names and positions, for the route pages) goes
+#     to `current` under the same gates as route_names.json, whenever its
+#     bytes differ from the published copy. It has no dated release.
 #   * A build that would stop offering a route the published document offers
 #     needs approval. The app removes a route it stops seeing from the rider's
 #     saved selection, permanently. Until someone approves, the build is
@@ -120,6 +123,9 @@ jobs:
       - name: Build septashapes.json
         # Same bundle as septameta.json, so both describe one GTFS version.
         run: python build_septa_shapes.py --gtfs-zip ./out/gtfs_public.zip --output-dir ./out
+
+      - name: Build route_stops.json
+        run: python build_route_stops.py --gtfs-zip ./out/gtfs_public.zip --output-dir ./out
 
       - name: Decide whether to publish
         id: gate
@@ -342,9 +348,25 @@ jobs:
               fi
             fi
           fi
+          # Stop names and positions for the website, the same way.
+          PUBLISH_STOPS=false
+          if [ "${ELIGIBLE}" = "true" ] && [ "${BLOCKED}" = "false" ]; then
+            if grep -Fxq current <<< "${TAGS}"; then
+              PUBLISH_STOPS=true
+              if grep -Fxq route_stops.json <<< "${CURRENT_ASSETS}"; then
+                mkdir -p /tmp/published-stops
+                gh release download current --repo "${GITHUB_REPOSITORY}" \
+                  --pattern route_stops.json --dir /tmp/published-stops --clobber
+                if cmp -s /tmp/published-stops/route_stops.json ./out/route_stops.json; then
+                  PUBLISH_STOPS=false
+                fi
+              fi
+            fi
+          fi
           echo "publish=${PUBLISH}" >> "$GITHUB_OUTPUT"
           echo "publish_shapes=${PUBLISH_SHAPES}" >> "$GITHUB_OUTPUT"
           echo "publish_names=${PUBLISH_NAMES}" >> "$GITHUB_OUTPUT"
+          echo "publish_stops=${PUBLISH_STOPS}" >> "$GITHUB_OUTPUT"
           if [ "${UNGUARDED}" = "true" ]; then
             BLOCKED=true
           fi
@@ -354,7 +376,7 @@ jobs:
           echo "rehearsal=${REHEARSAL}" >> "$GITHUB_OUTPUT"
           echo "pending=${PENDING}" >> "$GITHUB_OUTPUT"
           echo "published_sha256=$(sha256sum ./out/septameta.json | awk '{print $1}')" >> "$GITHUB_OUTPUT"
-          echo "Publish decision: ${PUBLISH}; septashapes.json: ${PUBLISH_SHAPES}"
+          echo "Publish decision: ${PUBLISH}; septashapes.json: ${PUBLISH_SHAPES}; route_stops.json: ${PUBLISH_STOPS}"
 
       - name: Generate sha256 sidecars
         # `sha256sum` output format — consumers verify with `sha256sum -c`.
@@ -389,6 +411,7 @@ jobs:
           path: |
             ./out/septameta*.json
             ./out/septashapes.json
+            ./out/route_stops.json
           retention-days: 14
 
       - name: Set the candidate aside for approval
@@ -465,6 +488,15 @@ jobs:
           cp "./out/route_names_${START_DATE}.json" ./out/route_names.json
           gh release upload current --clobber \
             --repo "${GITHUB_REPOSITORY}" ./out/route_names.json
+
+      - name: Publish route stops to 'current'
+        if: steps.gate.outputs.publish_stops == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh release upload current --clobber \
+            --repo "${GITHUB_REPOSITORY}" ./out/route_stops.json
 
       - name: Prune dated releases beyond the most recent 30
         # Keep the 30 most recent dated releases; never prune `current`. Sort by
