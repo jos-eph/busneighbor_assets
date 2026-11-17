@@ -44,9 +44,10 @@ def _zip(members: dict[str, str | bytes]) -> bytes:
     return buffer.getvalue()
 
 
-def make_bundle(bus_stops=BUS_STOPS, rail_stops=RAIL_STATIONS) -> bytes:
-    bus = _zip({"feed_info.txt": FEED_INFO, "stops.txt": "﻿" + bus_stops,
-                "route_stops.txt": ROUTE_STOPS})
+def make_bundle(bus_stops=BUS_STOPS, rail_stops=RAIL_STATIONS, route_stops=ROUTE_STOPS) -> bytes:
+    # The feed's text files start with a byte order mark.
+    bus = _zip({"feed_info.txt": FEED_INFO, "stops.txt": "\ufeff" + bus_stops,
+                "route_stops.txt": route_stops})
     rail = _zip({"stops.txt": rail_stops})
     return _zip({"google_bus.zip": bus, "google_rail.zip": rail})
 
