@@ -1,0 +1,33 @@
+name: JavaScript tests
+
+# Unit tests for the website's scripts, with Node's built-in test runner.
+# No packages: the repository has no package.json.
+
+on:
+  pull_request:
+    paths:
+      - '*.js'
+      - 'vendor/**'
+      - 'tests/js/**'
+      - '.github/workflows/js-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1  # v7.1.0
+        with:
+          node-version: '26'
+
+      - name: Run unit tests
+        run: node --test tests/js/
