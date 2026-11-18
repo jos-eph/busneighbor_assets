@@ -226,3 +226,83 @@ input:focus-visible {
     outline-color: Highlight;
   }
 }
+
+/* QR code: black on white in every theme, so phone cameras read it. */
+.qr-card {
+  width: min(100%, 16rem);
+  margin-top: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: #ffffff;
+  forced-color-adjust: none;
+}
+
+.qr-card svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* The printed sign (share.html), shown only when printing with routes chosen. */
+.print-sign {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: letter;
+    margin: 0.75in;
+  }
+
+  body.has-sign {
+    background: #ffffff;
+  }
+
+  body.has-sign > :not(.print-sign) {
+    display: none !important;
+  }
+
+  body.has-sign > .print-sign {
+    display: block;
+    color: #000000;
+    text-align: center;
+  }
+
+  .print-sign .print-title {
+    margin: 0 0 0.3in;
+    font-size: 28pt;
+    line-height: 1.2;
+  }
+
+  .print-sign .print-qr {
+    width: 3in;
+    height: 3in;
+    margin: 0 auto 0.25in;
+    print-color-adjust: exact;
+  }
+
+  .print-sign .print-qr svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .print-sign .print-scan {
+    margin: 0 0 0.15in;
+    font-size: 16pt;
+  }
+
+  .print-sign .print-link {
+    margin: 0 0 0.3in;
+    font-size: 16pt;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  .print-sign .print-about {
+    max-width: 5.5in;
+    margin: 0 auto;
+    font-size: 12pt;
+  }
+}

@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light dark">
-  <title>Make a Link to Your Philadelphia Bus Routes | BusNeighbor</title>
-  <meta name="description" content="Pick the Philadelphia bus and trolley routes you ride and get one link that opens them in BusNeighbor. Send it to family, or post it for visitors. Free.">
+  <title>Make a Link or QR Code for Your Bus Routes | BusNeighbor</title>
+  <meta name="description" content="Pick the Philadelphia bus and trolley routes you ride and get a link and QR code that open them in BusNeighbor. Print a sign or send the link. Free.">
   <link rel="canonical" href="https://bus.dydx.org/share.html">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="BusNeighbor">
   <meta property="og:url" content="https://bus.dydx.org/share.html">
-  <meta property="og:title" content="Make a Link to Your Philadelphia Bus Routes | BusNeighbor">
-  <meta property="og:description" content="Pick the bus and trolley routes you ride and get one link that opens them in BusNeighbor, the free live bus map.">
+  <meta property="og:title" content="Make a Link or QR Code for Your Bus Routes | BusNeighbor">
+  <meta property="og:description" content="Pick the bus and trolley routes you ride and get a link and QR code that open them in BusNeighbor, the free live bus map.">
   <meta property="og:image" content="https://bus.dydx.org/images/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -30,9 +30,9 @@
       },
       {
         "@type": "WebPage",
-        "name": "Make a link to your bus routes",
+        "name": "Make a link or QR code for your bus routes",
         "url": "https://bus.dydx.org/share.html",
-        "description": "Pick the Philadelphia bus and trolley routes you ride and get one link that opens them in BusNeighbor.",
+        "description": "Pick the Philadelphia bus and trolley routes you ride and get a link and QR code that open them in BusNeighbor.",
         "isPartOf": { "@type": "WebSite", "name": "BusNeighbor", "url": "https://bus.dydx.org/" }
       }
     ]
@@ -52,10 +52,10 @@
 
   <main id="main-content">
     <div class="wrap">
-      <h1>Make a link to your bus routes</h1>
+      <h1>Make a link or QR code for your bus routes</h1>
       <p>Pick the bus and trolley routes you ride and get one link that opens BusNeighbor with those
-        routes on the map. Send it to family, give it to someone you help get around, or post it
-        where visitors look for directions to your office.</p>
+        routes on the map. Send it to family, give it to someone you help get around, or print a sign
+        with its QR code for a front desk or bulletin board.</p>
 
       <form id="route-form">
         <fieldset class="picker-panel">
@@ -80,6 +80,16 @@
           <a id="link-open" class="button" href="busneighbor://go">Open in BusNeighbor</a>
         </div>
         <p class="hint">“Open in BusNeighbor” works on a phone with the app installed.</p>
+
+        <div id="qr-section">
+          <h3>QR code</h3>
+          <div id="link-qr" class="qr-card"></div>
+          <p class="hint">Point a phone's camera at the code to open the link.</p>
+          <div class="link-actions">
+            <button id="qr-print" type="button">Print a sign</button>
+            <button id="qr-download" type="button">Download QR code</button>
+          </div>
+        </div>
       </div>
 
       <noscript><p>This page needs JavaScript to load the route list.</p></noscript>
@@ -87,10 +97,11 @@
       <h2 id="how">How it works</h2>
       <ol class="steps">
         <li>Pick up to 20 routes. The link updates as you go.</li>
-        <li>Copy the link, or share it from your phone. Send it in a text or an email, or post it on a
-          website.</li>
-        <li>On a phone with BusNeighbor, the link opens the app with those routes on the map.
-          BusNeighbor asks before it replaces the routes that person already has.</li>
+        <li>Copy the link, or share it from your phone. Send it in a text or an email, post it on a
+          website, or print a sign with its QR code.</li>
+        <li>On a phone with BusNeighbor, opening the link or pointing the camera at the code opens
+          the app with those routes on the map. BusNeighbor asks before it replaces the routes that
+          person already has.</li>
       </ol>
 
       <h2 id="questions">Questions</h2>
@@ -100,17 +111,40 @@
       <h3>What happens if they open it without the app?</h3>
       <p>The link opens a page on this site that names the routes and links to both app stores.
         After installing BusNeighbor, they can open the link again.</p>
-      <h3>Does the link track anyone?</h3>
-      <p>No. The link holds only route numbers, and nothing that identifies you or the person who
-        opens it. This page doesn't save your choices, and BusNeighbor has no accounts, ads, or
-        analytics.</p>
+      <h3>Can I put the QR code on a flyer?</h3>
+      <p>Yes. Download it as an image and add it to your flyer, or print the sign. Keep the white
+        border around the code, and print it at least 1.5 inches (4 cm) square, larger if people
+        will scan it from across a room.</p>
+      <h3>Does the link or code track anyone?</h3>
+      <p>No. The link and its QR code hold only route numbers, and nothing that identifies you or
+        the person who opens it. This page makes the code in your browser and doesn't save your
+        choices, and BusNeighbor has no accounts, ads, or analytics.</p>
     </div>
   </main>
 
   <!-- #include footer.html -->
+
+  <!-- Printed instead of the page once routes are chosen. Hidden on screen. -->
+  <div id="print-sign" class="print-sign" aria-hidden="true">
+    <h2 id="print-title" class="print-title">Live buses</h2>
+    <div id="print-qr" class="print-qr"></div>
+    <p class="print-scan">Scan with your phone's camera to see where these buses are right now.</p>
+    <p id="print-link" class="print-link"></p>
+    <p class="print-about">Opens BusNeighbor, a free live bus map for iPhone and Android, built for
+      riders who are blind or have low vision. No app? The link shows how to get it.</p>
+  </div>
   <script type="module">
     import { initSharePage } from '/routelink.js';
-    initSharePage();
+    // Without the QR code, the page still makes links.
+    let onLink;
+    try {
+      const { initQr } = await import('/routeqr.js');
+      onLink = initQr(document);
+    } catch (error) {
+      console.error(error);
+      document.getElementById('qr-section').hidden = true;
+    }
+    initSharePage(document, { onLink });
   </script>
 </body>
 </html>

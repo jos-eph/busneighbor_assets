@@ -89,6 +89,51 @@ class RealPagesTest(unittest.TestCase):
             self.assertIn("apps.apple.com/app/busneighbor/id6812131455", text, page)
             self.assertIn("details?id=org.dydx.busneighbor_flutter", text, page)
 
+    def test_link_maker_offers_a_qr_code(self):
+        text = (build_site.ROOT / "share.html").read_text(encoding="utf-8")
+        self.assertIn("<title>Make a Link or QR Code for Your Bus Routes | BusNeighbor</title>", text)
+        for element in ('id="qr-section"', 'id="link-qr"', 'id="qr-print"', 'id="qr-download"',
+                        'id="print-sign"', 'id="print-title"', 'id="print-qr"', 'id="print-link"'):
+            self.assertIn(element, text)
+
+
+class DeployCopiesTest(unittest.TestCase):
+    """The deploy copies site files by name, so a new script or stylesheet must be listed."""
+
+    WORKFLOW = build_site.ROOT / ".github" / "workflows" / "deploy-privacy-policy.yml"
+    TEMPLATES = build_site.PAGES + ("route_page.html", "routes_page.html")
+    PAGE_REF = re.compile(r"""(?:src|href)="/([\w.-]+\.(?:js|css))"|(?:from|import\()\s*'/([\w.-]+\.js)'""")
+    SCRIPT_IMPORT = re.compile(r"""from\s+'\./([\w./-]+)'""")
+
+    def copied(self):
+        names, folders = set(), set()
+        for line in self.WORKFLOW.read_text(encoding="utf-8").splitlines():
+            words = line.split()
+            if words[:1] != ["cp"]:
+                continue
+            if words[1] == "-r":
+                folders.update(words[2:-1])
+            else:
+                names.update(words[1:-1])
+        return names, folders
+
+    def test_every_referenced_file_is_copied(self):
+        names, folders = self.copied()
+        for page in self.TEMPLATES:
+            text = (build_site.ROOT / page).read_text(encoding="utf-8")
+            for match in self.PAGE_REF.finditer(text):
+                name = match.group(1) or match.group(2)
+                self.assertIn(name, names, f"{page} uses /{name}, which the deploy doesn't copy")
+
+    def test_files_a_script_imports_are_copied(self):
+        names, folders = self.copied()
+        for script in sorted(n for n in names if n.endswith(".js")):
+            text = (build_site.ROOT / script).read_text(encoding="utf-8")
+            for path in self.SCRIPT_IMPORT.findall(text):
+                top = path.split("/")[0]
+                self.assertTrue(path in names or top in folders,
+                                f"{script} imports ./{path}, which the deploy doesn't copy")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,5 +1,7 @@
-// Route links: shared by share.html (builds a link) and go.html (opens one).
-// No dependencies, no storage, no network beyond the same-origin route list.
+// Route links: shared by share.html and the route pages (build a link) and
+// go.html (opens one). No dependencies, no storage, no network beyond the
+// same-origin route list. share.html adds its QR code through onLink
+// (routeqr.js), so the route pages never load the encoder.
 
 // Same-origin copy of the route catalog, written into the site by the Pages
 // build. The release asset itself cannot be fetched from a browser: it sends
@@ -9,6 +11,7 @@ export const ROUTE_LIST_URL = '/septameta.json';
 
 export const LINK_BASE = 'https://bus.dydx.org/go';
 export const APP_LINK_BASE = 'busneighbor://go';
+const SHARE_PAGE = '/share.html';
 
 // Keep in step with the app's parser (route_link_parser.dart).
 export const MAX_ROUTES = 20;
@@ -57,8 +60,11 @@ function el(tag, props = {}, ...children) {
   return node;
 }
 
-/** `preselect`: routes chosen when the page opens, as on a route's own page. */
-export async function initSharePage(root = document, { preselect = [] } = {}) {
+/**
+ * `preselect`: routes chosen when the page opens, as on a route's own page.
+ * `onLink(link, chosen)`: called after every change, with ('', []) when nothing is chosen.
+ */
+export async function initSharePage(root = document, { preselect = [], onLink = () => {} } = {}) {
   const picker = root.getElementById('route-picker');
   const filter = root.getElementById('route-filter');
   const status = root.getElementById('route-status');
@@ -67,6 +73,8 @@ export async function initSharePage(root = document, { preselect = [] } = {}) {
   const copy = root.getElementById('link-copy');
   const share = root.getElementById('link-share');
   const open = root.getElementById('link-open');
+  // Route pages only: a link to the link maker, which also makes QR codes.
+  const qrPage = root.getElementById('link-qr-page');
   const clear = root.getElementById('route-clear');
   const retry = root.getElementById('route-retry');
   const selected = new Set();
@@ -83,14 +91,18 @@ export async function initSharePage(root = document, { preselect = [] } = {}) {
     clear.disabled = chosen.length === 0;
     if (chosen.length === 0) {
       status.textContent = 'No routes chosen yet.';
+      onLink('', []);
       return;
     }
-    output.value = buildLink(LINK_BASE, chosen);
+    const link = buildLink(LINK_BASE, chosen);
+    output.value = link;
     open.href = buildLink(APP_LINK_BASE, chosen);
+    if (qrPage) qrPage.href = buildLink(SHARE_PAGE, chosen);
     const count = chosen.length === 1 ? '1 route' : `${chosen.length} routes`;
     status.textContent = full
       ? `${count} chosen: ${chosen.join(', ')}. That is the most one link can hold.`
       : `${count} chosen: ${chosen.join(', ')}.`;
+    onLink(link, chosen);
   }
 
   function render() {
