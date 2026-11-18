@@ -17,6 +17,8 @@ on:
       - 'share.html'
       - 'go.html'
       - 'routelink.js'
+      - 'routeqr.js'
+      - 'vendor/**'
       - 'routelink.css'
       - 'routepage.css'
       - 'route_page.html'
@@ -78,7 +80,9 @@ jobs:
           cp style.css robots.txt sitemap.xml _site/
           # Bing Webmaster Tools site verification.
           cp BingSiteAuth.xml _site/
-          cp routelink.js routelink.css routepage.css _site/
+          cp routelink.js routeqr.js routelink.css routepage.css _site/
+          # The QR encoder routeqr.js imports.
+          cp -r vendor _site/
           # index, share, and go, with the shared pieces in partials/ filled in.
           python3 build_site.py --output-dir _site
           cp -r images _site/
