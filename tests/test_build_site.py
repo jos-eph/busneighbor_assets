@@ -1,6 +1,8 @@
 """Unit tests for build_site. Stdlib only, no network."""
 
+import json
 import os
+import re
 import sys
 import tempfile
 import unittest
@@ -52,6 +54,32 @@ class RealPagesTest(unittest.TestCase):
             self.assertNotIn("#include", text, page)
             self.assertIn("not affiliated with, endorsed by, or operated by SEPTA", text, page)
             self.assertEqual(text.count("<footer>"), 1, page)
+
+    def test_footer_links_to_the_link_maker(self):
+        out = Path(tempfile.mkdtemp())
+        build_site.build(out)
+        for page in build_site.PAGES:
+            text = (out / page).read_text(encoding="utf-8")
+            self.assertIn('<a href="/share.html">Route links</a>', text, page)
+
+    def test_homepage_links_to_route_pages_and_the_link_maker(self):
+        text = (build_site.ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertRegex(text, r'href="/route/[A-Za-z0-9_-]+"')
+        self.assertIn('href="/routes.html"', text)
+        self.assertIn('href="/share.html"', text)
+
+    def test_structured_data_parses(self):
+        for page in ("index.html", "share.html"):
+            text = (build_site.ROOT / page).read_text(encoding="utf-8")
+            blocks = re.findall(r'<script type="application/ld\+json">(.*?)</script>', text, re.S)
+            self.assertEqual(len(blocks), 1, page)
+            json.loads(blocks[0])
+
+    def test_link_maker_explains_itself_without_javascript(self):
+        text = (build_site.ROOT / "share.html").read_text(encoding="utf-8")
+        self.assertIn('<meta property="og:image"', text)
+        self.assertIn('<h2 id="how">How it works</h2>', text)
+        self.assertIn('<h2 id="questions">Questions</h2>', text)
 
     def test_store_badges_on_pages_that_offer_the_app(self):
         out = Path(tempfile.mkdtemp())
