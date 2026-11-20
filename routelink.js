@@ -13,8 +13,9 @@ export const LINK_BASE = 'https://bus.dydx.org/go';
 export const APP_LINK_BASE = 'busneighbor://go';
 const SHARE_PAGE = '/share.html';
 
-// Keep in step with the app's parser (route_link_parser.dart).
+// Keep in step with the app's parsers (route_link.dart, track_link.dart).
 export const MAX_ROUTES = 20;
+export const MAX_TRACKED = 3;
 const ROUTE_ID = /^[A-Za-z0-9_-]{1,16}$/;
 
 /** Routes the app offers: the catalog's order, minus routes with no live positions. */
@@ -42,9 +43,75 @@ export function parseRoutes(search) {
   return [...new Set(ids)].slice(0, MAX_ROUTES);
 }
 
-export function buildLink(base, routes) {
-  // Route ids are limited to URL-safe characters, so commas stay readable.
-  return `${base}?routes=${routes.join(',')}`;
+/**
+ * The buses a `?track=47:3112,21:1234` query names, as `{route, vehicle}`
+ * pairs in order, each vehicle once and at most MAX_TRACKED. Null when the
+ * query has no `track`; empty when it names no valid pair.
+ */
+export function parseTrack(search) {
+  const raw = new URLSearchParams(search).get('track');
+  if (raw === null) return null;
+  const byVehicle = new Map();
+  for (const item of raw.split(',')) {
+    const parts = item.trim().split(':');
+    if (parts.length !== 2) continue;
+    const [route, vehicle] = parts;
+    if (ROUTE_ID.test(route) && ROUTE_ID.test(vehicle) && !byVehicle.has(vehicle)) {
+      byVehicle.set(vehicle, { route, vehicle });
+    }
+  }
+  return [...byVehicle.values()].slice(0, MAX_TRACKED);
+}
+
+export function buildLink(base, routes, track = null) {
+  // Ids are limited to URL-safe characters, so commas and colons stay readable.
+  const link = `${base}?routes=${routes.join(',')}`;
+  if (track === null) return link;
+  return `${link}&track=${track.map(({ route, vehicle }) => `${route}:${vehicle}`).join(',')}`;
+}
+
+function joinWithAnd(items) {
+  if (items.length <= 2) return items.join(' and ');
+  return `${items.slice(0, -1).join(', ')}, and ${items.at(-1)}`;
+}
+
+/**
+ * What go.html shows for a link's query: the summary, the hint under the
+ * button, and the app link (null hides the button). A link with `track`
+ * keeps it in the app link, so the app tracks the buses instead of only
+ * showing their routes.
+ */
+export function goPageContent(search) {
+  const routes = parseRoutes(search);
+  const track = parseTrack(search);
+  if (track !== null) return trackingContent(routes, track);
+  if (routes.length === 0) {
+    return { summary: "This link doesn't name any routes.", hint: null, href: null };
+  }
+  return {
+    summary:
+      routes.length === 1
+        ? `This link shows route ${routes[0]} in BusNeighbor.`
+        : `This link shows these routes in BusNeighbor: ${routes.join(', ')}.`,
+    hint: 'BusNeighbor asks before it replaces the routes you already have.',
+    href: buildLink(APP_LINK_BASE, routes),
+  };
+}
+
+function trackingContent(routes, track) {
+  // Like the app, a broken `track` never falls back to the routes.
+  if (track.length === 0) {
+    return { summary: "This link doesn't name a bus BusNeighbor can show.", hint: null, href: null };
+  }
+  // The app's links repeat the buses' routes in `routes`, for builds that
+  // don't track; keep that true for a hand-made link that leaves it out.
+  const linkRoutes = routes.length > 0 ? routes : [...new Set(track.map((bus) => bus.route))];
+  const buses = track.map(({ route, vehicle }) => `bus ${vehicle} on route ${route}`);
+  return {
+    summary: `This link tracks ${joinWithAnd(buses)} in BusNeighbor.`,
+    hint: `BusNeighbor asks first, then adds ${track.length === 1 ? 'the bus' : 'the buses'} to your map. Your routes stay as they are.`,
+    href: buildLink(APP_LINK_BASE, linkRoutes, track),
+  };
 }
 
 async function fetchRoutes() {
@@ -189,18 +256,13 @@ export async function initSharePage(root = document, { preselect = [], onLink = 
 }
 
 export function initGoPage(root = document) {
-  const routes = parseRoutes(location.search);
-  const summary = root.getElementById('go-summary');
-  const open = root.getElementById('go-open');
-  if (routes.length === 0) {
-    summary.textContent = "This link doesn't name any routes.";
-    open.hidden = true;
-    return;
-  }
+  const { summary, hint, href } = goPageContent(location.search);
   // textContent only: the ids come from the URL.
-  summary.textContent =
-    routes.length === 1
-      ? `This link shows route ${routes[0]} in BusNeighbor.`
-      : `This link shows these routes in BusNeighbor: ${routes.join(', ')}.`;
-  open.href = buildLink(APP_LINK_BASE, routes);
+  root.getElementById('go-summary').textContent = summary;
+  const hintNode = root.getElementById('go-hint');
+  hintNode.textContent = hint ?? '';
+  hintNode.hidden = hint === null;
+  const open = root.getElementById('go-open');
+  open.hidden = href === null;
+  if (href !== null) open.href = href;
 }
