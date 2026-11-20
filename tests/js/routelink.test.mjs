@@ -64,7 +64,10 @@ test('a shared bus link keeps its bus in the app link', () => {
   const content = goPageContent(SHARED);
   assert.equal(content.href, 'busneighbor://go?routes=45&track=45:3557');
   assert.equal(content.summary, 'This link tracks bus 3557 on route 45 in BusNeighbor.');
-  assert.match(content.hint, /adds the bus/);
+  assert.equal(
+    content.hint,
+    'BusNeighbor adds the bus to your map. Your routes stay as they are.',
+  );
 });
 
 test('the app link round-trips through the parsers', () => {
@@ -80,7 +83,10 @@ test('a tracking link names every bus', () => {
     summary,
     'This link tracks bus 1 on route 45, bus 2 on route 21, and bus 3 on route 9 in BusNeighbor.',
   );
-  assert.match(goPageContent('?track=45:1,21:2').hint, /adds the buses/);
+  assert.equal(
+    goPageContent('?track=45:1,21:2').hint,
+    'BusNeighbor adds the buses to your map. Your routes stay as they are.',
+  );
 });
 
 test('a tracking link without routes repeats the buses’ routes', () => {

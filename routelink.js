@@ -109,7 +109,7 @@ function trackingContent(routes, track) {
   const buses = track.map(({ route, vehicle }) => `bus ${vehicle} on route ${route}`);
   return {
     summary: `This link tracks ${joinWithAnd(buses)} in BusNeighbor.`,
-    hint: `BusNeighbor asks first, then adds ${track.length === 1 ? 'the bus' : 'the buses'} to your map. Your routes stay as they are.`,
+    hint: `BusNeighbor adds ${track.length === 1 ? 'the bus' : 'the buses'} to your map. Your routes stay as they are.`,
     href: buildLink(APP_LINK_BASE, linkRoutes, track),
   };
 }
