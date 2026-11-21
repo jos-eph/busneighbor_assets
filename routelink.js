@@ -105,12 +105,26 @@ function trackingContent(routes, track) {
   }
   // The app's links repeat the buses' routes in `routes`, for builds that
   // don't track; keep that true for a hand-made link that leaves it out.
-  const linkRoutes = routes.length > 0 ? routes : [...new Set(track.map((bus) => bus.route))];
-  const buses = track.map(({ route, vehicle }) => `bus ${vehicle} on route ${route}`);
+  const busRoutes = new Set(track.map((bus) => bus.route));
+  const linkRoutes = routes.length > 0 ? routes : [...busRoutes];
+  // The rest of the sender's map, which the app adds along with the buses.
+  const extra = routes.filter((route) => !busRoutes.has(route));
+  const buses = joinWithAnd(track.map(({ route, vehicle }) => `bus ${vehicle} on route ${route}`));
+  const theBuses = track.length === 1 ? 'the bus' : 'the buses';
+  const href = buildLink(APP_LINK_BASE, linkRoutes, track);
+  if (extra.length === 0) {
+    return {
+      summary: `This link tracks ${buses} in BusNeighbor.`,
+      hint: `BusNeighbor adds ${theBuses} to your map. Your routes stay as they are.`,
+      href,
+    };
+  }
+  const shows = extra.length === 1 ? `route ${extra[0]}` : `routes ${joinWithAnd(extra)}`;
+  const theseRoutes = extra.length === 1 ? 'this route' : 'these routes';
   return {
-    summary: `This link tracks ${joinWithAnd(buses)} in BusNeighbor.`,
-    hint: `BusNeighbor adds ${track.length === 1 ? 'the bus' : 'the buses'} to your map. Your routes stay as they are.`,
-    href: buildLink(APP_LINK_BASE, linkRoutes, track),
+    summary: `This link shows ${shows} in BusNeighbor and tracks ${buses}.`,
+    hint: `BusNeighbor adds ${theseRoutes} and ${theBuses} to your map. Your other routes stay as they are.`,
+    href,
   };
 }
 
