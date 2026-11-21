@@ -89,6 +89,56 @@ test('a tracking link names every bus', () => {
   );
 });
 
+test('a whole-map link names its other routes and its bus', () => {
+  const content = goPageContent('?routes=4,9,21,47&track=47:3112');
+  assert.equal(
+    content.summary,
+    'This link shows routes 4, 9, and 21 in BusNeighbor and tracks bus 3112 on route 47.',
+  );
+  assert.equal(
+    content.hint,
+    'BusNeighbor adds these routes and the bus to your map. Your other routes stay as they are.',
+  );
+  assert.equal(content.href, 'busneighbor://go?routes=4,9,21,47&track=47:3112');
+});
+
+test('a whole-map link with one other route says it once', () => {
+  const content = goPageContent('?routes=4,47&track=47:3112');
+  assert.equal(
+    content.summary,
+    'This link shows route 4 in BusNeighbor and tracks bus 3112 on route 47.',
+  );
+  assert.equal(
+    content.hint,
+    'BusNeighbor adds this route and the bus to your map. Your other routes stay as they are.',
+  );
+});
+
+test('a whole-map link with two buses names both', () => {
+  const content = goPageContent('?routes=4,21,47&track=47:3112,21:8001');
+  assert.equal(
+    content.summary,
+    'This link shows route 4 in BusNeighbor and tracks bus 3112 on route 47 and bus 8001 on route 21.',
+  );
+  assert.equal(
+    content.hint,
+    'BusNeighbor adds this route and the buses to your map. Your other routes stay as they are.',
+  );
+  assert.equal(content.href, 'busneighbor://go?routes=4,21,47&track=47:3112,21:8001');
+});
+
+test('a whole-map link with three other routes and two buses', () => {
+  const { summary, hint } = goPageContent('?routes=4,9,21,47,45&track=47:1,45:2');
+  assert.equal(
+    summary,
+    'This link shows routes 4, 9, and 21 in BusNeighbor and tracks bus 1 on route 47 and bus 2 on route 45.',
+  );
+  assert.equal(
+    hint,
+    'BusNeighbor adds these routes and the buses to your map. Your other routes stay as they are.',
+  );
+});
+
 test('a tracking link without routes repeats the buses’ routes', () => {
   const { href } = goPageContent('?track=45:3557,21:1234,45:9');
   assert.equal(href, 'busneighbor://go?routes=45,21&track=45:3557,21:1234,45:9');
