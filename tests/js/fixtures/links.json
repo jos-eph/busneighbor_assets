@@ -1,0 +1,97 @@
+[
+  {
+    "name": "valid 16-char route id",
+    "query": "?routes=ABCDEFGHIJKLMNOP",
+    "malformed": false,
+    "routes": ["ABCDEFGHIJKLMNOP"],
+    "track": []
+  },
+  {
+    "name": "17-char route id rejected",
+    "query": "?routes=ABCDEFGHIJKLMNOPQ",
+    "malformed": true
+  },
+  {
+    "name": "valid 5-digit vehicle id",
+    "query": "?routes=47&track=47:12345",
+    "malformed": false,
+    "routes": ["47"],
+    "track": [{"route": "47", "vehicle": "12345"}]
+  },
+  {
+    "name": "6-digit vehicle id rejected",
+    "query": "?routes=47&track=47:123456",
+    "malformed": true
+  },
+  {
+    "name": "letters in vehicle id rejected",
+    "query": "?routes=47&track=47:31a2",
+    "malformed": true
+  },
+  {
+    "name": "negative vehicle id rejected",
+    "query": "?routes=47&track=47:-1",
+    "malformed": true
+  },
+  {
+    "name": "decimal vehicle id rejected",
+    "query": "?routes=47&track=47:3.5",
+    "malformed": true
+  },
+  {
+    "name": "full-width digits in vehicle id rejected",
+    "query": "?routes=47&track=47:%EF%BC%90%EF%BC%91%EF%BC%92",
+    "malformed": true
+  },
+  {
+    "name": "space inside vehicle id rejected",
+    "query": "?routes=47&track=47:31%2012",
+    "malformed": true
+  },
+  {
+    "name": "html tag in routes rejected",
+    "query": "?routes=%3Cb%3E",
+    "malformed": true
+  },
+  {
+    "name": "html tag in track rejected",
+    "query": "?track=47:%3Cb%3E",
+    "malformed": true
+  },
+  {
+    "name": "one bad pair among good ones rejects whole link",
+    "query": "?routes=47&track=47:3112,47:31a2",
+    "malformed": true
+  },
+  {
+    "name": "one bad route among good ones rejects whole link",
+    "query": "?routes=47,bad!route",
+    "malformed": true
+  },
+  {
+    "name": "good track with bad route rejects whole link",
+    "query": "?routes=47,bad!route&track=47:3112",
+    "malformed": true
+  },
+  {
+    "name": "trailing comma in routes accepted",
+    "query": "?routes=4,9,",
+    "malformed": false,
+    "routes": ["4", "9"],
+    "track": []
+  },
+  {
+    "name": "trailing comma in track accepted",
+    "query": "?routes=47&track=47:3112,",
+    "malformed": false,
+    "routes": ["47"],
+    "track": [{"route": "47", "vehicle": "3112"}]
+  },
+  {
+    "name": "unknown query parameters ignored",
+    "query": "?routes=47&next=https://example.com",
+    "malformed": false,
+    "routes": ["47"],
+    "track": []
+  }
+]
